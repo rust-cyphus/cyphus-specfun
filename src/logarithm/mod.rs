@@ -10,6 +10,100 @@ use crate::consts::{ROOT5_DBL_EPS, ROOT6_DBL_EPS};
 use crate::result::{SpecFunCode, SpecFunResult};
 use num::Complex;
 
+pub trait Logarithm {
+    /// Compute the natural logarithm of a number and the associated error.
+    ///
+    /// # Example
+    /// ```
+    /// let x = 1.0;
+    ///
+    /// assert!(x.ln_e().val.abs() < 1e-10);
+    /// ```
+    fn ln_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Sized;
+    /// Compute the natural log of the absolute value of a number and the
+    /// associated error (value equivalent to x.abs().ln()).
+    ///
+    /// # Example
+    /// ```
+    /// let x = -1.0;
+    ///
+    /// assert!(x.ln_abs_e().val.abs() < 1e-10);
+    /// ```
+    fn ln_abs_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Sized;
+    /// Compute the natural log of the absolute value of a
+    /// number
+    ///
+    /// # Example
+    /// ```
+    /// let x = -1.0;
+    ///
+    /// assert!(x.ln_abs().abs() < 1e-10);
+    /// ```
+    fn ln_abs(&self) -> Self
+    where
+        Self: Sized;
+    /// Compute the natural log of (1 + x) along with error
+    /// estimate.
+    ///
+    /// # Example
+    /// ```
+    /// let res = 0.0_f64.ln_p1_e();
+    ///
+    /// assert!(res.abs() < 1e-10);
+    /// ```
+    fn ln_p1_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Sized;
+    /// Compute the natural log(1 + x) - x along with error
+    /// estimate.
+    ///
+    /// # Example
+    /// ```
+    /// let res = 10.0_f64.ln_p1_mx_e();
+    ///
+    /// assert!((res.val + 7.6021047272016295).abs() < 1e-10);
+    /// ```
+    fn ln_p1_mx_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Sized;
+    /// Compute the natural log(1 + x) - x.
+    ///
+    /// # Example
+    /// ```
+    /// let res = 10.0_f64.ln_p1_mx();
+    ///
+    /// assert!((res + 7.6021047272016295).abs() < 1e-10);
+    /// ```
+    fn ln_p1_mx(&self) -> Self
+    where
+        Self: Sized;
+}
+
+impl Logarithm for f64 {
+    fn ln_e(&self) -> SpecFunResult<Self> {
+        ln_e(*self)
+    }
+    fn ln_abs_e(&self) -> SpecFunResult<Self> {
+        ln_abs_e(*self)
+    }
+    fn ln_abs(&self) -> Self {
+        ln_abs_e(*self).val
+    }
+    fn ln_p1_e(&self) -> SpecFunResult<Self> {
+        ln_p1_e(*self)
+    }
+    fn ln_p1_mx_e(&self) -> SpecFunResult<Self> {
+        ln_p1_mx_e(*self)
+    }
+    fn ln_p1_mx(&self) -> Self {
+        ln_p1_mx_e(*self).val
+    }
+}
+
 // --------------
 // ---- Data ----
 // --------------
@@ -140,15 +234,10 @@ pub fn ln_abs_e(x: f64) -> SpecFunResult<f64> {
 /// assert!((lnr.val - 0.92873123336475721).abs() < 1e-10);
 /// assert!((theta.val +0.52270629950815609).abs() < 1e-10);
 /// ```
-pub fn complex_ln_e(z: Complex<f64>) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
-    let mut lnr = SpecFunResult {
-        val: 0.0,
-        err: 0.0,
-        code: SpecFunCode::Success,
-    };
-    let mut theta = SpecFunResult {
-        val: 0.0,
-        err: 0.0,
+pub fn complex_ln_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
+    let mut result = SpecFunResult {
+        val: Complex::new(0.0, 0.0),
+        err: Complex::new(0.0, 0.0),
         code: SpecFunCode::Success,
     };
 
@@ -157,20 +246,17 @@ pub fn complex_ln_e(z: Complex<f64>) -> (SpecFunResult<f64>, SpecFunResult<f64>)
         let ay = z.im.abs();
         let min = ax.min(ay);
         let max = ax.max(ay);
-        lnr.val = max.ln() + 0.5 * (1.0 + (min / max) * (min / max)).ln();
-        lnr.err = 2.0 * f64::EPSILON * lnr.val.abs();
-        theta.val = z.im.atan2(z.re);
-        theta.err = f64::EPSILON * lnr.val.abs();
-        (lnr, theta)
+        result.val.re = max.ln() + 0.5 * (1.0 + (min / max) * (min / max)).ln();
+        result.err.re = 2.0 * f64::EPSILON * result.val.re.abs();
+        result.val.im = z.im.atan2(z.re);
+        result.err.im = f64::EPSILON * result.val.re.abs();
+        result
     } else {
-        lnr.val = f64::NAN;
-        lnr.err = f64::NAN;
-        lnr.code = SpecFunCode::DomainErr;
-        theta.val = f64::NAN;
-        theta.err = f64::NAN;
-        theta.code = SpecFunCode::DomainErr;
-        lnr.issue_warning("complex_ln_e", &[z.re, z.im]);
-        (lnr, theta)
+        result.val = Complex::new(f64::NAN, f64::NAN);
+        result.err = Complex::new(f64::NAN, f64::NAN);
+        result.code = SpecFunCode::DomainErr;
+        result.issue_warning("complex_ln_e", &[z]);
+        result
     }
 }
 
@@ -309,10 +395,20 @@ mod tests {
     }
     #[test]
     fn test_complex_ln_e() {
-        let z = Complex::new(2.0, -1.0);
-        let (lnr, theta) = complex_ln_e(z);
-        assert!((lnr.val - 0.80471895621705019).abs() < 1e-10);
-        assert!((theta.val + 0.4636476090008061).abs() < 1e-10);
+        let z1 = Complex::new(2.0, -1.0);
+        let z2 = Complex::new(10.0, 1.0);
+        let z3 = Complex::new(-4.0, 1.0);
+        let ln1 = complex_ln_e(z1);
+        let ln2 = complex_ln_e(z2);
+        let ln3 = complex_ln_e(z3);
+        assert!((ln1.val.re - 0.80471895621705019).abs() < 1e-10);
+        assert!((ln1.val.im + 0.4636476090008061).abs() < 1e-10);
+
+        assert!((ln2.val.re - 2.3075602584206297).abs() < 1e-10);
+        assert!((ln2.val.im - 0.0996686524911620).abs() < 1e-10);
+
+        assert!((ln3.val.re - 1.4166066720281080).abs() < 1e-10);
+        assert!((ln3.val.im - 2.8966139904629291).abs() < 1e-10);
     }
     #[test]
     fn test_ln_p1_e() {

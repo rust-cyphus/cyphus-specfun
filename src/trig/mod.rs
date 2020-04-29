@@ -1,4 +1,4 @@
-// Copyright from GSL
+// Preamble of original GSL file:
 /* specfunc/trig.c
  *
  * Copyright (C) 1996, 1997, 1998, 1999, 2000 Gerard Jungman
@@ -17,6 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
+
+/* Author:  G. Jungman */
 
 //! Implementations of various trig functions and their assoiciated errors.
 

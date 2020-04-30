@@ -1,6 +1,6 @@
 // Chebyshev fit for (s[t]-1) * Zeta[s(t)], where
 // s[t] = (t+1)/2, -1 < t < 1
-pub const zeta_xlt1_data: [f64; 14] = [
+pub(crate) const zeta_xlt1_data: [f64; 14] = [
     1.48018677156931561235192914649,
     0.25012062539889426471999938167,
     0.00991137502135360774243761467,
@@ -19,7 +19,7 @@ pub const zeta_xlt1_data: [f64; 14] = [
 
 // Chebyshev fit for (s[t] - 1) * Zeta[s(t)], where
 // s[t] = (19t+21)/2, -1 < t < 1
-pub const zeta_xgt1_data: [f64; 30] = [
+pub(crate) const zeta_xgt1_data: [f64; 30] = [
     19.3918515726724119415911269006,
     9.1525329692510756181581271500,
     0.2427897658867379985365270155,
@@ -54,7 +54,7 @@ pub const zeta_xgt1_data: [f64; 30] = [
 
 // Chebyshev fit for Ln[Zeta[s[t]]] - 1 - 2^(-s[t]), where
 // s[t] = 10+5t -1 <= t <= 1; 5 <= s <= 15
-pub const zetam1_inter_data: [f64; 24] = [
+pub(crate) const zetam1_inter_data: [f64; 24] = [
     -21.7509435653088483422022339374,
     -5.63036877698121782876372020472,
     0.0528041358684229425504861579635,
@@ -82,9 +82,9 @@ pub const zetam1_inter_data: [f64; 24] = [
 ];
 
 // Zeta[n] - 1
-pub const ZETA_POS_TABLE_NMAX: usize = 100;
+pub(crate) const ZETA_POS_TABLE_NMAX: usize = 100;
 
-pub const zetam1_pos_int_table: [f64; ZETA_POS_TABLE_NMAX + 1] = [
+pub(crate) const zetam1_pos_int_table: [f64; ZETA_POS_TABLE_NMAX + 1] = [
     -1.5, // zeta(0) */
     0.0,  // FIXME: Infinity */
     // zeta(1) - 1 */
@@ -189,10 +189,10 @@ pub const zetam1_pos_int_table: [f64; ZETA_POS_TABLE_NMAX + 1] = [
     7.8886090522101180735205378276e-31,
 ];
 
-pub const ZETA_NEG_TABLE_NMAX: usize = 99;
-pub const ZETA_NEG_TABLE_SIZE: usize = 50;
+pub(crate) const ZETA_NEG_TABLE_NMAX: usize = 99;
+pub(crate) const ZETA_NEG_TABLE_SIZE: usize = 50;
 
-pub const zeta_neg_int_table: [f64; ZETA_NEG_TABLE_SIZE] = [
+pub(crate) const zeta_neg_int_table: [f64; ZETA_NEG_TABLE_SIZE] = [
     -0.083333333333333333333333333333, /* zeta(-1) */
     0.008333333333333333333333333333,  /* zeta(-3) */
     -0.003968253968253968253968253968, /* ...      */
@@ -246,7 +246,7 @@ pub const zeta_neg_int_table: [f64; ZETA_NEG_TABLE_SIZE] = [
 ];
 
 // coefficients for Maclaurin summation in hzeta()
-pub const hzeta_c: [f64; 15] = [
+pub(crate) const hzeta_c: [f64; 15] = [
     1.00000000000000000000000000000,
     0.083333333333333333333333333333,
     -0.00138888888888888888888888888889,
@@ -264,9 +264,9 @@ pub const hzeta_c: [f64; 15] = [
     -8.9535174270375468504026113181e-23,
 ];
 
-pub const ETA_POS_TABLE_NMAX: usize = 100;
+pub(crate) const ETA_POS_TABLE_NMAX: usize = 100;
 
-pub const eta_pos_int_table: [f64; ETA_POS_TABLE_NMAX + 1] = [
+pub(crate) const eta_pos_int_table: [f64; ETA_POS_TABLE_NMAX + 1] = [
     0.50000000000000000000000000000, /* eta(0) */
     std::f64::consts::LN_2,          /* eta(1) */
     0.82246703342411321823620758332, /* ...    */
@@ -370,10 +370,10 @@ pub const eta_pos_int_table: [f64; ETA_POS_TABLE_NMAX + 1] = [
     1.00000000000000000000000000000,
 ];
 
-pub const ETA_NEG_TABLE_NMAX: usize = 99;
-pub const ETA_NEG_TABLE_SIZE: usize = 50;
+pub(crate) const ETA_NEG_TABLE_NMAX: usize = 99;
+pub(crate) const ETA_NEG_TABLE_SIZE: usize = 50;
 
-pub const eta_neg_int_table: [f64; ETA_NEG_TABLE_SIZE] = [
+pub(crate) const eta_neg_int_table: [f64; ETA_NEG_TABLE_SIZE] = [
     0.25000000000000000000000000000,  /* eta(-1) */
     -0.12500000000000000000000000000, /* eta(-3) */
     0.25000000000000000000000000000,  /* ...      */

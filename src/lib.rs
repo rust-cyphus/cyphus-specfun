@@ -1,5 +1,6 @@
 pub mod cheb;
-pub mod consts;
+pub(crate) mod consts;
+pub(crate) mod elementary;
 pub mod exp;
 pub mod gamma;
 pub mod logarithm;

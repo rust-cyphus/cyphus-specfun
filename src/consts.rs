@@ -16,3 +16,5 @@ pub const ROOT5_DBL_EPS: f64 = 7.400_959_797_414_05e-4_f64;
 pub const ROOT6_DBL_EPS: f64 = 2.460_783_300_575_925e-3_f64;
 /// f64::EPSILON^(1/2)
 pub const SQRT_DLB_EPS: f64 = 1.490_116_119_384_765_6e-8_f64;
+/// f64::MAX.sqrt()
+pub const SQRT_DBL_MAX: f64 = 1.340_780_792_994_259_6e154;

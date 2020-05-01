@@ -18,7 +18,8 @@ pub(crate) fn multiply_e(x: f64, y: f64) -> SpecFunResult<f64> {
     } else if (ax <= 1.0 && ay >= 1.0) || (ay <= 1.0 && ax >= 1.0) {
         // Straddling 1.0 is always safe.
         result.val = x * y;
-        result.err = 2.0 * f64::EPSILON * result.val * abs();
+        result.err = 2.0 * f64::EPSILON * result.val.abs();
+        result
     } else {
         let f = 1.0 - 2.0 * f64::EPSILON;
         let min = ax.min(ay);
@@ -45,6 +46,6 @@ pub(crate) fn multiply_e(x: f64, y: f64) -> SpecFunResult<f64> {
 /// dx and dy in x and y respectively.
 pub(crate) fn multiply_err_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResult<f64> {
     let mut result = multiply_e(x, y);
-    result.err += (dx * y).abs() + (dy.x).abs();
+    result.err += (dx * y).abs() + (dy * x).abs();
     result
 }

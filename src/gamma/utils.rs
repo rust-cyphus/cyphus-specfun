@@ -43,10 +43,10 @@ pub(crate) fn lngamma_lanczos_complex_e(z: Complex<f64>) -> SpecFunResult<Comple
 
     let zz = Complex::new(z.re - 1.0, z.im);
     let mut ag = Complex::new(LANCZOS_7_C[0], 0.0);
-    for k in 1..9 {
+    for (k, lnzc) in LANCZOS_7_C.iter().enumerate().skip(1) {
         let r = zz.re + (k as f64);
         let i = zz.im;
-        let a = LANCZOS_7_C[k] / (r * r + i * i);
+        let a = lnzc / (r * r + i * i);
         ag.re += a * r;
         ag.im -= a * i;
     }
@@ -291,7 +291,7 @@ pub(crate) fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
 
 /// Compute the digamma function
 fn digamma_int_e(n: usize) -> SpecFunResult<f64> {
-    if n <= 0 {
+    if n == 0 {
         let result = SpecFunResult {
             val: f64::NAN,
             err: f64::NAN,
@@ -329,7 +329,7 @@ fn digamma_int_e(n: usize) -> SpecFunResult<f64> {
 
 /// Compute the trigamma function
 fn trigamma_int_e(n: usize) -> SpecFunResult<f64> {
-    if n <= 0 {
+    if n == 0 {
         let result = SpecFunResult {
             val: f64::NAN,
             err: f64::NAN,
@@ -979,7 +979,7 @@ pub(crate) fn gammainv_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if x < 0.5 {
         let (lng, sgn) = lngamma_sgn_e(x);
-        if lng.val == f64::NAN {
+        if lng.val.is_nan() {
             SpecFunResult {
                 val: 0.0,
                 err: 0.0,

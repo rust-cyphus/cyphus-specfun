@@ -170,11 +170,11 @@ pub(crate) fn test_sf_check_result_and_code(
 }
 
 pub(crate) fn test_sf_check_e10(e10: i32, e10_in: i32) {
-    let mut s = 0;
-
-    if e10 != e10_in {
-        s = TestResult::ExpBad as usize;
-    }
+    let s = if e10 != e10_in {
+        TestResult::ExpBad as usize
+    } else {
+        0
+    };
 
     if s != 0 {
         println!("Expected exponent: 10^{:?}", e10_in);

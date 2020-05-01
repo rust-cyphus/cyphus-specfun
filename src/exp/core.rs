@@ -3,7 +3,7 @@ use crate::consts::{
 };
 use crate::gamma::utils::lnfact_int_e;
 use crate::result::{SpecFunCode, SpecFunResult, SpecFunResultE10};
-use std::f64::consts::{LN_10};
+use std::f64::consts::LN_10;
 
 pub(crate) fn exp_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
@@ -206,16 +206,16 @@ pub(crate) fn exp_mult_err_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResult<
             result
         } else {
             let sy = y.signum();
-            let M = x.floor();
-            let N = ly.floor();
-            let a = x - M;
-            let b = ly - N;
-            let eMN = (M + N).exp();
+            let m = x.floor();
+            let n = ly.floor();
+            let a = x - m;
+            let b = ly - n;
+            let emn = (m + n).exp();
             let eab = (a + b).exp();
-            let val = sy * eMN * eab;
-            let mut err = eMN * eab * 2.0 * f64::EPSILON;
-            err += eMN * eab * (dy / y).abs();
-            err += eMN * eab * dx.abs();
+            let val = sy * emn * eab;
+            let mut err = emn * eab * 2.0 * f64::EPSILON;
+            err += emn * eab * (dy / y).abs();
+            err += emn * eab * dx.abs();
             SpecFunResult {
                 val,
                 err,
@@ -386,60 +386,60 @@ pub(crate) fn exprel_2_e(x: f64) -> SpecFunResult<f64> {
 
 /// Evaluate continued fraction for exprel
 /// Ref: Abramowitz + Stegun, 4.2.41
-pub(crate) fn exprel_n_CF_e(nn: usize, x: f64) -> SpecFunResult<f64> {
-    let RECUR_BIG = SQRT_DBL_MAX;
+pub(crate) fn exprel_n_cf_e(nn: usize, x: f64) -> SpecFunResult<f64> {
+    let recur_big = SQRT_DBL_MAX;
     let maxiter = 5000;
     let mut n = 1;
-    let mut Anm2: f64 = 1.0;
-    let mut Bnm2: f64 = 0.0;
-    let mut Anm1: f64 = 0.0;
-    let mut Bnm1: f64 = 1.0;
+    let mut anm2: f64 = 1.0;
+    let mut bnm2: f64 = 0.0;
+    let mut anm1: f64 = 0.0;
+    let mut bnm1: f64 = 1.0;
     let a1: f64 = 1.0;
     let b1: f64 = 1.0;
     let a2: f64 = -x;
     let b2: f64 = (nn + 1) as f64;
 
-    let mut An = b1 * Anm1 + a1 * Anm2; /* A1 */
-    let mut Bn = b1 * Bnm1 + a1 * Bnm2; /* B1 */
+    let mut an = b1 * anm1 + a1 * anm2; /* A1 */
+    let mut bn = b1 * bnm1 + a1 * bnm2; /* B1 */
 
     // One explicit step, before we get to the main pattern.
     n += 1;
-    Anm2 = Anm1;
-    Bnm2 = Bnm1;
-    Anm1 = An;
-    Bnm1 = Bn;
-    An = b2 * Anm1 + a2 * Anm2; /* A2 */
-    Bn = b2 * Bnm1 + a2 * Bnm2; /* B2 */
+    anm2 = anm1;
+    bnm2 = bnm1;
+    anm1 = an;
+    bnm1 = bn;
+    an = b2 * anm1 + a2 * anm2; /* A2 */
+    bn = b2 * bnm1 + a2 * bnm2; /* B2 */
 
-    let mut ffn = An / Bn;
+    let mut ffn = an / bn;
 
     while n < maxiter {
         n += 1;
 
-        Anm2 = Anm1;
-        Bnm2 = Bnm1;
-        Anm1 = An;
-        Bnm1 = Bn;
-        let an = if n % 2 == 1 {
+        anm2 = anm1;
+        bnm2 = bnm1;
+        anm1 = an;
+        bnm1 = bn;
+        an = if n % 2 == 1 {
             ((n - 1) / 2) as f64 * x
         } else {
             -((nn + (n / 2) - 1) as f64) * x
         };
-        let bn = (nn + n - 1) as f64;
-        An = bn * Anm1 + an * Anm2;
-        Bn = bn * Bnm1 + an * Bnm2;
+        bn = (nn + n - 1) as f64;
+        an = bn * anm1 + an * anm2;
+        bn = bn * bnm1 + an * bnm2;
 
-        if An.abs() > RECUR_BIG || Bn.abs() > RECUR_BIG {
-            An /= RECUR_BIG;
-            Bn /= RECUR_BIG;
-            Anm1 /= RECUR_BIG;
-            Bnm1 /= RECUR_BIG;
-            Anm2 /= RECUR_BIG;
-            Bnm2 /= RECUR_BIG;
+        if an.abs() > recur_big || bn.abs() > recur_big {
+            an /= recur_big;
+            bn /= recur_big;
+            anm1 /= recur_big;
+            bnm1 /= recur_big;
+            anm2 /= recur_big;
+            bnm2 /= recur_big;
         }
 
         let old_fn = ffn;
-        ffn = An / Bn;
+        ffn = an / bn;
         let del = old_fn / ffn;
 
         if (del - 1.0).abs() < 2.0 * f64::EPSILON {
@@ -534,7 +534,7 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
             result
         }
     } else if x > -10.0 * nd {
-        exprel_n_CF_e(n as usize, x)
+        exprel_n_cf_e(n as usize, x)
     } else {
         // x -> -Inf asymptotic:
         // exprel_n(x) ~ e^x n!/x^n - n/x (1 + (n-1)/x + (n-1)(n-2)/x + ...)
@@ -650,7 +650,12 @@ mod test {
         test_sf_e10(exp_err_e10_e(1.0, SQRT_TOL0), std::f64::consts::E, 0, TOL1);
         assert!(exp_e10_e(1.0).err <= 32.0 * SQRT_TOL0, "Error too large.");
 
-        test_sf_e10(exp_err_e10_e(2000.0, 1e-10), 3.881_180_194_283_637_3, 868, TOL3);
+        test_sf_e10(
+            exp_err_e10_e(2000.0, 1e-10),
+            3.881_180_194_283_637_3,
+            868,
+            TOL3,
+        );
         assert!(exp_e10_e(2000.0).err <= 1e-7, "Error too large.");
     }
     #[test]
@@ -712,7 +717,7 @@ mod test {
             SpecFunCode::Success,
         );
         test_sf_check_result_and_code(
-            exp_mult_e(x, (-x).exp() * LN_2.exp()),
+            exp_mult_e(x, (-x).exp() * std::f64::consts::LN_2.exp()),
             2.0,
             TOL4,
             SpecFunCode::Success,

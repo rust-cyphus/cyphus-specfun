@@ -93,15 +93,15 @@ pub(crate) fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
 
 /// Calculate series for g(eps) = Gamma(eps) eps - 1/(1+eps) - eps / 2, as well as its sign
 pub(crate) fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
-    let c1 = - 0.077_215_664_901_532_860_61_f64;
-    let c2 = - 0.010_944_004_672_027_444_61_f64;
-    let c3 =   0.092_520_923_919_113_710_98_f64;
-    let c4 = - 0.018_271_913_165_599_812_66_f64;
-    let c5 =   0.018_004_931_096_854_797_90_f64;
-    let c6 = - 0.006_850_885_378_723_806_85_f64;
-    let c7 =   0.003_998_239_557_568_466_03_f64;
-    let c8 = - 0.001_894_306_216_871_078_02_f64;
-    let c9 =   0.000_974_732_378_045_132_21_f64;
+    let c1 = -0.077_215_664_901_532_860_61_f64;
+    let c2 = -0.010_944_004_672_027_444_61_f64;
+    let c3 = 0.092_520_923_919_113_710_98_f64;
+    let c4 = -0.018_271_913_165_599_812_66_f64;
+    let c5 = 0.018_004_931_096_854_797_90_f64;
+    let c6 = -0.006_850_885_378_723_806_85_f64;
+    let c7 = 0.003_998_239_557_568_466_03_f64;
+    let c8 = -0.001_894_306_216_871_078_02_f64;
+    let c9 = 0.000_974_732_378_045_132_21_f64;
     let c10 = -0.000_484_343_927_222_558_93_f64;
     let g6 = c6 + eps * (c7 + eps * (c8 + eps * (c9 + eps * c10)));
     let g = eps * (c1 + eps * (c2 + eps * (c3 + eps * (c4 + eps * (c5 + eps * g6)))));
@@ -130,16 +130,16 @@ pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) 
             0.0,
         )
     } else if n == 1 {
-        let c0 =  0.077_215_664_901_532_860_61_f64;
-        let c1 =  0.088_159_669_573_560_305_21_f64;
+        let c0 = 0.077_215_664_901_532_860_61_f64;
+        let c1 = 0.088_159_669_573_560_305_21_f64;
         let c2 = -0.004_361_254_345_553_405_77_f64;
-        let c3 =  0.013_910_658_820_046_406_89_f64;
+        let c3 = 0.013_910_658_820_046_406_89_f64;
         let c4 = -0.004_094_272_276_808_391_00_f64;
-        let c5 =  0.002_756_613_101_915_415_84_f64;
+        let c5 = 0.002_756_613_101_915_415_84_f64;
         let c6 = -0.001_241_626_455_653_050_19_f64;
-        let c7 =  0.000_652_679_761_218_027_83_f64;
+        let c7 = 0.000_652_679_761_218_027_83_f64;
         let c8 = -0.000_322_052_616_827_104_37_f64;
-        let c9 =  0.000_162_291_310_395_454_56_f64;
+        let c9 = 0.000_162_291_310_395_454_56_f64;
         let g5 = c5 + eps * (c6 + eps * (c7 + eps * (c8 + eps * c9)));
         let g = eps * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + eps * (c4 + eps * g5)))));
 
@@ -157,9 +157,9 @@ pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) 
         )
     } else {
         let cs1 = -1.644_934_066_848_226_436_5_f64;
-        let cs2 =  0.811_742_425_283_353_643_6_f64;
+        let cs2 = 0.811_742_425_283_353_643_6_f64;
         let cs3 = -0.190_751_824_122_084_213_7_f64;
-        let cs4 =  0.026_147_847_817_654_800_5_f64;
+        let cs4 = 0.026_147_847_817_654_800_5_f64;
         let cs5 = -0.002_346_081_035_455_823_6_f64;
         let e2 = eps * eps;
         let sin_ser = 1.0 + e2 * (cs1 + e2 * (cs2 + e2 * (cs3 + e2 * (cs4 + e2 * cs5))));
@@ -235,18 +235,18 @@ pub(crate) fn lnfact_int_e(n: usize) -> SpecFunResult<f64> {
 /// approximate plus a correction series
 pub(crate) fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
     let n1 = -1.001_741_928_234_950_869_987_113_844_0_f64;
-    let n2 =  1.736_483_920_992_287_982_328_054_173_3_f64;
-    let d1 =  1.243_300_601_885_875_155_605_543_601_1_f64;
-    let d2 =  5.045_627_410_027_401_015_248_959_751_4_f64;
+    let n2 = 1.736_483_920_992_287_982_328_054_173_3_f64;
+    let d1 = 1.243_300_601_885_875_155_605_543_601_1_f64;
+    let d2 = 5.045_627_410_027_401_015_248_959_751_4_f64;
     let num = (eps + n1) * (eps + n2);
     let den = (eps + d1) * (eps + d2);
     let pade = 2.081_626_518_866_269_247_488_021_031_8_f64 * num * den.recip();
 
-    let c0 =  0.004_785_324_257_581_753_f64;
+    let c0 = 0.004_785_324_257_581_753_f64;
     let c1 = -0.011_924_570_836_454_41_f64;
-    let c2 =  0.019_319_614_139_604_98_f64;
+    let c2 = 0.019_319_614_139_604_98_f64;
     let c3 = -0.025_940_273_987_250_20_f64;
-    let c4 =  0.031_419_287_550_214_55_f64;
+    let c4 = 0.031_419_287_550_214_55_f64;
     let eps5 = eps * eps * eps * eps * eps;
     let corr = eps5 * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + c4 * eps))));
 
@@ -271,11 +271,11 @@ pub(crate) fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
     let num = (eps + n1) * (eps + n2);
     let den = (eps + d1) * (eps + d2);
     let pade = 2.853_379_987_657_819_184_635_688_69_f64 * num / den;
-    let c0 =   0.000_113_940_635_703_674_4_f64;
+    let c0 = 0.000_113_940_635_703_674_4_f64;
     let c1 = -0.000_136_543_526_979_253_3_f64;
-    let c2 =   0.000_106_728_716_918_366_5_f64;
+    let c2 = 0.000_106_728_716_918_366_5_f64;
     let c3 = -0.000_069_327_180_093_128_2_f64;
-    let c4 =   0.000_040_722_092_786_795_0_f64;
+    let c4 = 0.000_040_722_092_786_795_0_f64;
     let eps5 = eps * eps * eps * eps * eps;
     let corr = eps5 * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + c4 * eps))));
 
@@ -299,7 +299,7 @@ fn digamma_int_e(n: usize) -> SpecFunResult<f64> {
         };
         result.issue_warning("digamma_int_e", &[n as f64]);
         result
-    } else if (n as usize) < PSI_TABLE.len(){
+    } else if (n as usize) < PSI_TABLE.len() {
         let val = PSI_TABLE[n as usize];
         let err = std::f64::EPSILON * val.abs();
         SpecFunResult {
@@ -337,7 +337,7 @@ fn trigamma_int_e(n: usize) -> SpecFunResult<f64> {
         };
         result.issue_warning("trigamma_int_e", &[n as f64]);
         result
-    } else if n as usize < PSI_1_TABLE.len() {
+    } else if (n as usize) < PSI_1_TABLE.len() {
         let val = PSI_1_TABLE[n as usize];
         let err = std::f64::EPSILON * val;
         SpecFunResult {
@@ -937,7 +937,7 @@ pub(crate) fn gammastar_e(x: f64) -> SpecFunResult<f64> {
         cheb_eval_e(t, &GSTAR_A_DATA, -1.0, 1.0)
     } else if x < 10.0 {
         let t = 0.25 * (x - 2.0) - 1.0;
-        let c = cheb_eval_e(t, &gstar_b_data, -1.0, 1.0);
+        let c = cheb_eval_e(t, &GSTAR_B_DATA, -1.0, 1.0);
         let val = c.val / (x * x) + 1.0 + 1.0 / (12.0 * x);
         let mut err = c.err / (x * x);
         err += 2.0 * f64::EPSILON * val.abs();

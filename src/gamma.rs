@@ -112,8 +112,8 @@ macro_rules! impl_digamma_int {
                         err: f64::NAN,
                         code: SpecFunCode::DomainErr,
                     }
-                } else if (n as usize) < psi_table.len() {
-                    let val = psi_table[n as usize];
+                } else if (n as usize) < PSI_TABLE.len() {
+                    let val = PSI_TABLE[n as usize];
                     let err = std::f64::EPSILON * val.abs();
                     SpecFunResult {
                         val,
@@ -178,7 +178,7 @@ macro_rules! impl_trigamma_int {
                         err: f64::EPSILON,
                         code: SpecFunCode::DomainErr,
                     }
-                } else if n as usize < PSI_1_TABLE.len() {
+                } else if (n as usize) < PSI_1_TABLE.len() {
                     let val = PSI_1_TABLE[n as usize];
                     let err = std::f64::EPSILON * val;
                     SpecFunResult {

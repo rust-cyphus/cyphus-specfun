@@ -55,7 +55,7 @@ pub(crate) fn lngamma_lanczos_complex_e(z: Complex<f64>) -> SpecFunResult<Comple
     let logag = ag.ln();
 
     y.val.re = (zz.re + 0.5) * log1.re - zz.im * log1.im - (zz.re + 7.5)
-        + 0.918_938_533_204_672_741_8_f64
+        + 0.918_938_533_204_672_8_f64
         + logag.re;
     y.val.im = zz.im * log1.re + (zz.re + 0.5) * log1.im - zz.im + logag.im;
 
@@ -79,7 +79,7 @@ pub(crate) fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
             acc + val / (xx + ((k + 1) as f64))
         });
     let term1 = (xx + 0.5) * ((xx + 7.5) * (-1.0).exp()).ln();
-    let term2 = 0.918_938_533_204_672_741_8_f64 + ag.ln();
+    let term2 = 0.918_938_533_204_672_8_f64 + ag.ln();
 
     let val = term1 + (term2 - 7.0);
     let err = f64::EPSILON * (2.0 * (term1.abs() + term2.abs() + 7.0) + val.abs());
@@ -93,16 +93,16 @@ pub(crate) fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
 
 /// Calculate series for g(eps) = Gamma(eps) eps - 1/(1+eps) - eps / 2, as well as its sign
 pub(crate) fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
-    let c1 = -0.077_215_664_901_532_860_61_f64;
-    let c2 = -0.010_944_004_672_027_444_61_f64;
-    let c3 = 0.092_520_923_919_113_710_98_f64;
-    let c4 = -0.018_271_913_165_599_812_66_f64;
-    let c5 = 0.018_004_931_096_854_797_90_f64;
-    let c6 = -0.006_850_885_378_723_806_85_f64;
-    let c7 = 0.003_998_239_557_568_466_03_f64;
-    let c8 = -0.001_894_306_216_871_078_02_f64;
-    let c9 = 0.000_974_732_378_045_132_21_f64;
-    let c10 = -0.000_484_343_927_222_558_93_f64;
+    let c1 = -0.077_215_664_901_532_87_f64;
+    let c2 = -0.010_944_004_672_027_444_f64;
+    let c3 = 0.092_520_923_919_113_7_f64;
+    let c4 = -0.018_271_913_165_599_812_f64;
+    let c5 = 0.018_004_931_096_854_797_f64;
+    let c6 = -0.006_850_885_378_723_807_f64;
+    let c7 = 0.003_998_239_557_568_466_f64;
+    let c8 = -0.001_894_306_216_871_078_f64;
+    let c9 = 0.000_974_732_378_045_132_2_f64;
+    let c10 = -0.000_484_343_927_222_558_9_f64;
     let g6 = c6 + eps * (c7 + eps * (c8 + eps * (c9 + eps * c10)));
     let g = eps * (c1 + eps * (c2 + eps * (c3 + eps * (c4 + eps * (c5 + eps * g6)))));
 
@@ -130,16 +130,16 @@ pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) 
             0.0,
         )
     } else if n == 1 {
-        let c0 = 0.077_215_664_901_532_860_61_f64;
-        let c1 = 0.088_159_669_573_560_305_21_f64;
-        let c2 = -0.004_361_254_345_553_405_77_f64;
-        let c3 = 0.013_910_658_820_046_406_89_f64;
-        let c4 = -0.004_094_272_276_808_391_00_f64;
-        let c5 = 0.002_756_613_101_915_415_84_f64;
-        let c6 = -0.001_241_626_455_653_050_19_f64;
-        let c7 = 0.000_652_679_761_218_027_83_f64;
-        let c8 = -0.000_322_052_616_827_104_37_f64;
-        let c9 = 0.000_162_291_310_395_454_56_f64;
+        let c0 = 0.077_215_664_901_532_87_f64;
+        let c1 = 0.088_159_669_573_560_3_f64;
+        let c2 = -0.004_361_254_345_553_405_5_f64;
+        let c3 = 0.013_910_658_820_046_407_f64;
+        let c4 = -0.004_094_272_276_808_391_f64;
+        let c5 = 0.002_756_613_101_915_416_f64;
+        let c6 = -0.001_241_626_455_653_050_2_f64;
+        let c7 = 0.000_652_679_761_218_027_8_f64;
+        let c8 = -0.000_322_052_616_827_104_4_f64;
+        let c9 = 0.000_162_291_310_395_454_57_f64;
         let g5 = c5 + eps * (c6 + eps * (c7 + eps * (c8 + eps * c9)));
         let g = eps * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + eps * (c4 + eps * g5)))));
 
@@ -156,16 +156,16 @@ pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) 
             if eps > 0.0 { -1.0 } else { 1.0 },
         )
     } else {
-        let cs1 = -1.644_934_066_848_226_436_5_f64;
-        let cs2 = 0.811_742_425_283_353_643_6_f64;
-        let cs3 = -0.190_751_824_122_084_213_7_f64;
-        let cs4 = 0.026_147_847_817_654_800_5_f64;
-        let cs5 = -0.002_346_081_035_455_823_6_f64;
+        let cs1 = -1.644_934_066_848_226_4_f64;
+        let cs2 = 0.811_742_425_283_353_6_f64;
+        let cs3 = -0.190_751_824_122_084_22_f64;
+        let cs4 = 0.026_147_847_817_654_8_f64;
+        let cs5 = -0.002_346_081_035_455_823_5_f64;
         let e2 = eps * eps;
-        let sin_ser = 1.0 + e2 * (cs1 + e2 * (cs2 + e2 * (cs3 + e2 * (cs4 + e2 * cs5))));
+        let _sin_ser = 1.0 + e2 * (cs1 + e2 * (cs2 + e2 * (cs3 + e2 * (cs4 + e2 * cs5))));
 
         // Calculate series for ln(gamma(1+n-eps))
-        let aeps = eps.abs();
+        let _aeps = eps.abs();
 
         let mut psi0 = SpecFunResult {
             val: 0.0,
@@ -177,33 +177,33 @@ pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) 
             err: 0.0,
             code: SpecFunCode::Success,
         };
-        let mut psi2 = SpecFunResult {
+        let _psi2 = SpecFunResult {
             val: 0.0,
             err: 0.0,
             code: SpecFunCode::Success,
         };
-        let mut psi3 = SpecFunResult {
+        let _psi3 = SpecFunResult {
             val: 0.0,
             err: 0.0,
             code: SpecFunCode::Success,
         };
-        let mut psi4 = SpecFunResult {
+        let _psi4 = SpecFunResult {
             val: 0.0,
             err: 0.0,
             code: SpecFunCode::Success,
         };
-        let mut psi5 = SpecFunResult {
+        let _psi5 = SpecFunResult {
             val: 0.0,
             err: 0.0,
             code: SpecFunCode::Success,
         };
-        let mut psi6 = SpecFunResult {
+        let _psi6 = SpecFunResult {
             val: 0.0,
             err: 0.0,
             code: SpecFunCode::Success,
         };
 
-        let c0 = lnfact_int_e(n as usize);
+        let _c0 = lnfact_int_e(n as usize);
         psi0 = digamma_int_e((n + 1) as usize);
         psi1 = trigamma_int_e((n + 1) as usize);
 
@@ -222,7 +222,7 @@ pub(crate) fn lnfact_int_e(n: usize) -> SpecFunResult<f64> {
     if n < FACT_TABLE.len() {
         let val = FACT_TABLE[n].ln();
         SpecFunResult {
-            val: val,
+            val,
             err: 2.0 * f64::EPSILON * val.abs(),
             code: SpecFunCode::Success,
         }
@@ -234,18 +234,18 @@ pub(crate) fn lnfact_int_e(n: usize) -> SpecFunResult<f64> {
 /// Compute log(Gamma(1+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
 pub(crate) fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
-    let n1 = -1.001_741_928_234_950_869_987_113_844_0_f64;
-    let n2 = 1.736_483_920_992_287_982_328_054_173_3_f64;
-    let d1 = 1.243_300_601_885_875_155_605_543_601_1_f64;
-    let d2 = 5.045_627_410_027_401_015_248_959_751_4_f64;
+    let n1 = -1.001_741_928_234_951_f64;
+    let n2 = 1.736_483_920_992_288_f64;
+    let d1 = 1.243_300_601_885_875_2_f64;
+    let d2 = 5.045_627_410_027_401_f64;
     let num = (eps + n1) * (eps + n2);
     let den = (eps + d1) * (eps + d2);
-    let pade = 2.081_626_518_866_269_247_488_021_031_8_f64 * num * den.recip();
+    let pade = 2.081_626_518_866_269_f64 * num * den.recip();
 
     let c0 = 0.004_785_324_257_581_753_f64;
     let c1 = -0.011_924_570_836_454_41_f64;
     let c2 = 0.019_319_614_139_604_98_f64;
-    let c3 = -0.025_940_273_987_250_20_f64;
+    let c3 = -0.025_940_273_987_250_2_f64;
     let c4 = 0.031_419_287_550_214_55_f64;
     let eps5 = eps * eps * eps * eps * eps;
     let corr = eps5 * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + c4 * eps))));
@@ -264,13 +264,13 @@ pub(crate) fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
 /// Compute log(Gamma(2+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
 pub(crate) fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
-    let n1 = 1.000_895_834_786_669_227_164_446_568_f64;
-    let n2 = 4.209_376_735_287_755_081_642_901_277_f64;
-    let d1 = 2.618_851_904_903_217_274_682_578_255_f64;
-    let d2 = 10.857_665_599_009_835_153_229_229_36_f64;
+    let n1 = 1.000_895_834_786_669_2_f64;
+    let n2 = 4.209_376_735_287_755_f64;
+    let d1 = 2.618_851_904_903_217_f64;
+    let d2 = 10.857_665_599_009_835_f64;
     let num = (eps + n1) * (eps + n2);
     let den = (eps + d1) * (eps + d2);
-    let pade = 2.853_379_987_657_819_184_635_688_69_f64 * num / den;
+    let pade = 2.853_379_987_657_819_f64 * num / den;
     let c0 = 0.000_113_940_635_703_674_4_f64;
     let c1 = -0.000_136_543_526_979_253_3_f64;
     let c2 = 0.000_106_728_716_918_366_5_f64;
@@ -390,7 +390,7 @@ pub(crate) fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
 pub(crate) fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
     if (x - 0.5).abs() < f64::EPSILON {
         // Error term
-        let val = 1.772_453_850_905_516_027_298_17_f64;
+        let val = 1.772_453_850_905_516_f64;
         let err = f64::EPSILON * val;
         SpecFunResult {
             val,
@@ -408,13 +408,13 @@ pub(crate) fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if (x - 1.0).abs() < 0.01 {
         let eps = x - 1.0;
-        let c1 = 0.422_784_335_098_467_139_4_f64;
-        let c2 = -0.010_944_004_672_027_444_61_f64;
-        let c3 = 0.092_520_923_919_113_710_98_f64;
-        let c4 = -0.018_271_913_165_599_812_664_f64;
-        let c5 = 0.018_004_931_096_854_797_895_f64;
-        let c6 = -0.006_850_885_378_723_806_846_f64;
-        let c7 = 0.003_998_239_557_568_466_030_f64;
+        let c1 = 0.422_784_335_098_467_13_f64;
+        let c2 = -0.010_944_004_672_027_444_f64;
+        let c3 = 0.092_520_923_919_113_7_f64;
+        let c4 = -0.018_271_913_165_599_812_f64;
+        let c5 = 0.018_004_931_096_854_797_f64;
+        let c6 = -0.006_850_885_378_723_807_f64;
+        let c7 = 0.003_998_239_557_568_466_f64;
         let err = f64::EPSILON;
         let val = c7
             .mul_add(eps, c6)
@@ -432,14 +432,14 @@ pub(crate) fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if (x - 2.0).abs() < 0.01 {
         let eps = x - 2.0;
-        let c1 = 0.422_784_335_098_467_139_4_f64;
-        let c2 = 0.411_840_330_426_439_694_8_f64;
-        let c3 = 0.081_576_919_247_086_266_38_f64;
-        let c4 = 0.074_249_010_753_513_898_32_f64;
-        let c5 = -0.000_266_982_068_745_014_768_32_f64;
-        let c6 = 0.011_154_045_718_130_991_049_f64;
-        let c7 = -0.002_852_645_821_155_340_816_f64;
-        let c8 = 0.002_103_933_340_697_388_008_5_f64;
+        let c1 = 0.422_784_335_098_467_13_f64;
+        let c2 = 0.411_840_330_426_439_7_f64;
+        let c3 = 0.081_576_919_247_086_27_f64;
+        let c4 = 0.074_249_010_753_513_9_f64;
+        let c5 = -0.000_266_982_068_745_014_75_f64;
+        let c6 = 0.011_154_045_718_130_992_f64;
+        let c7 = -0.002_852_645_821_155_340_8_f64;
+        let c8 = 0.002_103_933_340_697_388_f64;
 
         let err = f64::EPSILON;
         let val = c8
@@ -619,18 +619,18 @@ pub(crate) fn psi_complex_asymp(z: Complex<f64>) -> Complex<f64> {
     // Horner method evaluation of term in parentheses
     let mut sum: Complex<f64>;
     sum = w * (c3 / c2);
-    sum = sum + 1.0;
-    sum = sum * (c2 / c1);
-    sum = sum * w;
-    sum = sum + 1.0;
-    sum = sum * c1;
-    sum = sum * w;
-    sum = sum + 1.0;
+    sum += 1.0;
+    sum *= c2 / c1;
+    sum *= w;
+    sum += 1.0;
+    sum *= c1;
+    sum *= w;
+    sum += 1.0;
 
     // Correction added to log(z)
     let mut cs = sum * w;
-    cs = cs * (-1.0 / 12.0);
-    cs = cs + zinv * (-0.5);
+    cs *= -1.0 / 12.0;
+    cs += zinv * (-0.5);
 
     cs + z.ln()
 }
@@ -769,7 +769,7 @@ pub(crate) fn lngamma_e(x: f64) -> SpecFunResult<f64> {
         } else {
             let mut result = lngamma_lanczos_e(z);
             result.val = LNPI - (abss.ln() + result.val);
-            result.err = 2.0 * f64::EPSILON * result.val.abs() + result.err;
+            result.err += 2.0 * f64::EPSILON * result.val.abs();
             result
         }
     } else {
@@ -806,7 +806,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
     } else if x >= 0.5 {
         (lngamma_lanczos_e(x), 1.0)
     } else if x.abs() < f64::EPSILON {
-        let mut result = SpecFunResult {
+        let result = SpecFunResult {
             val: f64::NAN,
             err: f64::NAN,
             code: SpecFunCode::DomainErr,
@@ -821,7 +821,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
         let s = (std::f64::consts::PI * z).sin();
         let abss = s.abs();
         if abss < f64::EPSILON {
-            let mut result = SpecFunResult {
+            let result = SpecFunResult {
                 val: f64::NAN,
                 err: f64::NAN,
                 code: SpecFunCode::DomainErr,
@@ -847,7 +847,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
             let mut result = lngamma_lanczos_e(z);
             let sgn = if s > 0.0 { 1.0 } else { -1.0 };
             result.val = LNPI - (abss.ln() + result.val);
-            result.err = 2.0 * f64::EPSILON * result.val.abs() + result.err;
+            result.err += 2.0 * f64::EPSILON * result.val.abs();
             (result, sgn)
         }
     } else {
@@ -1003,7 +1003,6 @@ pub(crate) fn gammainv_e(x: f64) -> SpecFunResult<f64> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn test_fn() {

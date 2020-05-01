@@ -42,7 +42,7 @@
 //! assert!((s.zeta() - analytic).abs() < 1e-10);
 //! ```
 
-use std::f64::consts::{LN_2, PI};
+use std::f64::consts::{LN_2};
 
 use crate::consts::{EUL_GAMMA, ROOT5_DBL_EPS};
 use crate::result::{SpecFunCode, SpecFunResult};
@@ -195,23 +195,23 @@ impl Zeta for f64 {
                 // We keep an array of (2 Pi)^(10 n).
                 let twopi_pow: [f64; 18] = [
                     1.0,
-                    9.589_560_061_550_901_348e7_f64,
-                    9.195_966_217_409_212_684e15_f64,
-                    8.818_527_036_583_869_903e23_f64,
-                    8.456_579_467_173_150_313e31_f64,
-                    8.109_487_671_573_504_384e39_f64,
-                    7.776_641_909_496_069_036e47_f64,
-                    7.457_457_466_828_644_277e55_f64,
-                    7.151_373_628_461_452_286e63_f64,
-                    6.857_852_693_272_229_709e71_f64,
-                    6.576_379_029_540_265_771e79_f64,
-                    6.306_458_169_130_020_789e87_f64,
-                    6.047_615_938_853_066_678e95_f64,
-                    5.799_397_627_482_402_614e103_f64,
-                    5.561_367_186_955_830_005e111_f64,
-                    5.333_106_466_365_131_227e119_f64,
-                    5.114_214_477_385_391_780e127_f64,
-                    4.904_306_689_854_036_836e135_f64,
+                    9.589_560_061_550_902e7_f64,
+                    9.195_966_217_409_212e15_f64,
+                    8.818_527_036_583_87e23_f64,
+                    8.456_579_467_173_15e31_f64,
+                    8.109_487_671_573_504e39_f64,
+                    7.776_641_909_496_07e47_f64,
+                    7.457_457_466_828_644e55_f64,
+                    7.151_373_628_461_452e63_f64,
+                    6.857_852_693_272_23e71_f64,
+                    6.576_379_029_540_266e79_f64,
+                    6.306_458_169_130_021e87_f64,
+                    6.047_615_938_853_066e95_f64,
+                    5.799_397_627_482_402e103_f64,
+                    5.561_367_186_955_83e111_f64,
+                    5.333_106_466_365_131e119_f64,
+                    5.114_214_477_385_392e127_f64,
+                    4.904_306_689_854_036_5e135_f64,
                 ];
                 let n = (-s / 10.0).floor() as usize;
                 let fs = s + 10.0 * n as f64;
@@ -276,16 +276,16 @@ impl Zeta for f64 {
             let del = s - 1.0;
             let c0 = LN_2;
             let c1 = LN_2 * (EUL_GAMMA - 0.5 * LN_2);
-            let c2 = -0.032_686_296_279_449_299_6_f64;
-            let c3 = 0.001_568_991_705_415_515_0_f64;
-            let c4 = 0.000_749_872_421_120_475_32_f64;
+            let c2 = -0.032_686_296_279_449_3_f64;
+            let c3 = 0.001_568_991_705_415_515_f64;
+            let c4 = 0.000_749_872_421_120_475_4_f64;
             result.val = c0 + del * (c1 + del * (c2 + del * (c3 + del * c4)));
             result.err = 2.0 * f64::EPSILON * result.val.abs();
             result
         } else {
             let z = s.zeta_e();
             let p = exp_e((1.0 - s) * LN_2);
-            let m = multiply_e(1.0 - p.val, z.val);
+            let _m = multiply_e(1.0 - p.val, z.val);
             result.err = (p.err * (LN_2 * (1.0 - s)) * z.val).abs() + z.err * p.val.abs();
             result.err += 2.0 * f64::EPSILON * result.val.abs();
             result
@@ -393,22 +393,20 @@ impl Zeta for i32 {
             result.val = ETA_POS_INT_TABLE[n as usize];
             result.err = 2.0 * f64::EPSILON * result.val.abs();
             result
+        } else if n % 2 == 0 {
+            result
+        } else if n > -(ETA_NEG_TABLE_NMAX as i32) {
+            result.val = ETA_NEG_INT_TABLE[(-(n + 1) / 2) as usize];
+            result.err = 2.0 * f64::EPSILON * result.val.abs();
+            result
         } else {
-            if n % 2 == 0 {
-                result
-            } else if n > -(ETA_NEG_TABLE_NMAX as i32) {
-                result.val = ETA_NEG_INT_TABLE[(-(n + 1) / 2) as usize];
-                result.err = 2.0 * f64::EPSILON * result.val.abs();
-                result
-            } else {
-                let z = n.zeta_e();
-                let p = exp_e((1.0 - n as f64) * LN_2);
-                result = multiply_e(-p.val, z.val);
-                result.err =
-                    (p.err * (LN_2 * (1.0 - n as f64)) * z.val).abs() + z.err * p.val.abs();
-                result.err += 2.0 * f64::EPSILON * result.val.abs();
-                result
-            }
+            let z = n.zeta_e();
+            let p = exp_e((1.0 - n as f64) * LN_2);
+            result = multiply_e(-p.val, z.val);
+            result.err =
+                (p.err * (LN_2 * (1.0 - n as f64)) * z.val).abs() + z.err * p.val.abs();
+            result.err += 2.0 * f64::EPSILON * result.val.abs();
+            result
         }
     }
     fn eta(&self) -> f64 {
@@ -419,7 +417,7 @@ impl Zeta for i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consts::{LN_DBL_MAX, SQRT_DLB_EPS};
+    use crate::consts::{SQRT_DLB_EPS};
     use crate::test_utils::*;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
@@ -434,7 +432,7 @@ mod tests {
     fn test_zeta_int_e() {
         test_sf_check_result_and_code(
             (-61).zeta_e(),
-            -3.30660898765775767257e+34,
+            -3.306_608_987_657_758e34,
             TOL0,
             SpecFunCode::Success,
         );
@@ -443,7 +441,7 @@ mod tests {
         test_sf_check_result_and_code((-6).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
         test_sf_check_result_and_code(
             (-5).zeta_e(),
-            -0.003968253968253968253968,
+            -0.003_968_253_968_253_968,
             TOL0,
             SpecFunCode::Success,
         );
@@ -455,32 +453,32 @@ mod tests {
 
         test_sf_check_result_and_code(
             5.zeta_e(),
-            1.0369277551433699263313655,
+            1.036_927_755_143_37,
             TOL0,
             SpecFunCode::Success,
         );
         test_sf_check_result_and_code(
             31.zeta_e(),
-            1.0000000004656629065033784,
+            1.000_000_000_465_662_8,
             TOL0,
             SpecFunCode::Success,
         );
 
         test_sf_check_result_and_code(
             (-151).zeta_e(),
-            8.195215221831378294e+143,
+            8.195_215_221_831_378e143,
             TOL2,
             SpecFunCode::Success,
         );
         test_sf_check_result_and_code(
             (-51).zeta_e(),
-            9.68995788746359406565e+24,
+            9.689_957_887_463_594e24,
             TOL1,
             SpecFunCode::Success,
         );
         test_sf_check_result_and_code(
             (-5).zeta_e(),
-            -0.003968253968253968253968,
+            -0.003_968_253_968_253_968,
             TOL1,
             SpecFunCode::Success,
         );

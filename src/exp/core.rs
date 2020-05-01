@@ -3,7 +3,7 @@ use crate::consts::{
 };
 use crate::gamma::utils::lnfact_int_e;
 use crate::result::{SpecFunCode, SpecFunResult, SpecFunResultE10};
-use std::f64::consts::{LN_10, LN_2};
+use std::f64::consts::{LN_10};
 
 pub(crate) fn exp_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
@@ -394,10 +394,10 @@ pub(crate) fn exprel_n_CF_e(nn: usize, x: f64) -> SpecFunResult<f64> {
     let mut Bnm2: f64 = 0.0;
     let mut Anm1: f64 = 0.0;
     let mut Bnm1: f64 = 1.0;
-    let mut a1: f64 = 1.0;
-    let mut b1: f64 = 1.0;
-    let mut a2: f64 = -x;
-    let mut b2: f64 = (nn + 1) as f64;
+    let a1: f64 = 1.0;
+    let b1: f64 = 1.0;
+    let a2: f64 = -x;
+    let b2: f64 = (nn + 1) as f64;
 
     let mut An = b1 * Anm1 + a1 * Anm2; /* A1 */
     let mut Bn = b1 * Bnm1 + a1 * Bnm2; /* B1 */
@@ -471,21 +471,21 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
     if n < 0 {
         result.code = SpecFunCode::DomainErr;
         result.issue_warning("exprel_n_e", &[n as f64, x]);
-        return result;
+        result
     } else if x.abs() <= f64::EPSILON {
         result.val = 1.0;
         result.err = 0.0;
-        return result;
+        result
     } else if x.abs() < ROOT3_DBL_EPS * n as f64 {
         result.val = 1.0 + x / ((n + 1) as f64) * (1.0 + x / ((n + 2) as f64));
         result.err = 2.0 * f64::EPSILON;
-        return result;
+        result
     } else if n == 0 {
-        return exp_e(x);
+        exp_e(x)
     } else if n == 1 {
-        return exprel_e(x);
+        exprel_e(x)
     } else if n == 2 {
-        return exprel_2_e(x);
+        exprel_2_e(x)
     } else if x > nd && (-x + nd * 1.0 + (x / nd).ln()) < LN_DBL_EPS {
         // x is much larger than n.
         // Ignore polynomial part, so
@@ -494,7 +494,7 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
         let lnterm = nd * x.ln();
         let lnr_val = x + lnfn.val - lnterm;
         let lnr_err = (f64::EPSILON * (x.abs() + lnfn.val.abs() + lnterm.abs())) + lnfn.err;
-        return exp_err_e(lnr_val, lnr_err);
+        exp_err_e(lnr_val, lnr_err)
     } else if x > nd {
         // Write the identity
         // exprel_n(x) = e^x n! / x^n (1 - Gamma[n,x]/Gamma[n])
@@ -637,7 +637,7 @@ mod test {
     fn test_exp_e10_e() {
         test_sf_e10(exp_e10_e(1.0), std::f64::consts::E, 0, TOL0);
         assert!(exp_e10_e(1.0).err <= TOL1, "Error too large.");
-        test_sf_e10(exp_e10_e(2000.0), 3.88118019428363725, 868, TOL3);
+        test_sf_e10(exp_e10_e(2000.0), 3.881_180_194_283_637_3, 868, TOL3);
         assert!(exp_e10_e(2000.0).err <= TOL5, "Error too large.");
     }
     #[test]
@@ -650,7 +650,7 @@ mod test {
         test_sf_e10(exp_err_e10_e(1.0, SQRT_TOL0), std::f64::consts::E, 0, TOL1);
         assert!(exp_e10_e(1.0).err <= 32.0 * SQRT_TOL0, "Error too large.");
 
-        test_sf_e10(exp_err_e10_e(2000.0, 1e-10), 3.88118019428363725, 868, TOL3);
+        test_sf_e10(exp_err_e10_e(2000.0, 1e-10), 3.881_180_194_283_637_3, 868, TOL3);
         assert!(exp_e10_e(2000.0).err <= 1e-7, "Error too large.");
     }
     #[test]

@@ -9,7 +9,7 @@ pub const LN_DBL_MIN: f64 = -7.083_964_185_322_641e2_f64;
 /// Natural log of f64::EPSILON
 pub const LN_DBL_EPS: f64 = -3.604_365_338_911_715e1_f64;
 /// f64::EPSILON^(1/3)
-pub const ROOT3_DBL_EPS: f64 = 6.055_454_452_393_342_9e-06;
+pub const ROOT3_DBL_EPS: f64 = 6.055_454_452_393_343e-6;
 /// f64::EPSILON^(1/4)
 pub const ROOT4_DBL_EPS: f64 = 1.220_703_125e-4_f64;
 /// f64::EPSILON^(1/5)

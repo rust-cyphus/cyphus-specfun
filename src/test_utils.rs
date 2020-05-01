@@ -26,7 +26,7 @@ pub(crate) fn test_sf_frac_diff(x1: f64, x2: f64) -> f64 {
 pub(crate) fn test_sf_check_result(r: SpecFunResult<f64>, val: f64, tol: f64) {
     let mut s: usize = 0;
     let mut f: f64 = 0.0;
-    let mut d: f64;
+    let d: f64;
 
     if r.val.is_nan() || val.is_nan() {
         s = if r.val.is_nan() != val.is_nan() {
@@ -101,7 +101,7 @@ pub(crate) fn test_sf_check_result_and_code(
 ) {
     let mut s: usize = 0;
     let mut f: f64 = 0.0;
-    let mut d: f64;
+    let d: f64;
 
     if r.val.is_nan() || val.is_nan() {
         s = if r.val.is_nan() != val.is_nan() {

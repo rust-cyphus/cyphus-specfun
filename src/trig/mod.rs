@@ -803,7 +803,7 @@ pub fn sinc_e(x: f64) -> SpecFunResult<f64> {
         // Large arguments must be handled seperately
         let r = std::f64::consts::PI * ax;
         let mut result = sin_e(r);
-        result.val = result.val / r;
+        result.val /= r;
         result.err = result.err / r + 2.0 * f64::EPSILON * result.val;
         result
     }
@@ -822,15 +822,15 @@ mod tests {
     #[test]
     fn test_cos_e() {
         let x = 1.0;
-        assert!((cos_e(x).val - 0.54030230586813972).abs() < 1e-10);
-        assert!((x.cos_e().val - 0.54030230586813972).abs() < 1e-10);
+        assert!((cos_e(x).val - 0.540_302_305_868_139_8).abs() < 1e-10);
+        assert!((x.cos_e().val - 0.540_302_305_868_139_8).abs() < 1e-10);
     }
     #[test]
     fn test_hypot_e() {
         let x = 1.0;
         let y = 2.0;
-        assert!((hypot_e(x, y).val - 2.2360679774997897).abs() < 1e-10);
-        assert!((x.hypot_e(y).val - 2.2360679774997897).abs() < 1e-10);
+        assert!((hypot_e(x, y).val - 2.236_067_977_499_79).abs() < 1e-10);
+        assert!((x.hypot_e(y).val - 2.236_067_977_499_79).abs() < 1e-10);
     }
     #[test]
     fn test_complex_sin_e() {
@@ -847,43 +847,43 @@ mod tests {
         assert!((w1.re - 1.2984575814159773).abs() < 1e-10);
         assert!((w1.im - 0.6349639147847361).abs() < 1e-10);
 
-        assert!((w2.re - -14.856255163875255).abs() < 1e-10);
-        assert!((w2.im - 22.898192550963759).abs() < 1e-10);
+        assert!((w2.re - -14.856_255_163_875_256).abs() < 1e-10);
+        assert!((w2.im - 22.898_192_550_963_76).abs() < 1e-10);
 
-        assert!((w3.re - -0.91751378218801646).abs() < 1e-10);
+        assert!((w3.re - -0.917_513_782_188_016_5).abs() < 1e-10);
         assert!((w3.im - 0.04087625387324457).abs() < 1e-10);
 
         assert!((w4.re - -0.3755928499348538).abs() < 1e-10);
-        assert!((w4.im - -3.6087412126897430).abs() < 1e-10);
+        assert!((w4.im - -3.608_741_212_689_743).abs() < 1e-10);
     }
     #[test]
     fn test_complex_cos_e() {
         let z = Complex::new(1.0, 1.0);
         let w = complex_cos_e(z).val;
-        assert!((w.re - 0.83373002513114905).abs() < 1e-10);
-        assert!((w.im + 0.98889770576286510).abs() < 1e-10);
+        assert!((w.re - 0.833_730_025_131_149).abs() < 1e-10);
+        assert!((w.im + 0.988_897_705_762_865_1).abs() < 1e-10);
     }
     #[test]
     fn test_complex_lnsin_e() {
         let z = Complex::new(2.0, -1.0);
         let w = complex_lnsin_e(z).val;
         // 0.39602537002984730+0.33538186897032753 I
-        assert!((w.re - 0.39602537002984730).abs() < 1e-10);
-        assert!((w.im - 0.33538186897032753).abs() < 1e-10);
+        assert!((w.re - 0.396_025_370_029_847_3).abs() < 1e-10);
+        assert!((w.im - 0.335_381_868_970_327_5).abs() < 1e-10);
     }
     #[test]
     fn test_lnsinh_e() {
         let x = 10.0_f64;
-        assert!((lnsinh_e(x).val - 9.3068528173789011).abs() < 1e-10);
-        assert!((x.lnsinh_e().val - 9.3068528173789011).abs() < 1e-10);
-        assert!((x.lnsinh() - 9.3068528173789011).abs() < 1e-10);
+        assert!((lnsinh_e(x).val - 9.306_852_817_378_902).abs() < 1e-10);
+        assert!((x.lnsinh_e().val - 9.306_852_817_378_902).abs() < 1e-10);
+        assert!((x.lnsinh() - 9.306_852_817_378_902).abs() < 1e-10);
     }
     #[test]
     fn test_lncosh_e() {
         let x = 10.0_f64;
-        assert!((lncosh_e(x).val - 9.3068528215012083).abs() < 1e-10);
-        assert!((x.lncosh_e().val - 9.3068528215012083).abs() < 1e-10);
-        assert!((x.lncosh() - 9.3068528215012083).abs() < 1e-10);
+        assert!((lncosh_e(x).val - 9.306_852_821_501_208).abs() < 1e-10);
+        assert!((x.lncosh_e().val - 9.306_852_821_501_208).abs() < 1e-10);
+        assert!((x.lncosh() - 9.306_852_821_501_208).abs() < 1e-10);
     }
     #[test]
     fn test_angle_restrict_symm_e() {
@@ -929,17 +929,17 @@ mod tests {
     fn test_sin_err_e() {
         let x = 1.0_f64;
         let dx = 0.0_f64;
-        assert!((sin_err_e(x, dx).val - 0.84147098480789651).abs() < 1e-10);
+        assert!((sin_err_e(x, dx).val - 0.841_470_984_807_896_5).abs() < 1e-10);
     }
     #[test]
     fn test_cos_err_e() {
         let x = 1.0_f64;
         let dx = 0.0_f64;
-        assert!((cos_err_e(x, dx).val - 0.54030230586813972).abs() < 1e-10);
+        assert!((cos_err_e(x, dx).val - 0.540_302_305_868_139_8).abs() < 1e-10);
     }
     #[test]
     fn test_sinc_e() {
         let x = 1.5_f64;
-        assert!((sinc_e(x).val - -0.21220659078919378).abs() < 1e-10)
+        assert!((sinc_e(x).val - -0.212_206_590_789_193_77).abs() < 1e-10)
     }
 }

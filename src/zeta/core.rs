@@ -14,7 +14,7 @@ pub(crate) fn riemann_zeta_sgt0(s: f64) -> SpecFunResult<f64> {
     } else if s <= 20.0 {
         let x = (2.0 * s - 21.0) / 19.0;
         let mut result = cheb_eval_e(x, &ZETA_XGT1_DATA, -1.0, 1.0);
-        result.val = result.val / (s - 1.0);
+        result.val /= s - 1.0;
         result.err = result.err / (s - 1.0) + std::f64::EPSILON * result.val.abs();
         result
     } else {

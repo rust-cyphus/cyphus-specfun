@@ -1,11 +1,10 @@
 pub(crate) mod data;
 pub(crate) mod utils;
 
-use std::f64::consts::PI;
-use std::f64::{EPSILON, NAN};
+
+
 
 use crate::{
-    elementary::multiply_err_e,
     exp::core::exp_mult_err_e,
     result::{SpecFunCode, SpecFunResult},
     zeta::Zeta,
@@ -268,7 +267,7 @@ impl TriGamma for f64 {
             let mut r = psi_n_xg0(1, 1.0 - x);
 
             r.val = d - r.val;
-            r.err = r.err + 2.0 * std::f64::EPSILON * d;
+            r.err += 2.0 * std::f64::EPSILON * d;
 
             r
         }
@@ -330,9 +329,9 @@ impl Gamma for f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consts::{LN_DBL_MAX, SQRT_DLB_EPS};
+    use crate::consts::{SQRT_DLB_EPS};
     use crate::test_utils::*;
-    use utils::*;
+    
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
     const SQRT_TOL0: f64 = 2.0 * SQRT_DLB_EPS;
@@ -346,7 +345,7 @@ mod tests {
     fn test_lngamma_sgn_e() {
         test_sf_check_result_and_code(
             utils::lngamma_e(0.7),
-            0.26086724653166651439,
+            0.260_867_246_531_666_54,
             TOL1,
             SpecFunCode::Success,
         );
@@ -356,13 +355,13 @@ mod tests {
     fn test_gamma_e() {
         test_sf_check_result_and_code(
             (1.0 + 1.0 / 4096.0).gamma_e(),
-            0.9998591371459403421,
+            0.999_859_137_145_940_3,
             TOL0,
             SpecFunCode::Success,
         );
         test_sf_check_result_and_code(
             (1.0 + 1.0 / 32.0).gamma_e(),
-            0.9829010992836269148,
+            0.982_901_099_283_626_9,
             TOL0,
             SpecFunCode::Success,
         );

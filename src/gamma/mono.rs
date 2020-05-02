@@ -1,40 +1,21 @@
+use super::psi::digamma_int_e;
+use super::psi::polygamma_e;
+use super::psi::trigamma_int_e;
+
 use crate::{
     cheb::cheb_eval_e,
     consts::{LNPI, ROOT4_DBL_EPS},
     exp::core::{exp_err_e, exp_mult_err_e},
     result::{SpecFunCode, SpecFunResult},
     trig::angle_restrict_symm_e,
-    zeta::Zeta,
 };
 
 use num::{complex::Complex, Float};
 
 use super::data::*;
 
-// ------------------
-// Internal Functions
-// ------------------
-
-/// Compute the factorial of a number, returning an f64
-pub(crate) fn factorial(n: usize) -> f64 {
-    if n < FACT_TABLE.len() {
-        FACT_TABLE[n]
-    } else {
-        std::f64::NAN
-    }
-}
-
-/// Compute the double factorial of a number, returning an f64
-pub(crate) fn double_factorial(n: usize) -> f64 {
-    if n < DOUBLE_FACT_TABLE.len() {
-        DOUBLE_FACT_TABLE[n]
-    } else {
-        std::f64::NAN
-    }
-}
-
 /// Compute Log(Gamma(z)) using Lanczos method for complex numbers
-pub(crate) fn lngamma_lanczos_complex_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
+fn lngamma_lanczos_complex_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
     let mut y = SpecFunResult {
         val: Complex::new(0.0, 0.0),
         err: Complex::new(f64::EPSILON, f64::EPSILON),
@@ -69,14 +50,14 @@ pub(crate) fn lngamma_lanczos_complex_e(z: Complex<f64>) -> SpecFunResult<Comple
 }
 
 /// Compute Log(Gamma(x)) using Lanczos method
-pub(crate) fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
+fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
     let xx = x - 1.0;
     let ag = LANCZOS_7_C
         .iter()
-        .skip(1)
         .enumerate()
+        .skip(1)
         .fold(LANCZOS_7_C[0], |acc, (k, val)| {
-            acc + val / (xx + ((k + 1) as f64))
+            acc + val / (xx + (k as f64))
         });
     let term1 = (xx + 0.5) * ((xx + 7.5) * (-1.0).exp()).ln();
     let term2 = 0.918_938_533_204_672_8_f64 + ag.ln();
@@ -92,7 +73,7 @@ pub(crate) fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
 }
 
 /// Calculate series for g(eps) = Gamma(eps) eps - 1/(1+eps) - eps / 2, as well as its sign
-pub(crate) fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
+fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
     let c1 = -0.077_215_664_901_532_87_f64;
     let c2 = -0.010_944_004_672_027_444_f64;
     let c3 = 0.092_520_923_919_113_7_f64;
@@ -103,11 +84,22 @@ pub(crate) fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
     let c8 = -0.001_894_306_216_871_078_f64;
     let c9 = 0.000_974_732_378_045_132_2_f64;
     let c10 = -0.000_484_343_927_222_558_9_f64;
-    let g6 = c6 + eps * (c7 + eps * (c8 + eps * (c9 + eps * c10)));
-    let g = eps * (c1 + eps * (c2 + eps * (c3 + eps * (c4 + eps * (c5 + eps * g6)))));
+
+    let g6 = c10
+        .mul_add(eps, c9)
+        .mul_add(eps, c8)
+        .mul_add(eps, c7)
+        .mul_add(eps, c6);
+    let g = g6
+        .mul_add(eps, c5)
+        .mul_add(eps, c4)
+        .mul_add(eps, c3)
+        .mul_add(eps, c2)
+        .mul_add(eps, c1)
+        .mul_add(eps, 0.0);
 
     let gee = g + 1.0 / (1.0 + eps) + 0.5 * eps;
-    let val = gee * eps.abs().recip();
+    let val = (gee * eps.abs().recip()).ln();
     let err = 4.0 * f64::EPSILON * val.abs();
     (
         SpecFunResult {
@@ -115,11 +107,11 @@ pub(crate) fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
             err,
             code: SpecFunCode::Success,
         },
-        val.signum(),
+        eps.signum(),
     )
 }
 
-pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) {
+fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
     if eps.abs() < f64::EPSILON {
         (
             SpecFunResult {
@@ -162,78 +154,97 @@ pub(crate) fn lngamma_sgn_sing_e(n: i32, eps: f64) -> (SpecFunResult<f64>, f64) 
         let cs4 = 0.026_147_847_817_654_8_f64;
         let cs5 = -0.002_346_081_035_455_823_5_f64;
         let e2 = eps * eps;
-        let _sin_ser = 1.0 + e2 * (cs1 + e2 * (cs2 + e2 * (cs3 + e2 * (cs4 + e2 * cs5))));
+        let sin_ser = 1.0 + e2 * (cs1 + e2 * (cs2 + e2 * (cs3 + e2 * (cs4 + e2 * cs5))));
 
         // Calculate series for ln(gamma(1+n-eps))
-        let _aeps = eps.abs();
+        let aeps = eps.abs();
 
-        let mut psi0 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-        let mut psi1 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-        let _psi2 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-        let _psi3 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-        let _psi4 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-        let _psi5 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-        let _psi6 = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-
-        let _c0 = lnfact_int_e(n as usize);
-        psi0 = digamma_int_e((n + 1) as usize);
-        psi1 = trigamma_int_e((n + 1) as usize);
-
-        (
+        let c0 = lnfact_e(n);
+        let psi0 = digamma_int_e(n + 1);
+        let psi1 = trigamma_int_e(n + 1);
+        let psi2 = if aeps > 0.00001 {
+            polygamma_e(2, n as f64 + 1.0)
+        } else {
             SpecFunResult {
                 val: 0.0,
                 err: 0.0,
                 code: SpecFunCode::Success,
-            },
-            0.0,
-        )
-    }
-}
+            }
+        };
+        let psi3 = if aeps > 0.0002 {
+            polygamma_e(3, n as f64 + 1.0)
+        } else {
+            SpecFunResult {
+                val: 0.0,
+                err: 0.0,
+                code: SpecFunCode::Success,
+            }
+        };
+        let psi4 = if aeps > 0.001 {
+            polygamma_e(4, n as f64 + 1.0)
+        } else {
+            SpecFunResult {
+                val: 0.0,
+                err: 0.0,
+                code: SpecFunCode::Success,
+            }
+        };
+        let psi5 = if aeps > 0.005 {
+            polygamma_e(5, n as f64 + 1.0)
+        } else {
+            SpecFunResult {
+                val: 0.0,
+                err: 0.0,
+                code: SpecFunCode::Success,
+            }
+        };
+        let psi6 = if aeps > 0.01 {
+            polygamma_e(6, n as f64 + 1.0)
+        } else {
+            SpecFunResult {
+                val: 0.0,
+                err: 0.0,
+                code: SpecFunCode::Success,
+            }
+        };
 
-pub(crate) fn lnfact_int_e(n: usize) -> SpecFunResult<f64> {
-    if n < FACT_TABLE.len() {
-        let val = FACT_TABLE[n].ln();
-        SpecFunResult {
-            val,
-            err: 2.0 * f64::EPSILON * val.abs(),
-            code: SpecFunCode::Success,
-        }
-    } else {
-        lngamma_e((n as f64) + 1.0)
+        let c1 = psi0.val;
+        let c2 = psi1.val / 2.0;
+        let c3 = psi2.val / 6.0;
+        let c4 = psi3.val / 24.0;
+        let c5 = psi4.val / 120.0;
+        let c6 = psi5.val / 720.0;
+        let c7 = psi6.val / 5040.0;
+
+        let lng_ser = c7
+            .mul_add(-eps, c6)
+            .mul_add(-eps, c5)
+            .mul_add(-eps, c4)
+            .mul_add(-eps, c3)
+            .mul_add(-eps, c2)
+            .mul_add(-eps, c1)
+            .mul_add(-eps, c0.val);
+
+        let g = -lng_ser - sin_ser.ln();
+        let val = g - eps.abs().ln();
+        let err = c0.err + 2.0 * f64::EPSILON * (g.abs() + val.abs());
+
+        let sgn = (if n % 2 == 1 { -1.0 } else { 1.0 }) * (if eps > 0 as f64 { 1.0 } else { -1.0 });
+
+        (
+            SpecFunResult {
+                val,
+                err,
+                code: SpecFunCode::Success,
+            },
+            sgn,
+        )
     }
 }
 
 /// Compute log(Gamma(1+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
-pub(crate) fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
+fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
     let n1 = -1.001_741_928_234_951_f64;
     let n2 = 1.736_483_920_992_288_f64;
     let d1 = 1.243_300_601_885_875_2_f64;
@@ -263,7 +274,7 @@ pub(crate) fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
 
 /// Compute log(Gamma(2+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
-pub(crate) fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
+fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
     let n1 = 1.000_895_834_786_669_2_f64;
     let n2 = 4.209_376_735_287_755_f64;
     let d1 = 2.618_851_904_903_217_f64;
@@ -276,8 +287,12 @@ pub(crate) fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
     let c2 = 0.000_106_728_716_918_366_5_f64;
     let c3 = -0.000_069_327_180_093_128_2_f64;
     let c4 = 0.000_040_722_092_786_795_0_f64;
-    let eps5 = eps * eps * eps * eps * eps;
-    let corr = eps5 * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + c4 * eps))));
+    let corr = c4
+        .mul_add(eps, c3)
+        .mul_add(eps, c2)
+        .mul_add(eps, c1)
+        .mul_add(eps, c0)
+        .mul_add(eps.powi(5), 0.0);
 
     let val = eps * (pade + corr);
     let err = 2.0 * f64::EPSILON * val.abs();
@@ -289,82 +304,7 @@ pub(crate) fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
     }
 }
 
-/// Compute the digamma function
-fn digamma_int_e(n: usize) -> SpecFunResult<f64> {
-    if n == 0 {
-        let result = SpecFunResult {
-            val: f64::NAN,
-            err: f64::NAN,
-            code: SpecFunCode::DomainErr,
-        };
-        result.issue_warning("digamma_int_e", &[n as f64]);
-        result
-    } else if (n as usize) < PSI_TABLE.len() {
-        let val = PSI_TABLE[n as usize];
-        let err = std::f64::EPSILON * val.abs();
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    } else {
-        // Abramowitz+Stegun 6.3.18
-        let nf = n as f64;
-        let c2 = -1.0 / 12.0;
-        let c3 = 1.0 / 120.0;
-        let c4 = -1.0 / 252.0;
-        let c5 = 1.0 / 240.0;
-        let ni2 = (1.0 / nf) * (1.0 / nf);
-        let ser = ni2 * (c2 + ni2 * (c3 + ni2 * (c4 + ni2 * c5)));
-        let val = nf.ln() - 0.5 / nf + ser;
-        let mut err = std::f64::EPSILON * (nf.ln().abs() + (0.5 / nf).abs() + ser.abs());
-        err += std::f64::EPSILON * val.abs();
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    }
-}
-
-/// Compute the trigamma function
-fn trigamma_int_e(n: usize) -> SpecFunResult<f64> {
-    if n == 0 {
-        let result = SpecFunResult {
-            val: f64::NAN,
-            err: f64::NAN,
-            code: SpecFunCode::DomainErr,
-        };
-        result.issue_warning("trigamma_int_e", &[n as f64]);
-        result
-    } else if (n as usize) < PSI_1_TABLE.len() {
-        let val = PSI_1_TABLE[n as usize];
-        let err = std::f64::EPSILON * val;
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    } else {
-        // Abramowitz+Stegun 6.4.12
-        // double-precision for n > 100
-        let nf = n as f64;
-        let c0 = -1.0 / 30.0;
-        let c1 = 1.0 / 42.0;
-        let c2 = -1.0 / 30.0;
-        let ni2 = (1.0 / nf) * (1.0 / nf);
-        let ser = ni2 * ni2 * (c0 + ni2 * (c1 + c2 * ni2));
-        let val = (1.0 + 0.5 / nf + 1.0 / (6.0 * nf * nf) + ser) / nf;
-        let err = std::f64::EPSILON * val;
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    }
-}
-
-pub(crate) fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
+fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
     let y = 1.0 / (x * x);
     let c0 = 1.0 / 12.0;
     let c1 = -1.0 / 360.0;
@@ -387,7 +327,7 @@ pub(crate) fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
 }
 
 /// Compute Gamma(x) for x >= 1/2
-pub(crate) fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
+fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
     if (x - 0.5).abs() < f64::EPSILON {
         // Error term
         let val = 1.772_453_850_905_516_f64;
@@ -397,7 +337,7 @@ pub(crate) fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
             err,
             code: SpecFunCode::Success,
         }
-    } else if x <= 1.0 + (FACT_TABLE.len() as f64) - 1.0 && (x - x.floor()).abs() < f64::EPSILON {
+    } else if x <= (FACT_TABLE.len() as f64) && (x - x.floor()).abs() < f64::EPSILON {
         let n = x.floor() as usize;
         let val = FACT_TABLE[n - 1];
         let err = val * f64::EPSILON;
@@ -505,207 +445,67 @@ pub(crate) fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
     }
 }
 
-/// Compute the digamma function for either positive or negative `x`.
-pub(crate) fn psi_x_e(x: f64) -> SpecFunResult<f64> {
-    let y = x.abs();
+// --------------------------------
+// ------ External Functions ------
+// --------------------------------
 
-    if y < f64::EPSILON || (x + 1.0).abs() < f64::EPSILON || (x + 2.0).abs() < f64::EPSILON {
-        let result = SpecFunResult {
-            val: std::f64::NAN,
-            err: std::f64::NAN,
-            code: SpecFunCode::DomainErr,
-        };
-        result.issue_warning("psi_x_e", &[x]);
-        result
-    } else if y >= 2.0 {
-        let t = 8.0 / (y * y) - 1.0;
-        let result_c = cheb_eval_e(t, &APSICS_DATA, -1.0, 1.0);
-        if x < 0.0 {
-            let s = (x * std::f64::consts::PI).sin();
-            let c = (x * std::f64::consts::PI).cos();
-            if s.abs() < 2.0 * f64::MIN_POSITIVE.sqrt() {
-                let result = SpecFunResult {
-                    val: std::f64::NAN,
-                    err: std::f64::NAN,
-                    code: SpecFunCode::DomainErr,
-                };
-                result.issue_warning("psi_x_e", &[x]);
-                result
-            } else {
-                let val = y.ln() - 0.5 / x + result_c.val - std::f64::consts::PI * c / s;
-                let mut err = std::f64::consts::PI * x.abs() * f64::EPSILON / (s * s);
-                err += result_c.err;
-                err += f64::EPSILON * val.abs();
-                SpecFunResult {
-                    val,
-                    err,
-                    code: SpecFunCode::Success,
-                }
-            }
-        } else {
-            let val = y.ln() - 0.5 / x + result_c.val;
-            let mut err = result_c.err;
-            err += f64::EPSILON * val;
-            SpecFunResult {
-                val,
-                err,
-                code: SpecFunCode::Success,
-            }
-        }
-    } else if x < -1.0 {
-        let v = x + 2.0;
-        let t1 = 1.0 / x;
-        let t2 = 1.0 / (x + 1.0);
-        let t3 = 1.0 / v;
-        let result_c = cheb_eval_e(2.0 * v - 1.0, &PSICS_DATA, -1.0, 1.0);
-
-        let val = -(t1 + t2 + t3) + result_c.val;
-        let mut err = f64::EPSILON * (t1.abs() + (x / (t2 * t2)).abs() + (x / (t3 * t3)).abs());
-        err += result_c.err;
-        err += f64::EPSILON * val.abs();
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    } else if x < 0.0 {
-        let v = x + 1.0;
-        let t1 = 1.0 / x;
-        let t2 = 1.0 / v;
-        let result_c = cheb_eval_e(2.0 * v - 1.0, &PSICS_DATA, -1.0, 1.0);
-
-        let val = -(t1 + t2) + result_c.val;
-        let mut err = f64::EPSILON * (t1.abs() + (x / (t2 * t2)).abs());
-        err += result_c.err;
-        err += f64::EPSILON * val.abs();
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    } else if x < 1.0 {
-        let t1 = 1.0 / x;
-        let result_c = cheb_eval_e(2.0 * x - 1.0, &PSICS_DATA, -1.0, 1.0);
-
-        let val = -t1 + result_c.val;
-        let mut err = f64::EPSILON * t1;
-        err += result_c.err;
-        err += f64::EPSILON * val;
-        SpecFunResult {
-            val,
-            err,
-            code: SpecFunCode::Success,
-        }
-    } else {
-        let v = x - 1.0;
-        cheb_eval_e(2.0 * v - 1.0, &PSICS_DATA, -1.0, 1.0)
-    }
-}
-
-/// Compute psi(z) for large |z| in the right-half plane
-/// ref: [Abramowitz + Stegun, 6.3.18]
-pub(crate) fn psi_complex_asymp(z: Complex<f64>) -> Complex<f64> {
-    // coefficients in the asymptotic expansion for large z;
-    // let w = z^(-2) and write the expression in the form
-    //
-    //   ln(z) - 1/(2z) - 1/12 w (1 + c1 w + c2 w + c3 w + ... )
-    let c1 = -0.1;
-    let c2 = 1.0 / 21.0;
-    let c3 = -0.05;
-
-    let zinv = z.inv();
-    let w = zinv.powi(2);
-
-    // Horner method evaluation of term in parentheses
-    let mut sum: Complex<f64>;
-    sum = w * (c3 / c2);
-    sum += 1.0;
-    sum *= c2 / c1;
-    sum *= w;
-    sum += 1.0;
-    sum *= c1;
-    sum *= w;
-    sum += 1.0;
-
-    // Correction added to log(z)
-    let mut cs = sum * w;
-    cs *= -1.0 / 12.0;
-    cs += zinv * (-0.5);
-
-    cs + z.ln()
-}
-
-/// Compute Psi(z) for complex z in the right-half plane
-pub(crate) fn psi_complex_rhp(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
-    let mut n_recurse: usize = 0;
-    let mut res = SpecFunResult {
-        val: Complex::new(0.0, 0.0),
-        err: Complex::new(0.0, 0.0),
+/// Compute the factorial of a number, returning an f64
+pub fn factorial(n: usize) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult {
+        val: 0.0,
+        err: 0.0,
         code: SpecFunCode::Success,
     };
-
-    if z.re.abs() < std::f64::EPSILON && z.im.abs() < std::f64::EPSILON {
-        res.val = Complex::new(std::f64::NAN, std::f64::NAN);
-        res.err = Complex::new(std::f64::NAN, std::f64::NAN);
-        res.code = SpecFunCode::DomainErr;
-        res.issue_warning("psi_complex_rhp", &[z]);
-        return res;
-    }
-
-    // Compute the number of recurrences to apply
-    if z.re < 20.0 && z.im.abs() < 20.0 {
-        let sp = (20.0 + z.im).sqrt();
-        let sn = (20.0 - z.im).sqrt();
-        let rhs = sp * sn - z.re;
-        if rhs > 0.0 {
-            n_recurse = rhs.ceil() as usize;
-        }
-    }
-
-    // Compute asymptotic at the large value z + n_recurse
-    let mut a = psi_complex_asymp(z + n_recurse as f64);
-    res.err = 2.0 * std::f64::EPSILON * Complex::new(a.re.abs(), a.im.abs());
-
-    // Descend recursively, if necessary
-    for i in (1..(n_recurse + 1)).rev() {
-        let zn = z + (i as f64 - 1.0);
-        let zn_inv = zn.inv();
-        a = z - zn_inv;
-
-        // Accumulate the error, to catch cancellations
-        res.err.re += 2.0 * std::f64::EPSILON * zn_inv.re.abs();
-        res.err.im += 2.0 * std::f64::EPSILON * zn_inv.im.abs();
-    }
-
-    res.val = a;
-
-    res.err.re += 2.0 * std::f64::EPSILON * res.val.re.abs();
-    res.err.im += 2.0 * std::f64::EPSILON * res.val.im.abs();
-
-    res
-}
-
-/// Compute Psi^{(n)}(x) for x > 0
-pub(crate) fn psi_n_xg0(n: usize, x: f64) -> SpecFunResult<f64> {
-    if n == 0 {
-        psi_x_e(x)
+    if n < 18 {
+        result.val = FACT_TABLE[n];
+        result.err = 0.0;
+    } else if n < FACT_TABLE.len() {
+        result.val = FACT_TABLE[n];
+        result.err = 2.0 * f64::EPSILON * result.val.abs();
     } else {
-        // Abramowitz + Stegun 6.4.10
-        let hz = (n as f64 + 1.0).hzeta_e(x);
-        let lnnf = lnfact_int_e(n);
-        let mut result = exp_mult_err_e(lnnf.val, lnnf.err, hz.val, hz.err);
-
-        if n % 2 == 0 {
-            result.val *= -1.0;
-        }
-
-        result
+        result.val = f64::INFINITY;
+        result.err = f64::INFINITY;
+        result.code = SpecFunCode::OverflowErr;
+        result.issue_warning("factorial", &[n as f64]);
     }
+    result
 }
 
-// ------------------
-// External functions
-// ------------------
+/// Compute the double factorial of a number, returning an f64
+pub fn double_factorial(n: usize) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult {
+        val: 0.0,
+        err: 0.0,
+        code: SpecFunCode::Success,
+    };
+    if n < 26 {
+        result.val = DOUBLE_FACT_TABLE[n];
+        result.err = 0.0;
+    } else if n < FACT_TABLE.len() {
+        result.val = DOUBLE_FACT_TABLE[n];
+        result.err = 2.0 * f64::EPSILON * result.val.abs();
+    } else {
+        result.val = f64::INFINITY;
+        result.err = f64::INFINITY;
+        result.code = SpecFunCode::OverflowErr;
+        result.issue_warning("double_factorial", &[n as f64]);
+    }
+    result
+}
+
+/// Compute the natural log of n!
+pub(crate) fn lnfact_e(n: usize) -> SpecFunResult<f64> {
+    if n < FACT_TABLE.len() {
+        let val = FACT_TABLE[n].ln();
+        SpecFunResult {
+            val,
+            err: 2.0 * f64::EPSILON * val.abs(),
+            code: SpecFunCode::Success,
+        }
+    } else {
+        lngamma_e((n as f64) + 1.0)
+    }
+}
 
 /// ln(gamma(x)) where x is not a negative integer
 ///
@@ -723,7 +523,7 @@ pub(crate) fn lngamma_e(x: f64) -> SpecFunResult<f64> {
         result.err *= 1.0 / (f64::EPSILON + (x - 1.0).abs());
         result
     } else if (x - 2.0).abs() < 0.01 {
-        let mut result = lngamma_2_pade_e(x - 1.0);
+        let mut result = lngamma_2_pade_e(x - 2.0);
         result.err *= 1.0 / (f64::EPSILON + (x - 2.0).abs());
         result
     } else if x >= 0.5 {
@@ -741,7 +541,7 @@ pub(crate) fn lngamma_e(x: f64) -> SpecFunResult<f64> {
     } else if x > -0.5 / (f64::EPSILON * std::f64::consts::PI) {
         // Try tp extract a fractional part from x
         let z = 1.0 - x;
-        let s = (std::f64::consts::PI * x).sin();
+        let s = (std::f64::consts::PI * z).sin();
         let abss = s.abs();
         if abss < f64::EPSILON {
             let result = SpecFunResult {
@@ -762,7 +562,7 @@ pub(crate) fn lngamma_e(x: f64) -> SpecFunResult<f64> {
                 result.issue_warning("lngamma_e", &[x]);
                 result
             } else {
-                let n = -(x - 0.5) as i32;
+                let n = -(x - 0.5) as usize;
                 let eps = x + n as f64;
                 lngamma_sgn_sing_e(n, eps).0
             }
@@ -839,7 +639,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
                 result.issue_warning("lngamma_sgn_e", &[x]);
                 (result, 0.0)
             } else {
-                let n = -(x - 0.5) as i32;
+                let n = -(x - 0.5) as usize;
                 let eps = x + n as f64;
                 lngamma_sgn_sing_e(n, eps)
             }
@@ -861,6 +661,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
         (result, 0.0)
     }
 }
+
 /// Gamma(x), where x is not a negative integer
 ///
 /// Uses real Lanczos method.
@@ -998,14 +799,5 @@ pub(crate) fn gammainv_e(x: f64) -> SpecFunResult<f64> {
             err,
             code: SpecFunCode::Success,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn test_fn() {
-        assert!(true);
     }
 }

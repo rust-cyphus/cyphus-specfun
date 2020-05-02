@@ -1,8 +1,8 @@
 // Maximum x such that gamma(x) is not considered an overflow
-pub const GSL_SF_GAMMA_XMAX: f64 = 171.0;
+pub(crate) const GSL_SF_GAMMA_XMAX: f64 = 171.0;
 
 /// Table of all factorials up to 170! (where overflow occurs)
-pub const FACT_TABLE: [f64; 171] = [
+pub(crate) const FACT_TABLE: [f64; 171] = [
     1.0,
     1.0,
     2.0,
@@ -177,7 +177,7 @@ pub const FACT_TABLE: [f64; 171] = [
 ];
 
 /// Table of all double factorials up to 297!! (where overflow occurs)
-pub const DOUBLE_FACT_TABLE: [f64; 298] = [
+pub(crate) const DOUBLE_FACT_TABLE: [f64; 298] = [
     1.000_000_000_000_000_000_000_00,
     1.000_000_000_000_000_000_000_00,
     2.000_000_000_000_000_000_000_00,
@@ -478,7 +478,7 @@ pub const DOUBLE_FACT_TABLE: [f64; 298] = [
     1.255_275_622_599_306_4e304,
 ];
 
-pub const LANCZOS_7_C: [f64; 9] = [
+pub(crate) const LANCZOS_7_C: [f64; 9] = [
     0.999_999_999_999_809_9_f64,
     676.520_368_121_885_1_f64,
     -1_259.139_216_722_402_8_f64,
@@ -490,7 +490,7 @@ pub const LANCZOS_7_C: [f64; 9] = [
     1.505_632_735_149_311_6e-7_f64,
 ];
 
-pub const GSTAR_A_DATA: [f64; 30] = [
+pub(crate) const GSTAR_A_DATA: [f64; 30] = [
     2.167_864_478_664_630_4_f64,
     -0.055_332_490_187_455_84_f64,
     0.018_003_924_314_607_2_f64,
@@ -523,7 +523,7 @@ pub const GSTAR_A_DATA: [f64; 30] = [
     -1.011_515_394_308_118_7e-15_f64,
 ];
 
-pub const GSTAR_B_DATA: [f64; 30] = [
+pub(crate) const GSTAR_B_DATA: [f64; 30] = [
     0.005_750_227_727_311_434_f64,
     0.000_449_668_953_496_568_5_f64,
     -0.000_167_276_315_318_871_74_f64,
@@ -557,7 +557,7 @@ pub const GSTAR_B_DATA: [f64; 30] = [
 ];
 
 // Chebyshev expansion for log(gamma(x)/gamma(8)) for 5<x<10 over -1 < t < 1
-pub const GAMMA_5_10_DATA: [f64; 24] = [
+pub(crate) const GAMMA_5_10_DATA: [f64; 24] = [
     -1.528_559_409_666_157_9_f64,
     4.825_915_230_059_59_f64,
     0.227_771_232_097_761_5_f64,
@@ -590,7 +590,7 @@ pub const GAMMA_5_10_DATA: [f64; 24] = [
 /// x(y) = (2y - 11)/9
 ///
 /// g(x) := f(y(x))
-pub const R1PY_DATA: [f64; 30] = [
+pub(crate) const R1PY_DATA: [f64; 30] = [
     1.598_883_282_449_769_6_f64,
     0.679_056_253_532_134_6_f64,
     -0.068_485_802_980_122_52_f64,
@@ -630,7 +630,7 @@ pub const R1PY_DATA: [f64; 30] = [
 ///                                        log weighted error  16.69
 ///                              significant figures required  16.39
 ///                                   decimal places required  17.37
-pub const PSICS_DATA: [f64; 23] = [
+pub(crate) const PSICS_DATA: [f64; 23] = [
     -0.038_057_080_835_217_92_f64,
     0.491_415_393_029_387_14_f64,
     -0.056_815_747_821_244_73_f64,
@@ -662,7 +662,7 @@ pub const PSICS_DATA: [f64; 23] = [
 ///                                        log weighted error  16.26
 ///                              significant figures required  14.42
 ///                                   decimal places required  16.86
-pub const APSICS_DATA: [f64; 16] = [
+pub(crate) const APSICS_DATA: [f64; 16] = [
     -0.020_474_904_467_818_5_f64,
     -0.010_180_127_153_485_9_f64,
     0.000_055_971_872_538_7_f64,
@@ -681,11 +681,11 @@ pub const APSICS_DATA: [f64; 16] = [
     -0.000_000_000_000_000_0_f64,
 ];
 
-pub const PSI_TABLE_NMAX: usize = 100;
+pub(crate) const PSI_TABLE_NMAX: usize = 100;
 
-pub const PSI_TABLE: [f64; PSI_TABLE_NMAX + 1] = [
-    0.0_f64,                                      // Infinity  psi(0) */
-    -0.577_215_664_901_532_9_f64,                // psi(1)
+pub(crate) const PSI_TABLE: [f64; PSI_TABLE_NMAX + 1] = [
+    0.0_f64,                      // Infinity  psi(0) */
+    -0.577_215_664_901_532_9_f64, // psi(1)
     0.422_784_335_098_467_13_f64, // ...
     0.922_784_335_098_467_1_f64,
     1.256_117_668_431_800_5_f64,
@@ -787,11 +787,11 @@ pub const PSI_TABLE: [f64; PSI_TABLE_NMAX + 1] = [
     4.600_161_852_738_087_f64,
 ];
 
-pub const PSI_1_TABLE_NMAX: usize = 100;
+pub(crate) const PSI_1_TABLE_NMAX: usize = 100;
 
-pub const PSI_1_TABLE: [f64; PSI_1_TABLE_NMAX + 1] = [
-    0.0_f64,                               // Infinity               psi(1,0) */
-    1.644_934_066_848_226_4_f64,           // psi(1,1)
+pub(crate) const PSI_1_TABLE: [f64; PSI_1_TABLE_NMAX + 1] = [
+    0.0_f64,                     // Infinity               psi(1,0) */
+    1.644_934_066_848_226_4_f64, // psi(1,1)
     0.644_934_066_848_226_4_f64, // ...
     0.394_934_066_848_226_46_f64,
     0.283_822_955_737_115_3_f64,
@@ -889,6 +889,6 @@ pub const PSI_1_TABLE: [f64; PSI_1_TABLE_NMAX + 1] = [
     0.010_471_108_514_912_978_f64,
     0.010_362_601_570_468_534_f64,
     0.010_256_320_350_360_127_f64, // ...
-    0.010_152_197_068_394_28_f64, // psi(1,99)
+    0.010_152_197_068_394_28_f64,  // psi(1,99)
     0.010_050_166_663_333_571_f64, // psi(1,100)
 ];

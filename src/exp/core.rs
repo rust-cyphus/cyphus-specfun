@@ -1,7 +1,7 @@
 use crate::consts::{
     LN_DBL_EPS, LN_DBL_MAX, LN_DBL_MIN, ROOT3_DBL_EPS, SQRT_DBL_MAX, SQRT_DBL_MIN,
 };
-use crate::gamma::utils::lnfact_int_e;
+use crate::gamma::mono::lnfact_e;
 use crate::result::{SpecFunCode, SpecFunResult, SpecFunResultE10};
 use std::f64::consts::LN_10;
 
@@ -69,14 +69,12 @@ pub(crate) fn exp_mult_e(x: f64, y: f64) -> SpecFunResult<f64> {
         code: SpecFunCode::Success,
     };
 
-    if ay < f64::EPSILON {
+    if ay < f64::MIN_POSITIVE {
         result
     } else if (x < 0.5 * LN_DBL_MAX && x > 0.5 * LN_DBL_MIN)
-        && ay < 0.8 * SQRT_DBL_MAX
-        && ay > 1.2 * SQRT_DBL_MIN
+        && (ay < 0.8 * SQRT_DBL_MAX && ay > 1.2 * SQRT_DBL_MIN)
     {
-        let ex = x.exp();
-        result.val = y * ex;
+        result.val = y * x.exp();
         result.err = (2.0 + x.abs()) * f64::EPSILON * result.val.abs();
         result
     } else {
@@ -121,18 +119,16 @@ pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
         e10: 0,
     };
 
-    if ay < f64::EPSILON {
+    if ay < f64::MIN_POSITIVE {
         result
     } else if (x < 0.5 * LN_DBL_MAX && x > 0.5 * LN_DBL_MIN)
-        && ay < 0.8 * SQRT_DBL_MAX
-        && ay > 1.2 * SQRT_DBL_MIN
+        && (ay < 0.8 * SQRT_DBL_MAX && ay > 1.2 * SQRT_DBL_MIN)
     {
-        let ex = x.exp();
-        result.val = y * ex;
+        result.val = y * x.exp();
         result.err = (2.0 + x.abs()) * f64::EPSILON * result.val.abs();
         result
     } else {
-        let ly = ay.abs();
+        let ly = ay.ln();
         let l10_val = (x + ly) / LN_10;
 
         if l10_val > (i32::MAX - 1) as f64 {
@@ -149,14 +145,14 @@ pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
             result
         } else {
             let sy = y.signum();
-            let n = l10_val.floor() as i32;
-            let arg_val = (l10_val - n as f64) * LN_10;
-            let arg_err = 2.0 * f64::EPSILON * (x.abs() + ly.abs() + LN_10 * (n as f64).abs());
+            let n = l10_val.floor();
+            let arg_val = (l10_val - n) * LN_10;
+            let arg_err = 2.0 * f64::EPSILON * (x.abs() + ly.abs() + LN_10 * n.abs());
 
             result.val = sy * arg_val.exp();
             result.err = arg_err * result.val.abs();
             result.err += 2.0 * f64::EPSILON * result.val.abs();
-            result.e10 = n;
+            result.e10 = n as i32;
             result
         }
     }
@@ -166,7 +162,7 @@ pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
 pub(crate) fn exp_mult_err_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResult<f64> {
     let ay = y.abs();
 
-    if ay < f64::EPSILON {
+    if ay < f64::MIN_POSITIVE {
         SpecFunResult {
             val: 0.0,
             err: (dy * x.exp()).abs(),
@@ -235,7 +231,7 @@ pub(crate) fn exp_mult_err_e10_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunRes
 
     let ay = y.abs();
 
-    if ay < f64::EPSILON {
+    if ay < f64::MIN_POSITIVE {
         result.err = (dy * x.exp()).abs();
         result
     } else if (x < 0.5 * LN_DBL_MAX && x > 0.5 * LN_DBL_MIN)
@@ -248,7 +244,7 @@ pub(crate) fn exp_mult_err_e10_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunRes
         result.err += (2.0 + x.abs()) * f64::EPSILON * result.val.abs();
         result
     } else {
-        let ly = ay.abs();
+        let ly = ay.ln();
         let l10_val = (x + ly) / LN_10;
 
         if l10_val > (i32::MAX - 1) as f64 {
@@ -399,47 +395,45 @@ pub(crate) fn exprel_n_cf_e(nn: usize, x: f64) -> SpecFunResult<f64> {
     let a2: f64 = -x;
     let b2: f64 = (nn + 1) as f64;
 
-    let mut an = b1 * anm1 + a1 * anm2; /* A1 */
-    let mut bn = b1 * bnm1 + a1 * bnm2; /* B1 */
+    let mut aan = b1 * anm1 + a1 * anm2; /* A1 */
+    let mut bbn = b1 * bnm1 + a1 * bnm2; /* B1 */
 
     // One explicit step, before we get to the main pattern.
     n += 1;
     anm2 = anm1;
     bnm2 = bnm1;
-    anm1 = an;
-    bnm1 = bn;
-    an = b2 * anm1 + a2 * anm2; /* A2 */
-    bn = b2 * bnm1 + a2 * bnm2; /* B2 */
+    anm1 = aan;
+    bnm1 = bbn;
+    aan = b2 * anm1 + a2 * anm2; /* A2 */
+    bbn = b2 * bnm1 + a2 * bnm2; /* B2 */
 
-    let mut ffn = an / bn;
+    let mut ffn = aan / bbn;
 
     while n < maxiter {
         n += 1;
 
         anm2 = anm1;
         bnm2 = bnm1;
-        anm1 = an;
-        bnm1 = bn;
-        an = if n % 2 == 1 {
+        anm1 = aan;
+        bnm1 = bbn;
+        let an = if n % 2 == 1 {
             ((n - 1) / 2) as f64 * x
         } else {
             -((nn + (n / 2) - 1) as f64) * x
         };
-        bn = (nn + n - 1) as f64;
-        an = bn * anm1 + an * anm2;
-        bn = bn * bnm1 + an * bnm2;
+        let bn = (nn + n - 1) as f64;
+        aan = bn * anm1 + an * anm2;
+        bbn = bn * bnm1 + an * bnm2;
 
-        if an.abs() > recur_big || bn.abs() > recur_big {
-            an /= recur_big;
-            bn /= recur_big;
+        if aan.abs() > recur_big || bbn.abs() > recur_big {
+            aan /= recur_big;
+            bbn /= recur_big;
             anm1 /= recur_big;
             bnm1 /= recur_big;
-            anm2 /= recur_big;
-            bnm2 /= recur_big;
         }
 
         let old_fn = ffn;
-        ffn = an / bn;
+        ffn = aan / bbn;
         let del = old_fn / ffn;
 
         if (del - 1.0).abs() < 2.0 * f64::EPSILON {
@@ -460,7 +454,7 @@ pub(crate) fn exprel_n_cf_e(nn: usize, x: f64) -> SpecFunResult<f64> {
     result
 }
 
-pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
+pub(crate) fn exprel_n_e(n: usize, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
         err: 0.0,
@@ -468,11 +462,7 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
     };
     let nd = n as f64;
 
-    if n < 0 {
-        result.code = SpecFunCode::DomainErr;
-        result.issue_warning("exprel_n_e", &[n as f64, x]);
-        result
-    } else if x.abs() <= f64::EPSILON {
+    if x.abs() <= f64::MIN_POSITIVE {
         result.val = 1.0;
         result.err = 0.0;
         result
@@ -486,11 +476,11 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
         exprel_e(x)
     } else if n == 2 {
         exprel_2_e(x)
-    } else if x > nd && (-x + nd * 1.0 + (x / nd).ln()) < LN_DBL_EPS {
+    } else if x > nd && -x + nd * (1.0 + (x / nd).ln()) < LN_DBL_EPS {
         // x is much larger than n.
         // Ignore polynomial part, so
         // exprel_N(x) ~= e^x N!/x^N
-        let lnfn = lnfact_int_e(n as usize);
+        let lnfn = lnfact_e(n as usize);
         let lnterm = nd * x.ln();
         let lnr_val = x + lnfn.val - lnterm;
         let lnr_err = (f64::EPSILON * (x.abs() + lnfn.val.abs() + lnterm.abs())) + lnfn.err;
@@ -502,7 +492,7 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
         // Gamma[n,x] ~ x^(n-1) e^(-x) (1 + (n-1)/x + (n-1)(n-2)/x^2 + ...)
 
         let lnx = x.ln();
-        let lnfn = lnfact_int_e(n as usize);
+        let lnfn = lnfact_e(n);
         let lgn = lnfn.val - nd.ln();
         let lnpre_val = x + lnfn.val - nd * lnx;
         let lnpre_err = f64::EPSILON * (x.abs() + lnfn.val.abs() + (nd * lnx).abs()) + lnfn.err;
@@ -534,7 +524,7 @@ pub(crate) fn exprel_n_e(n: i32, x: f64) -> SpecFunResult<f64> {
             result
         }
     } else if x > -10.0 * nd {
-        exprel_n_cf_e(n as usize, x)
+        exprel_n_cf_e(n, x)
     } else {
         // x -> -Inf asymptotic:
         // exprel_n(x) ~ e^x n!/x^n - n/x (1 + (n-1)/x + (n-1)(n-2)/x + ...)
@@ -613,114 +603,4 @@ pub(crate) fn exp_err_e10_e(x: f64, dx: f64) -> SpecFunResultE10<f64> {
         result.e10 = n as i32;
     }
     result
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    use crate::consts::{LN_DBL_MAX, SQRT_DLB_EPS};
-    use crate::test_utils::*;
-
-    const TOL0: f64 = 2.0 * f64::EPSILON;
-    const SQRT_TOL0: f64 = 2.0 * SQRT_DLB_EPS;
-    const TOL1: f64 = 16.0 * f64::EPSILON;
-    const TOL3: f64 = 2048.0 * f64::EPSILON;
-    const TOL4: f64 = 16384.0 * f64::EPSILON;
-    const TOL5: f64 = 131072.0 * f64::EPSILON;
-
-    #[test]
-    fn test_exp_e() {
-        test_sf_check_result(exp_e(-10.0), (-10.0_f64).exp(), TOL0);
-        test_sf_check_result(exp_e(10.0), (10.0_f64).exp(), TOL0);
-    }
-    #[test]
-    fn test_exp_e10_e() {
-        test_sf_e10(exp_e10_e(1.0), std::f64::consts::E, 0, TOL0);
-        assert!(exp_e10_e(1.0).err <= TOL1, "Error too large.");
-        test_sf_e10(exp_e10_e(2000.0), 3.881_180_194_283_637_3, 868, TOL3);
-        assert!(exp_e10_e(2000.0).err <= TOL5, "Error too large.");
-    }
-    #[test]
-    fn test_exp_err_e() {
-        test_sf_check_result(exp_err_e(-10.0, TOL1), (-10.0_f64).exp(), TOL1);
-        test_sf_check_result(exp_err_e(10.0, TOL1), (10.0_f64).exp(), TOL1);
-    }
-    #[test]
-    fn test_exp_err_e10_e() {
-        test_sf_e10(exp_err_e10_e(1.0, SQRT_TOL0), std::f64::consts::E, 0, TOL1);
-        assert!(exp_e10_e(1.0).err <= 32.0 * SQRT_TOL0, "Error too large.");
-
-        test_sf_e10(
-            exp_err_e10_e(2000.0, 1e-10),
-            3.881_180_194_283_637_3,
-            868,
-            TOL3,
-        );
-        assert!(exp_e10_e(2000.0).err <= 1e-7, "Error too large.");
-    }
-    #[test]
-    fn test_exp_mult_e() {
-        test_sf_check_result_and_code(
-            exp_mult_e(-10.0, 1e-6),
-            1e-6 * (-10.0_f64).exp(),
-            TOL0,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(-10.0, 2.0),
-            2.0 * (-10.0_f64).exp(),
-            TOL0,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(-10.0, -2.0),
-            -2.0 * (-10.0_f64).exp(),
-            TOL0,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(10.0, 1e-6),
-            1e-6 * (10.0_f64).exp(),
-            TOL0,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(10.0, 2.0),
-            2.0 * (10.0_f64).exp(),
-            TOL0,
-            SpecFunCode::Success,
-        );
-
-        let x = 0.8 * LN_DBL_MAX;
-        test_sf_check_result_and_code(
-            exp_mult_e(x, 1.00001),
-            1.00001 * x.exp(),
-            TOL3,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(x, 1.000001),
-            1.000001 * x.exp(),
-            TOL3,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(x, 100.0),
-            100.0 * x.exp(),
-            TOL3,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(x, 1e20),
-            1e20 * x.exp(),
-            TOL3,
-            SpecFunCode::Success,
-        );
-        test_sf_check_result_and_code(
-            exp_mult_e(x, (-x).exp() * std::f64::consts::LN_2.exp()),
-            2.0,
-            TOL4,
-            SpecFunCode::Success,
-        );
-    }
 }

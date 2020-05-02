@@ -3,6 +3,10 @@ use crate::result::{SpecFunCode, SpecFunResult};
 
 use crate::zeta::data::*;
 
+// -------------------------------
+// ----- Internal Functions ------
+//--------------------------------
+
 /// Compute the Riemann-Zeta function for s >= 0 (for internal use only)
 pub(crate) fn riemann_zeta_sgt0(s: f64) -> SpecFunResult<f64> {
     if s < 1.0 {

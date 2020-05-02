@@ -42,18 +42,17 @@
 //! assert!((s.zeta() - analytic).abs() < 1e-10);
 //! ```
 
-use std::f64::consts::{LN_2};
+use crate::result::SpecFunResult;
 
-use crate::consts::{EUL_GAMMA, ROOT5_DBL_EPS};
-use crate::result::{SpecFunCode, SpecFunResult};
-
-mod core;
 mod data;
+pub(crate) mod eta;
+pub(crate) mod hurwitz;
+mod internal;
+pub(crate) mod riemann;
 
-use crate::elementary::multiply_e;
-use crate::exp::core::exp_e;
-use crate::gamma::Gamma;
-use crate::zeta::{core::*, data::*};
+use crate::zeta::{eta::*, hurwitz::*, riemann::*};
+
+use num::Float;
 
 /// Implementation for the Riemann- and Hurwitz-zeta functions.
 pub trait Zeta {
@@ -75,349 +74,84 @@ pub trait Zeta {
     fn eta(&self) -> f64;
 }
 
-impl Zeta for f64 {
-    fn hzeta_e(&self, q: f64) -> SpecFunResult<f64> {
-        let s = *self;
-        if s <= 1.0 || q <= 0.0 {
-            let result = SpecFunResult {
-                val: std::f64::NAN,
-                err: std::f64::NAN,
-                code: SpecFunCode::DomainErr,
-            };
-            result.issue_warning("hzeta_e", &[*self, q]);
-            result
-        } else {
-            let max_bits = 54.0;
-            let ln_term0 = -s * q.ln();
-
-            if ln_term0 < std::f64::MIN_POSITIVE.ln() + 1.0 {
-                let result = SpecFunResult {
-                    val: 0.0,
-                    err: 0.0,
-                    code: SpecFunCode::UnderflowErr,
-                };
-                result.issue_warning("hzeta_e", &[*self, q]);
-                result
-            } else if ln_term0 > std::f64::MAX.ln() - 1.0 {
-                let result = SpecFunResult {
-                    val: 0.0,
-                    err: 0.0,
-                    code: SpecFunCode::OverflowErr,
-                };
-                result.issue_warning("hzeta_e", &[*self, q]);
-                result
-            } else if (s > max_bits && q < 1.0) || (s > 0.5 * max_bits && q < 0.25) {
-                let val = q.powf(-s);
-                let err = 2.0 * std::f64::EPSILON * val.abs();
-                SpecFunResult {
-                    val,
-                    err,
-                    code: SpecFunCode::Success,
-                }
-            } else if s > 0.5 * max_bits && q < 1.0 {
-                let p1 = q.powf(-s);
-                let p2 = (q / (1.0 + q)).powf(s);
-                let p3 = (q / (2.0 + q)).powf(s);
-                let val = p1 * (1.0 + p2 + p3);
-                let err = std::f64::EPSILON * (0.5 * s + 2.0) * val.abs();
-                SpecFunResult {
-                    val,
-                    err,
-                    code: SpecFunCode::Success,
-                }
-            } else {
-                // Euler-Maclaurin summation formula
-                // [Moshier, p. 400, with several typo corrections]
-                let jmax = 12;
-                let kmax = 10;
-                let pmax = (kmax as f64 + q).powf(-s);
-                let mut scp = s;
-                let mut pcp = pmax / (kmax as f64 + q);
-                let mut ans = pmax * ((kmax as f64 + q) / (s - 1.0) + 0.5);
-
-                ans += (0..kmax).fold(0.0, |acc, k| acc + (k as f64 + q).powf(-s));
-
-                for j in 0..(jmax + 1) {
-                    let delta = HZETA_C[j + 1] * scp * pcp;
-                    ans += delta;
-                    if (delta / ans).abs() < 0.5 * std::f64::EPSILON {
-                        break;
-                    }
-                    scp *= (s + (2 * j) as f64 + 1.0) * (s + (2 * j) as f64 + 2.0);
-                    pcp /= (kmax as f64 + q) * (kmax as f64 + q);
-                }
-                let err = 2.0 * (jmax as f64 + 1.0) * std::f64::EPSILON * ans.abs();
-                SpecFunResult {
-                    val: ans,
-                    err,
-                    code: SpecFunCode::Success,
-                }
+macro_rules! impl_zeta_integer {
+    ($T:ty) => {
+        impl Zeta for $T {
+            fn zeta_e(&self) -> SpecFunResult<f64> {
+                zeta_int_e(*self as i64)
+            }
+            fn zeta(&self) -> f64 {
+                zeta_int_e(*self as i64).val
+            }
+            fn hzeta_e(&self, q: f64) -> SpecFunResult<f64> {
+                hzeta_e(*self as f64, q)
+            }
+            fn hzeta(&self, q: f64) -> f64 {
+                hzeta_e(*self as f64, q).val
+            }
+            fn zeta_m1_e(&self) -> SpecFunResult<f64> {
+                zeta_m1_int_e(*self as i64)
+            }
+            fn zeta_m1(&self) -> f64 {
+                zeta_m1_int_e(*self as i64).val
+            }
+            fn eta_e(&self) -> SpecFunResult<f64> {
+                eta_int_e(*self as i64)
+            }
+            fn eta(&self) -> f64 {
+                eta_int_e(*self as i64).val
             }
         }
-    }
-    fn hzeta(&self, q: f64) -> f64 {
-        self.hzeta_e(q).val
-    }
-    fn zeta_e(&self) -> SpecFunResult<Self> {
-        let s = *self;
-        let mut result = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-
-        if (s - 1.0).abs() < std::f64::EPSILON {
-            result.val = f64::NAN;
-            result.err = f64::NAN;
-            result.code = SpecFunCode::DomainErr;
-            result.issue_warning("zeta_e", &[*self]);
-            result
-        } else if s >= 0.0 {
-            riemann_zeta_sgt0(s)
-        } else {
-            // reflection formula, [Abramowitz+Stegun, 23.2.5]
-            let zeta_one_minus_s = riemann_zeta1ms_slt0(s);
-            let fmod = s - (s / 2.0).floor() * 2.0;
-            let sin_term = if fmod.abs() < std::f64::EPSILON {
-                0.0
-            } else {
-                let fmod = s - (s / 4.0).floor() * 4.0;
-                (0.5 * std::f64::consts::PI * fmod).sin() / std::f64::consts::PI
-            };
-
-            if sin_term.abs() < std::f64::EPSILON {
-                result
-            } else if s > -170.0 {
-                // We have to be careful about losing digits
-                // in calculating pow(2 Pi, s). The gamma
-                // function is fine because we were careful
-                // with that implementation.
-                // We keep an array of (2 Pi)^(10 n).
-                let twopi_pow: [f64; 18] = [
-                    1.0,
-                    9.589_560_061_550_902e7_f64,
-                    9.195_966_217_409_212e15_f64,
-                    8.818_527_036_583_87e23_f64,
-                    8.456_579_467_173_15e31_f64,
-                    8.109_487_671_573_504e39_f64,
-                    7.776_641_909_496_07e47_f64,
-                    7.457_457_466_828_644e55_f64,
-                    7.151_373_628_461_452e63_f64,
-                    6.857_852_693_272_23e71_f64,
-                    6.576_379_029_540_266e79_f64,
-                    6.306_458_169_130_021e87_f64,
-                    6.047_615_938_853_066e95_f64,
-                    5.799_397_627_482_402e103_f64,
-                    5.561_367_186_955_83e111_f64,
-                    5.333_106_466_365_131e119_f64,
-                    5.114_214_477_385_392e127_f64,
-                    4.904_306_689_854_036_5e135_f64,
-                ];
-                let n = (-s / 10.0).floor() as usize;
-                let fs = s + 10.0 * n as f64;
-                let p = (2.0 * std::f64::consts::PI).powf(fs) / twopi_pow[n];
-                let g = (1.0 - s).gamma_e();
-
-                result.val = p * g.val * sin_term * zeta_one_minus_s.val;
-                result.err = (p * g.val * sin_term).abs() * zeta_one_minus_s.err;
-                result.err += (p * sin_term * zeta_one_minus_s.val).abs() * g.err;
-                result.err += f64::EPSILON * (s.abs() + 2.0) * result.val.abs();
-                result
-            } else {
-                //  The actual zeta function may or may not
-                // overflow here. But we have no easy way
-                // to calculate it when the prefactor(s)
-                // overflow. Trying to use log's and exp
-                // is no good because we loose a couple
-                // digits to the exp error amplification.
-                // When we gather a little more patience,
-                // we can implement something here. Until
-                // then just give up.
-                result.val = f64::NAN;
-                result.err = f64::NAN;
-                result.code = SpecFunCode::OverflowErr;
-                result.issue_warning("zeta_e", &[s]);
-                result
-            }
-        }
-    }
-    fn zeta(&self) -> f64 {
-        self.zeta_e().val
-    }
-    fn zeta_m1_e(&self) -> SpecFunResult<f64> {
-        let s = *self;
-
-        if s <= 5.0 {
-            let mut result = s.zeta_e();
-            result.val -= 1.0;
-            result
-        } else if s < 15.0 {
-            riemann_zeta_minus_1_intermediate_s(s)
-        } else {
-            riemann_zeta_minus1_large_s(s)
-        }
-    }
-    fn zeta_m1(&self) -> f64 {
-        self.zeta_m1_e().val
-    }
-    fn eta_e(&self) -> SpecFunResult<f64> {
-        let s = *self;
-        let mut result = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-
-        if s > 100.0 {
-            result.val = 1.0;
-            result.err = f64::EPSILON;
-            result
-        } else if (s - 1.0).abs() < 10.0 * ROOT5_DBL_EPS {
-            let del = s - 1.0;
-            let c0 = LN_2;
-            let c1 = LN_2 * (EUL_GAMMA - 0.5 * LN_2);
-            let c2 = -0.032_686_296_279_449_3_f64;
-            let c3 = 0.001_568_991_705_415_515_f64;
-            let c4 = 0.000_749_872_421_120_475_4_f64;
-            result.val = c0 + del * (c1 + del * (c2 + del * (c3 + del * c4)));
-            result.err = 2.0 * f64::EPSILON * result.val.abs();
-            result
-        } else {
-            let z = s.zeta_e();
-            let p = exp_e((1.0 - s) * LN_2);
-            let _m = multiply_e(1.0 - p.val, z.val);
-            result.err = (p.err * (LN_2 * (1.0 - s)) * z.val).abs() + z.err * p.val.abs();
-            result.err += 2.0 * f64::EPSILON * result.val.abs();
-            result
-        }
-    }
-    fn eta(&self) -> f64 {
-        (*self).eta_e().val
-    }
+    };
 }
 
-impl Zeta for i32 {
-    fn zeta_e(&self) -> SpecFunResult<f64> {
-        let n = *self;
-        let mut result = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-
-        if n < 0 {
-            if n % 2 == 0 {
-                // Exactly zero at even negative integers
-                result
-            } else if n > -(ZETA_NEG_TABLE_NMAX as i32) {
-                result.val = ZETA_NEG_INT_TABLE[(-(n + 1) / 2) as usize];
-                result.err = 2.0 * f64::EPSILON * result.val.abs();
-                result
-            } else {
-                (n as f64).zeta_e()
+macro_rules! impl_zeta_float {
+    ($T:ty) => {
+        impl Zeta for $T {
+            fn zeta_e(&self) -> SpecFunResult<f64> {
+                zeta_e(*self as f64)
             }
-        } else if n == 1 {
-            result.val = f64::NAN;
-            result.err = f64::NAN;
-            result.code = SpecFunCode::DomainErr;
-            result.issue_warning("zeta_e", &[n as f64]);
-            result
-        } else if n <= ZETA_POS_TABLE_NMAX as i32 {
-            result.val = 1.0 + ZETAM1_POS_INT_TABLE[n as usize];
-            result.err = 2.0 * f64::EPSILON * result.val.abs();
-            result
-        } else {
-            result.val = 1.0;
-            result.err = f64::EPSILON;
-            result
-        }
-    }
-    fn zeta(&self) -> f64 {
-        self.zeta_e().val
-    }
-    fn hzeta_e(&self, q: f64) -> SpecFunResult<f64> {
-        (*self as f64).hzeta_e(q)
-    }
-    fn hzeta(&self, q: f64) -> f64 {
-        (*self as f64).hzeta(q)
-    }
-    fn zeta_m1_e(&self) -> SpecFunResult<f64> {
-        let n = *self;
-        let mut result = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-
-        if n < 0 {
-            if n % 2 == 0 {
-                result
-            } else if n > -(ZETA_NEG_TABLE_NMAX as i32) {
-                result.val = ZETA_NEG_INT_TABLE[(-(n + 1) / 2) as usize] - 1.0;
-                result.err = 2.0 * f64::EPSILON * result.val.abs();
-                result
-            } else {
-                (n as f64).zeta_e()
+            fn zeta(&self) -> f64 {
+                zeta_e(*self as f64).val
             }
-        } else if n == 1 {
-            result.val = f64::NAN;
-            result.err = f64::NAN;
-            result.code = SpecFunCode::DomainErr;
-            result.issue_warning("zeta_m1_e", &[n as f64]);
-            result
-        } else if n <= ZETA_POS_TABLE_NMAX as i32 {
-            result.val = ZETAM1_POS_INT_TABLE[n as usize];
-            result.err = 2.0 * f64::EPSILON * result.val.abs();
-            result
-        } else {
-            (n as f64).zeta_m1_e()
+            fn hzeta_e(&self, q: f64) -> SpecFunResult<f64> {
+                hzeta_e(*self as f64, q)
+            }
+            fn hzeta(&self, q: f64) -> f64 {
+                hzeta_e(*self as f64, q).val
+            }
+            fn zeta_m1_e(&self) -> SpecFunResult<f64> {
+                zeta_m1_e(*self as f64)
+            }
+            fn zeta_m1(&self) -> f64 {
+                zeta_m1_e(*self as f64).val
+            }
+            fn eta_e(&self) -> SpecFunResult<f64> {
+                eta_e(*self as f64)
+            }
+            fn eta(&self) -> f64 {
+                eta_e(*self as f64).val
+            }
         }
-    }
-    fn zeta_m1(&self) -> f64 {
-        self.zeta_m1_e().val
-    }
-    fn eta_e(&self) -> SpecFunResult<f64> {
-        let mut result = SpecFunResult {
-            val: 0.0,
-            err: 0.0,
-            code: SpecFunCode::Success,
-        };
-
-        let n = *self;
-
-        if n > ETA_POS_TABLE_NMAX as i32 {
-            result.val = 1.0;
-            result.err = f64::EPSILON;
-            result
-        } else if n >= 0 {
-            result.val = ETA_POS_INT_TABLE[n as usize];
-            result.err = 2.0 * f64::EPSILON * result.val.abs();
-            result
-        } else if n % 2 == 0 {
-            result
-        } else if n > -(ETA_NEG_TABLE_NMAX as i32) {
-            result.val = ETA_NEG_INT_TABLE[(-(n + 1) / 2) as usize];
-            result.err = 2.0 * f64::EPSILON * result.val.abs();
-            result
-        } else {
-            let z = n.zeta_e();
-            let p = exp_e((1.0 - n as f64) * LN_2);
-            result = multiply_e(-p.val, z.val);
-            result.err =
-                (p.err * (LN_2 * (1.0 - n as f64)) * z.val).abs() + z.err * p.val.abs();
-            result.err += 2.0 * f64::EPSILON * result.val.abs();
-            result
-        }
-    }
-    fn eta(&self) -> f64 {
-        self.eta_e().val
-    }
+    };
 }
+
+impl_zeta_integer!(u8);
+impl_zeta_integer!(i8);
+impl_zeta_integer!(i16);
+impl_zeta_integer!(u16);
+impl_zeta_integer!(i32);
+impl_zeta_integer!(u32);
+impl_zeta_integer!(i64);
+
+impl_zeta_float!(f32);
+impl_zeta_float!(f64);
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consts::{SQRT_DLB_EPS};
+    use crate::consts::SQRT_DLB_EPS;
+    use crate::result::SpecFunCode;
     use crate::test_utils::*;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
@@ -451,12 +185,7 @@ mod tests {
         test_sf_check_result_and_code((-2).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
         test_sf_check_result_and_code((-1).zeta_e(), -1.0 / 12.0, TOL0, SpecFunCode::Success);
 
-        test_sf_check_result_and_code(
-            5.zeta_e(),
-            1.036_927_755_143_37,
-            TOL0,
-            SpecFunCode::Success,
-        );
+        test_sf_check_result_and_code(5.zeta_e(), 1.036_927_755_143_37, TOL0, SpecFunCode::Success);
         test_sf_check_result_and_code(
             31.zeta_e(),
             1.000_000_000_465_662_8,
@@ -483,6 +212,97 @@ mod tests {
             SpecFunCode::Success,
         );
     }
+
+    #[test]
+    fn test_zetam1_int_e() {
+        test_sf_check_result_and_code((-8).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_sf_check_result_and_code((-6).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_sf_check_result_and_code((-4).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_sf_check_result_and_code((-3).zeta_m1_e(), -119.0 / 120.0, TOL0, SpecFunCode::Success);
+        test_sf_check_result_and_code((-2).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_sf_check_result_and_code((-1).zeta_m1_e(), -13.0 / 12.0, TOL0, SpecFunCode::Success);
+
+        test_sf_check_result_and_code(
+            5.zeta_m1_e(),
+            0.0369277551433699263313655,
+            TOL0,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            31.zeta_m1_e(),
+            0.0000000004656629065033784,
+            TOL0,
+            SpecFunCode::Success,
+        );
+    }
+
+    #[test]
+    fn test_zeta_e() {
+        test_sf_check_result_and_code(
+            (-151.0).zeta_e(),
+            8.195215221831378294e+143,
+            TOL2,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            (-51.0).zeta_e(),
+            9.68995788746359406565e+24,
+            TOL1,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            (-5.0).zeta_e(),
+            -0.003968253968253968253968,
+            TOL1,
+            SpecFunCode::Success,
+        );
+
+        test_sf_check_result_and_code((-8.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_sf_check_result_and_code((-6.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_sf_check_result_and_code((-4.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_sf_check_result_and_code((-3.0).zeta_e(), 1.0 / 120.0, TOL1, SpecFunCode::Success);
+        test_sf_check_result_and_code((-2.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_sf_check_result_and_code((-1.0).zeta_e(), -1.0 / 12.0, TOL1, SpecFunCode::Success);
+
+        test_sf_check_result_and_code(
+            (-0.5).zeta_e(),
+            -0.207886224977354566017307,
+            TOL1,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            (-1e-10).zeta_e(),
+            -0.49999999990810614668948,
+            TOL1,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(0.0.zeta_e(), -0.5, TOL1, SpecFunCode::Success);
+        test_sf_check_result_and_code(
+            (1e-10).zeta_e(),
+            -0.50000000009189385333058,
+            TOL1,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            0.5.zeta_e(),
+            -1.460354508809586812889499,
+            TOL1,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            (1.0 - 1.0 / 1024.0).zeta_e(),
+            -1023.4228554489429787,
+            TOL1,
+            SpecFunCode::Success,
+        );
+        test_sf_check_result_and_code(
+            (1.0 + 1.0 / 1048576.0).zeta_e(),
+            1.0485765772157343441e+06,
+            TOL1,
+            SpecFunCode::Success,
+        );
+    }
+
     #[test]
     fn test_hzeta() {
         let s = 4.0_f64;

@@ -12,7 +12,7 @@ pub(crate) fn multiply_e(x: f64, y: f64) -> SpecFunResult<f64> {
         code: SpecFunCode::Success,
     };
 
-    if ax < f64::EPSILON || ay < f64::EPSILON {
+    if x == 0.0 || y == 0.0 {
         // It is necessary to eliminate this immediately.
         result
     } else if (ax <= 1.0 && ay >= 1.0) || (ay <= 1.0 && ax >= 1.0) {

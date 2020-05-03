@@ -225,7 +225,7 @@ pub fn ln_e(x: f64) -> SpecFunResult<f64> {
 /// assert!(ln_abs_e(x).val.abs() < 1e-10);
 /// ```
 pub fn ln_abs_e(x: f64) -> SpecFunResult<f64> {
-    if x.abs() < f64::EPSILON {
+    if x == 0.0 {
         let res = SpecFunResult {
             val: f64::NAN,
             err: f64::NAN,

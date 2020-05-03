@@ -316,7 +316,7 @@ pub fn hypot_e(x: f64, y: f64) -> SpecFunResult<f64> {
         err: 0.0,
         code: SpecFunCode::Success,
     };
-    if x.abs() < f64::EPSILON && y.abs() < f64::EPSILON {
+    if x == 0.0 && y == 0.0 {
         result
     } else {
         let a = x.abs();

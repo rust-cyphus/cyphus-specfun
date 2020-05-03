@@ -152,6 +152,8 @@ mod tests {
     use super::*;
     use crate::consts::SQRT_DLB_EPS;
     use crate::result::SpecFunCode;
+    #[macro_use]
+    use crate::test_check_result_and_code;
     use crate::test_utils::*;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
@@ -164,165 +166,142 @@ mod tests {
 
     #[test]
     fn test_zeta_int_e() {
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-61).zeta_e(),
             -3.306_608_987_657_758e34,
             TOL0,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
 
-        test_sf_check_result_and_code((-8).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-6).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code(
+        test_check_result_and_code!((-8).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-6).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
             (-5).zeta_e(),
             -0.003_968_253_968_253_968,
             TOL0,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
 
-        test_sf_check_result_and_code((-4).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-3).zeta_e(), 1.0 / 120.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-2).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-1).zeta_e(), -1.0 / 12.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-4).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-3).zeta_e(), 1.0 / 120.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-2).zeta_e(), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-1).zeta_e(), -1.0 / 12.0, TOL0, SpecFunCode::Success);
 
-        test_sf_check_result_and_code(5.zeta_e(), 1.036_927_755_143_37, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(5.zeta_e(), 1.036_927_755_143_37, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
             31.zeta_e(),
             1.000_000_000_465_662_8,
             TOL0,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
 
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-151).zeta_e(),
             8.195_215_221_831_378e143,
             TOL2,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-51).zeta_e(),
             9.689_957_887_463_594e24,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-5).zeta_e(),
             -0.003_968_253_968_253_968,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
     }
 
     #[test]
     fn test_zetam1_int_e() {
-        test_sf_check_result_and_code((-8).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-6).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-4).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-3).zeta_m1_e(), -119.0 / 120.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-2).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
-        test_sf_check_result_and_code((-1).zeta_m1_e(), -13.0 / 12.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-8).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-6).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-4).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-3).zeta_m1_e(), -119.0 / 120.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-2).zeta_m1_e(), -1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!((-1).zeta_m1_e(), -13.0 / 12.0, TOL0, SpecFunCode::Success);
 
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             5.zeta_m1_e(),
             0.0369277551433699263313655,
             TOL0,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             31.zeta_m1_e(),
             0.0000000004656629065033784,
             TOL0,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
     }
 
     #[test]
     fn test_zeta_e() {
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-151.0).zeta_e(),
             8.195215221831378294e+143,
             TOL2,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-51.0).zeta_e(),
             9.68995788746359406565e+24,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-5.0).zeta_e(),
             -0.003968253968253968253968,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
 
-        test_sf_check_result_and_code((-8.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
-        test_sf_check_result_and_code((-6.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
-        test_sf_check_result_and_code((-4.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
-        test_sf_check_result_and_code((-3.0).zeta_e(), 1.0 / 120.0, TOL1, SpecFunCode::Success);
-        test_sf_check_result_and_code((-2.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
-        test_sf_check_result_and_code((-1.0).zeta_e(), -1.0 / 12.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!((-8.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!((-6.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!((-4.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!((-3.0).zeta_e(), 1.0 / 120.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!((-2.0).zeta_e(), 0.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!((-1.0).zeta_e(), -1.0 / 12.0, TOL1, SpecFunCode::Success);
 
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-0.5).zeta_e(),
             -0.207886224977354566017307,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (-1e-10).zeta_e(),
             -0.49999999990810614668948,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(0.0.zeta_e(), -0.5, TOL1, SpecFunCode::Success);
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(0.0.zeta_e(), -0.5, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!(
             (1e-10).zeta_e(),
             -0.50000000009189385333058,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             0.5.zeta_e(),
             -1.460354508809586812889499,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (1.0 - 1.0 / 1024.0).zeta_e(),
             -1023.4228554489429787,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-        test_sf_check_result_and_code(
+        test_check_result_and_code!(
             (1.0 + 1.0 / 1048576.0).zeta_e(),
             1.0485765772157343441e+06,
             TOL1,
-            SpecFunCode::Success,
+            SpecFunCode::Success
         );
-    }
-
-    #[test]
-    fn test_hzeta() {
-        let s = 4.0_f64;
-        let q = 3.0_f64;
-        let analytic = std::f64::consts::PI.powi(4) / 90.0 - 17.0 / 16.0;
-        assert!((s.hzeta(q) - analytic).abs() < 1e-10);
-    }
-    #[test]
-    fn test_zeta() {
-        let s = 2.0_f64;
-        let analytic = std::f64::consts::PI.powi(2) / 6.0;
-        println!("{:?}", s.zeta());
-        assert!((s.zeta() - analytic).abs() < 1e-10);
-    }
-
-    #[test]
-    fn test_zeta_i32() {
-        let s: i32 = 2;
-        let analytic = std::f64::consts::PI.powi(2) / 6.0;
-        println!("{:?}", s.zeta());
-        assert!((s.zeta() - analytic).abs() < 1e-10);
     }
 }

@@ -1,24 +1,151 @@
 /// Euler–Mascheroni constant
-pub const EUL_GAMMA: f64 = 0.577_215_664_901_532_9_f64;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const EUL_GAMMA: f64 = 0.57721566490153286061;
+
+// Log constants
+
 /// Natural log of pi
-pub const LNPI: f64 = 1.144_729_885_849_400_2_f64;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const LNPI: f64 = 1.1447298858494001741;
+/// (2.0*f64::const::PI).sqrt().ln()
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const LN_SQRT_PI: f64 = 0.91893853320467274178;
 /// Natural log of f64::MAX
-pub const LN_DBL_MAX: f64 = 7.097_827_128_933_84e2_f64;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const LN_DBL_MAX: f64 = 7.0978271289338397e+02;
 /// Natural log of f64::MIN
-pub const LN_DBL_MIN: f64 = -7.083_964_185_322_641e2_f64;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const LN_DBL_MIN: f64 = -7.0839641853226408e+02;
 /// Natural log of f64::EPSILON
-pub const LN_DBL_EPS: f64 = -3.604_365_338_911_715e1_f64;
-/// f64::EPSILON^(1/3)
-pub const ROOT3_DBL_EPS: f64 = 6.055_454_452_393_343e-6;
-/// f64::EPSILON^(1/4)
-pub const ROOT4_DBL_EPS: f64 = 1.220_703_125e-4_f64;
-/// f64::EPSILON^(1/5)
-pub const ROOT5_DBL_EPS: f64 = 7.400_959_797_414_05e-4_f64;
-/// f64::EPSILON^(1/6)
-pub const ROOT6_DBL_EPS: f64 = 2.460_783_300_575_925e-3_f64;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const LN_DBL_EPS: f64 = -3.6043653389117154e+01;
+
+// Roots of f64::EPSILON
+
 /// f64::EPSILON^(1/2)
-pub const SQRT_DLB_EPS: f64 = 1.490_116_119_384_765_6e-8_f64;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const SQRT_DLB_EPS: f64 = 1.4901161193847656e-08;
+/// f64::EPSILON^(1/3)
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT3_DBL_EPS: f64 = 6.0554544523933429e-06;
+/// f64::EPSILON^(1/4)
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT4_DBL_EPS: f64 = 1.2207031250000000e-04;
+/// f64::EPSILON^(1/5)
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT5_DBL_EPS: f64 = 7.4009597974140505e-04;
+/// f64::EPSILON^(1/6)
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT6_DBL_EPS: f64 = 2.4607833005759251e-03;
+
+// Roots of f64::MAX
+
 /// f64::MAX.sqrt()
-pub const SQRT_DBL_MAX: f64 = 1.340_780_792_994_259_6e154;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const SQRT_DBL_MAX: f64 = 1.3407807929942596e+154;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT3_DBL_MAX: f64 = 5.6438030941222897e+102;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT4_DBL_MAX: f64 = 1.1579208923731620e+77;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT5_DBL_MAX: f64 = 4.4765466227572707e+61;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT6_DBL_MAX: f64 = 2.3756689782295612e+51;
+
+// Roots of f64::MIN_POSITIVE
+
 /// f64::MIN.sqrt()
-pub const SQRT_DBL_MIN: f64 = 1.491_668_146_240_041_3e-154;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const SQRT_DBL_MIN: f64 = 1.4916681462400413e-154;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT3_DBL_MIN: f64 = 2.8126442852362996e-103;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT4_DBL_MIN: f64 = 1.2213386697554620e-77;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT5_DBL_MIN: f64 = 2.9476022969691763e-62;
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const ROOT6_DBL_MIN: f64 = 5.3034368905798218e-52;

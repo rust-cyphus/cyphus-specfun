@@ -90,10 +90,6 @@ pub trait Gamma {
     fn polygamma(&self, n: usize) -> f64;
 }
 
-// -----------------------
-// ------- Digamma -------
-// -----------------------
-
 macro_rules! impl_gamma_int {
     ($T:ty) => {
         impl Gamma for $T {
@@ -458,5 +454,55 @@ mod tests {
             SpecFunCode::Success
         );
         test_check_result_and_code!(gammastar_e, (1.0e+20), 1.0, TOL0, SpecFunCode::Success);
+    }
+    #[test]
+    fn test_gammainv_e() {
+        test_check_result_and_code!(gammainv_e, (1.0), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (2.0), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (3.0), 0.5, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (4.0), 1.0 / 6.0, TOL0, SpecFunCode::Success);
+
+        test_check_result_and_code!(
+            gammainv_e,
+            (10.0),
+            1.0 / 362880.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            gammainv_e,
+            (100.0),
+            1.0715102881254669232e-156,
+            TOL2,
+            SpecFunCode::Success
+        );
+
+        test_check_result_and_code!(gammainv_e, (0.0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (-1.0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (-2.0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (-3.0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gammainv_e, (-4.0), 0.0, TOL0, SpecFunCode::Success);
+
+        test_check_result_and_code!(
+            gammainv_e,
+            (-10.5),
+            -1.0 / 2.640121820547716316e-07,
+            TOL2,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            gammainv_e,
+            (-11.25),
+            1.0 / 6.027393816261931672e-08,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            gammainv_e,
+            (-1.0 + 1.0 / 65536.0),
+            -1.0 / 65536.42280587818970,
+            TOL1,
+            SpecFunCode::Success
+        );
     }
 }

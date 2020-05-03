@@ -69,7 +69,7 @@ pub(crate) fn exp_mult_e(x: f64, y: f64) -> SpecFunResult<f64> {
         code: SpecFunCode::Success,
     };
 
-    if ay < f64::MIN_POSITIVE {
+    if y == 0.0 {
         result
     } else if (x < 0.5 * LN_DBL_MAX && x > 0.5 * LN_DBL_MIN)
         && (ay < 0.8 * SQRT_DBL_MAX && ay > 1.2 * SQRT_DBL_MIN)
@@ -119,7 +119,7 @@ pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
         e10: 0,
     };
 
-    if ay < f64::MIN_POSITIVE {
+    if y == 0.0 {
         result
     } else if (x < 0.5 * LN_DBL_MAX && x > 0.5 * LN_DBL_MIN)
         && (ay < 0.8 * SQRT_DBL_MAX && ay > 1.2 * SQRT_DBL_MIN)
@@ -162,7 +162,7 @@ pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
 pub(crate) fn exp_mult_err_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResult<f64> {
     let ay = y.abs();
 
-    if ay < f64::MIN_POSITIVE {
+    if y == 0.0 {
         SpecFunResult {
             val: 0.0,
             err: (dy * x.exp()).abs(),
@@ -231,7 +231,7 @@ pub(crate) fn exp_mult_err_e10_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunRes
 
     let ay = y.abs();
 
-    if ay < f64::MIN_POSITIVE {
+    if y == 0.0 {
         result.err = (dy * x.exp()).abs();
         result
     } else if (x < 0.5 * LN_DBL_MAX && x > 0.5 * LN_DBL_MIN)

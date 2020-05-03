@@ -55,7 +55,7 @@ pub fn cheb_eval_e<T: Float>(x: T, coeffs: &[T], lb: T, ub: T) -> SpecFunResult<
     }
 
     let val = d;
-    let err = T::epsilon() * e + *coeffs.last().unwrap();
+    let err = T::epsilon() * e + coeffs.last().unwrap().abs();
     let code = SpecFunCode::Success;
     SpecFunResult { val, err, code }
 }

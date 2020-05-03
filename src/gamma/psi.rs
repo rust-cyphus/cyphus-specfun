@@ -12,7 +12,7 @@ use num::complex::Complex;
 fn psi_x_e(x: f64) -> SpecFunResult<f64> {
     let y = x.abs();
 
-    if y < f64::EPSILON || (x + 1.0).abs() < f64::EPSILON || (x + 2.0).abs() < f64::EPSILON {
+    if x == 0.0 || x == -1.0 || x == -2.0 {
         let result = SpecFunResult {
             val: std::f64::NAN,
             err: std::f64::NAN,

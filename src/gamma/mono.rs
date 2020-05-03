@@ -2,12 +2,13 @@ use super::psi::digamma_int_e;
 use super::psi::polygamma_e;
 use super::psi::trigamma_int_e;
 
+use crate::trig::angle_restrict_symm_e;
+use crate::trig::complex_lnsin_e;
 use crate::{
     cheb::cheb_eval_e,
     consts::{LNPI, ROOT4_DBL_EPS},
     exp::core::{exp_err_e, exp_mult_err_e},
     result::{SpecFunCode, SpecFunResult},
-    trig::angle_restrict_symm_e,
 };
 
 use num::{complex::Complex, Float};
@@ -73,33 +74,37 @@ fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
 }
 
 /// Calculate series for g(eps) = Gamma(eps) eps - 1/(1+eps) - eps / 2, as well as its sign
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
 fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
-    let c1 = -0.077_215_664_901_532_87_f64;
-    let c2 = -0.010_944_004_672_027_444_f64;
-    let c3 = 0.092_520_923_919_113_7_f64;
-    let c4 = -0.018_271_913_165_599_812_f64;
-    let c5 = 0.018_004_931_096_854_797_f64;
-    let c6 = -0.006_850_885_378_723_807_f64;
-    let c7 = 0.003_998_239_557_568_466_f64;
-    let c8 = -0.001_894_306_216_871_078_f64;
-    let c9 = 0.000_974_732_378_045_132_2_f64;
-    let c10 = -0.000_484_343_927_222_558_9_f64;
+    let c1 = -0.07721566490153286061_f64;
+    let c2 = -0.01094400467202744461_f64;
+    let c3 = 0.09252092391911371098_f64;
+    let c4 = -0.01827191316559981266_f64;
+    let c5 = 0.01800493109685479790_f64;
+    let c6 = -0.00685088537872380685_f64;
+    let c7 = 0.00399823955756846603_f64;
+    let c8 = -0.00189430621687107802_f64;
+    let c9 = 0.00097473237804513221_f64;
+    let c10 = -0.00048434392722255893_f64;
 
-    let g6 = c10
-        .mul_add(eps, c9)
-        .mul_add(eps, c8)
-        .mul_add(eps, c7)
-        .mul_add(eps, c6);
-    let g = g6
-        .mul_add(eps, c5)
-        .mul_add(eps, c4)
-        .mul_add(eps, c3)
-        .mul_add(eps, c2)
-        .mul_add(eps, c1)
-        .mul_add(eps, 0.0);
+    let g = eps
+        * c10
+            .mul_add(eps, c9)
+            .mul_add(eps, c8)
+            .mul_add(eps, c7)
+            .mul_add(eps, c6)
+            .mul_add(eps, c5)
+            .mul_add(eps, c4)
+            .mul_add(eps, c3)
+            .mul_add(eps, c2)
+            .mul_add(eps, c1);
 
     let gee = g + 1.0 / (1.0 + eps) + 0.5 * eps;
-    let val = (gee * eps.abs().recip()).ln();
+    let val = (gee / eps.abs()).ln();
     let err = 4.0 * f64::EPSILON * val.abs();
     (
         SpecFunResult {
@@ -111,8 +116,13 @@ fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
     )
 }
 
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
 fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
-    if eps.abs() < f64::EPSILON {
+    if eps == 0.0 {
         (
             SpecFunResult {
                 val: 0.0,
@@ -122,16 +132,16 @@ fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
             0.0,
         )
     } else if n == 1 {
-        let c0 = 0.077_215_664_901_532_87_f64;
-        let c1 = 0.088_159_669_573_560_3_f64;
-        let c2 = -0.004_361_254_345_553_405_5_f64;
-        let c3 = 0.013_910_658_820_046_407_f64;
-        let c4 = -0.004_094_272_276_808_391_f64;
-        let c5 = 0.002_756_613_101_915_416_f64;
-        let c6 = -0.001_241_626_455_653_050_2_f64;
-        let c7 = 0.000_652_679_761_218_027_8_f64;
-        let c8 = -0.000_322_052_616_827_104_4_f64;
-        let c9 = 0.000_162_291_310_395_454_57_f64;
+        let c0 = 0.07721566490153286061_f64;
+        let c1 = 0.08815966957356030521_f64;
+        let c2 = -0.00436125434555340577_f64;
+        let c3 = 0.01391065882004640689_f64;
+        let c4 = -0.00409427227680839100_f64;
+        let c5 = 0.00275661310191541584_f64;
+        let c6 = -0.00124162645565305019_f64;
+        let c7 = 0.00065267976121802783_f64;
+        let c8 = -0.00032205261682710437_f64;
+        let c9 = 0.00016229131039545456_f64;
         let g5 = c5 + eps * (c6 + eps * (c7 + eps * (c8 + eps * c9)));
         let g = eps * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + eps * (c4 + eps * g5)))));
 
@@ -148,11 +158,11 @@ fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
             if eps > 0.0 { -1.0 } else { 1.0 },
         )
     } else {
-        let cs1 = -1.644_934_066_848_226_4_f64;
-        let cs2 = 0.811_742_425_283_353_6_f64;
-        let cs3 = -0.190_751_824_122_084_22_f64;
-        let cs4 = 0.026_147_847_817_654_8_f64;
-        let cs5 = -0.002_346_081_035_455_823_5_f64;
+        let cs1 = -1.6449340668482264365_f64;
+        let cs2 = 0.8117424252833536436_f64;
+        let cs3 = -0.1907518241220842137_f64;
+        let cs4 = 0.0261478478176548005_f64;
+        let cs5 = -0.0023460810354558236_f64;
         let e2 = eps * eps;
         let sin_ser = 1.0 + e2 * (cs1 + e2 * (cs2 + e2 * (cs3 + e2 * (cs4 + e2 * cs5))));
 
@@ -244,20 +254,26 @@ fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
 
 /// Compute log(Gamma(1+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+#[inline]
 fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
-    let n1 = -1.001_741_928_234_951_f64;
-    let n2 = 1.736_483_920_992_288_f64;
-    let d1 = 1.243_300_601_885_875_2_f64;
-    let d2 = 5.045_627_410_027_401_f64;
-    let num = (eps + n1) * (eps + n2);
-    let den = (eps + d1) * (eps + d2);
-    let pade = 2.081_626_518_866_269_f64 * num * den.recip();
+    let n1: f64 = -1.0017419282349508699871138440;
+    let n2: f64 = 1.7364839209922879823280541733;
+    let d1: f64 = 1.2433006018858751556055436011;
+    let d2: f64 = 5.0456274100274010152489597514;
+    let num: f64 = (eps + n1) * (eps + n2);
+    let den: f64 = (eps + d1) * (eps + d2);
+    let pade: f64 = 2.0816265188662692474880210318 * num * den.recip();
 
-    let c0 = 0.004_785_324_257_581_753_f64;
-    let c1 = -0.011_924_570_836_454_41_f64;
-    let c2 = 0.019_319_614_139_604_98_f64;
-    let c3 = -0.025_940_273_987_250_2_f64;
-    let c4 = 0.031_419_287_550_214_55_f64;
+    let c0: f64 = 0.004785324257581753;
+    let c1: f64 = -0.01192457083645441;
+    let c2: f64 = 0.01931961413960498;
+    let c3: f64 = -0.02594027398725020;
+    let c4: f64 = 0.03141928755021455;
     let eps5 = eps * eps * eps * eps * eps;
     let corr = eps5 * (c0 + eps * (c1 + eps * (c2 + eps * (c3 + c4 * eps))));
 
@@ -274,19 +290,25 @@ fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
 
 /// Compute log(Gamma(2+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+#[inline]
 fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
-    let n1 = 1.000_895_834_786_669_2_f64;
-    let n2 = 4.209_376_735_287_755_f64;
-    let d1 = 2.618_851_904_903_217_f64;
-    let d2 = 10.857_665_599_009_835_f64;
-    let num = (eps + n1) * (eps + n2);
-    let den = (eps + d1) * (eps + d2);
-    let pade = 2.853_379_987_657_819_f64 * num / den;
-    let c0 = 0.000_113_940_635_703_674_4_f64;
-    let c1 = -0.000_136_543_526_979_253_3_f64;
-    let c2 = 0.000_106_728_716_918_366_5_f64;
-    let c3 = -0.000_069_327_180_093_128_2_f64;
-    let c4 = 0.000_040_722_092_786_795_0_f64;
+    let n1: f64 = 1.000895834786669227164446568;
+    let n2: f64 = 4.209376735287755081642901277;
+    let d1: f64 = 2.618851904903217274682578255;
+    let d2: f64 = 10.85766559900983515322922936;
+    let num: f64 = (eps + n1) * (eps + n2);
+    let den: f64 = (eps + d1) * (eps + d2);
+    let pade: f64 = 2.85337998765781918463568869 * num / den;
+    let c0: f64 = 0.0001139406357036744;
+    let c1: f64 = -0.0001365435269792533;
+    let c2: f64 = 0.0001067287169183665;
+    let c3: f64 = -0.0000693271800931282;
+    let c4: f64 = 0.0000407220927867950;
     let corr = c4
         .mul_add(eps, c3)
         .mul_add(eps, c2)
@@ -328,16 +350,16 @@ fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
 
 /// Compute Gamma(x) for x >= 1/2
 fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
-    if (x - 0.5).abs() < f64::EPSILON {
+    if x == 0.5 {
         // Error term
-        let val = 1.772_453_850_905_516_f64;
+        let val = 1.77245385090551602729817_f64;
         let err = f64::EPSILON * val;
         SpecFunResult {
             val,
             err,
             code: SpecFunCode::Success,
         }
-    } else if x <= (FACT_TABLE.len() as f64) && (x - x.floor()).abs() < f64::EPSILON {
+    } else if x <= (FACT_TABLE.len() as f64) && x == x.floor() {
         let n = x.floor() as usize;
         let val = FACT_TABLE[n - 1];
         let err = val * f64::EPSILON;
@@ -348,13 +370,13 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if (x - 1.0).abs() < 0.01 {
         let eps = x - 1.0;
-        let c1 = 0.422_784_335_098_467_13_f64;
-        let c2 = -0.010_944_004_672_027_444_f64;
-        let c3 = 0.092_520_923_919_113_7_f64;
-        let c4 = -0.018_271_913_165_599_812_f64;
-        let c5 = 0.018_004_931_096_854_797_f64;
-        let c6 = -0.006_850_885_378_723_807_f64;
-        let c7 = 0.003_998_239_557_568_466_f64;
+        let c1: f64 = 0.4227843350984671394;
+        let c2: f64 = -0.01094400467202744461;
+        let c3: f64 = 0.09252092391911371098;
+        let c4: f64 = -0.018271913165599812664;
+        let c5: f64 = 0.018004931096854797895;
+        let c6: f64 = -0.006850885378723806846;
+        let c7: f64 = 0.003998239557568466030;
         let err = f64::EPSILON;
         let val = c7
             .mul_add(eps, c6)
@@ -372,14 +394,14 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if (x - 2.0).abs() < 0.01 {
         let eps = x - 2.0;
-        let c1 = 0.422_784_335_098_467_13_f64;
-        let c2 = 0.411_840_330_426_439_7_f64;
-        let c3 = 0.081_576_919_247_086_27_f64;
-        let c4 = 0.074_249_010_753_513_9_f64;
-        let c5 = -0.000_266_982_068_745_014_75_f64;
-        let c6 = 0.011_154_045_718_130_992_f64;
-        let c7 = -0.002_852_645_821_155_340_8_f64;
-        let c8 = 0.002_103_933_340_697_388_f64;
+        let c1 = 0.4227843350984671394_f64;
+        let c2 = 0.4118403304264396948_f64;
+        let c3 = 0.08157691924708626638_f64;
+        let c4 = 0.07424901075351389832_f64;
+        let c5 = -0.0002669820687450147683_f64;
+        let c6 = 0.011154045718130991049_f64;
+        let c7 = -0.002852645821155340816_f64;
+        let c8 = 0.0021039333406973880085_f64;
 
         let err = f64::EPSILON;
         let val = c8
@@ -419,7 +441,8 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
             err,
             code: SpecFunCode::Success,
         }
-    } else if x < GSL_SF_GAMMA_XMAX {
+    } else if x < 171.0 {
+        // 171 = max x s.t. gamma(x) is not overflow
         // We do not want to exponentiate the logarithm
         // if x is large because of the inevitable
         // inflation of the error. So we carefully
@@ -528,7 +551,7 @@ pub(crate) fn lngamma_e(x: f64) -> SpecFunResult<f64> {
         result
     } else if x >= 0.5 {
         lngamma_lanczos_e(x)
-    } else if x.abs() < f64::EPSILON {
+    } else if x == 0.0 {
         let result = SpecFunResult {
             val: f64::NAN,
             err: f64::NAN,
@@ -543,7 +566,7 @@ pub(crate) fn lngamma_e(x: f64) -> SpecFunResult<f64> {
         let z = 1.0 - x;
         let s = (std::f64::consts::PI * z).sin();
         let abss = s.abs();
-        if abss < f64::EPSILON {
+        if s == 0.0 {
             let result = SpecFunResult {
                 val: f64::NAN,
                 err: f64::NAN,
@@ -605,7 +628,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
         (result, 1.0)
     } else if x >= 0.5 {
         (lngamma_lanczos_e(x), 1.0)
-    } else if x.abs() < f64::EPSILON {
+    } else if x == 0.0 {
         let result = SpecFunResult {
             val: f64::NAN,
             err: f64::NAN,
@@ -620,7 +643,7 @@ pub(crate) fn lngamma_sgn_e(x: f64) -> (SpecFunResult<f64>, f64) {
         let z = 1.0 - x;
         let s = (std::f64::consts::PI * z).sin();
         let abss = s.abs();
-        if abss < f64::EPSILON {
+        if s == 0.0 {
             let result = SpecFunResult {
                 val: f64::NAN,
                 err: f64::NAN,
@@ -672,7 +695,7 @@ pub(crate) fn gamma_e(x: f64) -> SpecFunResult<f64> {
         let sgn_gamma = if rint_x % 2 == 0 { 1.0 } else { -1.0 };
         let sin_term = sgn_gamma * (std::f64::consts::PI * f_x).sin() / std::f64::consts::PI;
 
-        if sin_term.abs() < f64::EPSILON {
+        if sin_term == 0.0 {
             let result = SpecFunResult {
                 val: f64::NAN,
                 err: f64::NAN,
@@ -772,7 +795,7 @@ pub(crate) fn gammastar_e(x: f64) -> SpecFunResult<f64> {
 ///
 /// Uses real Lanczos method.
 pub(crate) fn gammainv_e(x: f64) -> SpecFunResult<f64> {
-    if x <= 0.0 && (x - x.floor()).abs() < f64::EPSILON {
+    if x <= 0.0 && x == x.floor() {
         SpecFunResult {
             val: 0.0,
             err: 0.0,
@@ -799,5 +822,41 @@ pub(crate) fn gammainv_e(x: f64) -> SpecFunResult<f64> {
             err,
             code: SpecFunCode::Success,
         }
+    }
+}
+
+/// Compute ln(gamma(z)) for a complex number z
+pub(crate) fn lngamma_complex_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
+    let mut result = SpecFunResult {
+        val: Complex::new(0.0, 0.0),
+        err: Complex::new(0.0, 0.0),
+        code: SpecFunCode::Success,
+    };
+
+    if z.re <= 0.5 {
+        // Transform to right half plane using reflection;
+        // in fact we do a little better by stopping at 1/2.
+        let zz = Complex::new(1.0 - z.re, -z.im);
+
+        let lg = lngamma_lanczos_complex_e(zz);
+        let lnsin = complex_lnsin_e(std::f64::consts::PI * zz);
+
+        if lnsin.code == SpecFunCode::Success {
+            result.val.re = LNPI - lnsin.val.re - lg.val.re;
+            result.val.im = -lnsin.val.im - lg.val.im;
+
+            result.err.re = lnsin.err.re + lg.err.re + 2.0 * f64::EPSILON * result.val.re.abs();
+            result.err.im = lnsin.err.im + lg.err.im + 2.0 * f64::EPSILON * result.val.im.abs();
+
+            result.val.im = angle_restrict_symm_e(result.val.im).val;
+            result
+        } else {
+            result.val = Complex::new(f64::NAN, f64::NAN);
+            result.err = Complex::new(f64::NAN, f64::NAN);
+            result.code = SpecFunCode::DomainErr;
+            result
+        }
+    } else {
+        lngamma_lanczos_complex_e(z)
     }
 }

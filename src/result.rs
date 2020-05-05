@@ -21,6 +21,8 @@ pub enum SpecFunCode {
     RoundoffErr = 7,
     /// Failed because too many iterations
     MaxIterErr = 8,
+    /// Sanity check failed... should never happen
+    SanityCheckErr = 9,
 }
 
 /// Result structure from a special function evaluation, contianing the value,
@@ -78,6 +80,10 @@ impl<T: std::fmt::Debug> SpecFunResult<T> {
                 "SpecFunMaxIterErr: Maximum number of iterations excceded in {:?} with args {:?}",
                 fname, vars
             ),
+            SpecFunCode::SanityCheckErr => warn!(
+                "SanityCheckErr: Sanity check failed in {:?} with args {:?}",
+                fname, vars
+            ),
         }
     }
 }
@@ -118,6 +124,10 @@ impl<T: std::fmt::Debug> SpecFunResultE10<T> {
             ),
             SpecFunCode::MaxIterErr => warn!(
                 "SpecFunMaxIterErr: Maximum number of iterations excceded in {:?} with args {:?}",
+                fname, vars
+            ),
+            SpecFunCode::SanityCheckErr => warn!(
+                "SanityCheckErr: Sanity check failed in {:?} with args {:?}",
                 fname, vars
             ),
         }

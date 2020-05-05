@@ -6,6 +6,14 @@
 )]
 pub(crate) const EUL_GAMMA: f64 = 0.57721566490153286061;
 
+// 3.0_f64.sqrt()
+#[allow(
+    clippy::excessive_precision,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
+)]
+pub(crate) const SQRT_3: f64 = 1.7320508075688772935;
+
 // Log constants
 
 /// Natural log of pi

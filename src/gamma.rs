@@ -1,5 +1,6 @@
 mod data;
 pub(crate) mod mono;
+pub(crate) mod poch;
 pub(crate) mod psi;
 
 use crate::result::SpecFunResult;

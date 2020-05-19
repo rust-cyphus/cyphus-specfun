@@ -26,7 +26,7 @@ use crate::cheb::cheb_eval_e;
 use crate::consts::{LN_DBL_EPS, LN_DBL_MAX, ROOT4_DBL_EPS, SQRT_DLB_EPS};
 use crate::logarithm::{complex_ln_e, ln_p1_e};
 use crate::result::{SpecFunCode, SpecFunResult};
-use num::Complex;
+use num::{Complex, Num};
 mod data;
 use data::*;
 
@@ -41,7 +41,7 @@ pub trait Trig {
     /// ```
     fn sin_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute cosine of a number along with the error estimate.
     ///
     /// ## Examples
@@ -52,7 +52,7 @@ pub trait Trig {
     /// ```
     fn cos_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute sqrt(x^2+y^2) along with the error estimate.
     ///
     /// ## Examples
@@ -64,7 +64,7 @@ pub trait Trig {
     /// ```
     fn hypot_e(&self, other: Self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute sinc(x) = sin(pi*x) / (pi*x) along with error estimate.
     ///
     /// # Examples
@@ -74,7 +74,7 @@ pub trait Trig {
     /// ```
     fn sinc_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute sinc(x) = sin(pi*x) / (pi*x).
     ///
     /// # Examples
@@ -84,7 +84,7 @@ pub trait Trig {
     /// ```
     fn sinc(&self) -> Self
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute log(sinh(x)) for a positive real number x and the associated error
     ///
     /// # Examples
@@ -95,7 +95,7 @@ pub trait Trig {
     /// ```
     fn lnsinh_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute log(sinh(x)) for a positive real number x.
     ///
     /// # Examples
@@ -106,7 +106,7 @@ pub trait Trig {
     /// ```
     fn lnsinh(&self) -> Self
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute ln(cosh(x)) for a real number x and the associated error
     ///
     /// # Examples
@@ -117,7 +117,7 @@ pub trait Trig {
     /// ```
     fn lncosh_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute ln(cosh(x)) for a real number x.
     ///
     /// # Examples
@@ -128,7 +128,7 @@ pub trait Trig {
     /// ```
     fn lncosh(&self) -> Self
     where
-        Self: Sized;
+        Self: Sized + Num;
 }
 
 impl Trig for f64 {

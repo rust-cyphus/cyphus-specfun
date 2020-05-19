@@ -6,6 +6,7 @@ pub(crate) mod psi;
 use crate::result::SpecFunResult;
 
 use mono::*;
+use poch::*;
 use psi::*;
 
 /// Implementation for the gamma function
@@ -211,6 +212,7 @@ mod tests {
     use crate::test_utils::*;
     use crate::result::SpecFunCode;
     use crate::test_check_result_and_code;
+    use crate::test_check_result_sgn_and_code;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
     const SQRT_TOL0: f64 = 2.0 * SQRT_DLB_EPS;
@@ -502,6 +504,180 @@ mod tests {
             gammainv_e,
             (-1.0 + 1.0 / 65536.0),
             -1.0 / 65536.42280587818970,
+            TOL1,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_lnpoch_e() {
+        test_check_result_and_code!(lnpoch_e, (5.0, 0.0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
+            lnpoch_e,
+            (5.0, 1.0 / 65536.0),
+            0.000022981557571259389129,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lnpoch_e,
+            (5.0, 1.0 / 256.0),
+            0.005884960217985189004,
+            TOL2,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lnpoch_e,
+            (7.0, 3.0),
+            6.222576268071368616,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lnpoch_e,
+            (5.0, 2.0),
+            3.401197381662155375,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_lnpoch_sgn_e() {
+        test_check_result_sgn_and_code!(
+            lnpoch_sgn_e,
+            (5.0, 0.0),
+            0.0,
+            TOL0,
+            1.0,
+            SpecFunCode::Success
+        );
+        test_check_result_sgn_and_code!(
+            lnpoch_sgn_e,
+            (-4.5, 0.25),
+            0.7430116475119920117,
+            TOL1,
+            1.0,
+            SpecFunCode::Success
+        );
+        test_check_result_sgn_and_code!(
+            lnpoch_sgn_e,
+            (-4.5, 1.25),
+            2.1899306304483174731,
+            TOL2,
+            -1.0,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_poch_e() {
+        dbg!(f64::NEG_INFINITY.exp());
+        test_check_result_and_code!(poch_e, (5.0, 0.0), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (7.0, 3.0), 504.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (5.0, 2.0), 30.0, TOL1, SpecFunCode::Success);
+        test_check_result_and_code!(
+            poch_e,
+            (5.0, 1.0 / 256.0),
+            1.0059023106151364982,
+            TOL0,
+            SpecFunCode::Success
+        );
+
+        test_check_result_and_code!(
+            poch_e,
+            (-9.0, -4.0),
+            1.0 / 17160.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            poch_e,
+            (-9.0, -3.0),
+            -1.0 / 1320.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(poch_e, (-9.0, -3.5), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-9.0, 4.0), 3024.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-9.0, 3.0), -504.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-9.0, 3.5), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-9.0, 0.0), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
+            poch_e,
+            (-8.0, -4.0),
+            1.0 / 11880.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            poch_e,
+            (-8.0, -3.0),
+            -1.0 / 990.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(poch_e, (-8.0, 4.0), 1680.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-8.0, 3.0), -336.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-3.0, 4.0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-3.0, 3.0), -6.0, TOL2, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-4.0, 4.0), 24.0, TOL2, SpecFunCode::Success);
+        test_check_result_and_code!(poch_e, (-3.0, 100.0), 0.0, TOL0, SpecFunCode::Success);
+    }
+
+    #[test]
+    fn test_pochrel_e() {
+        test_check_result_and_code!(
+            pochrel_e,
+            (5.0, 0.0),
+            1.506117668431800472,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (7.0, 3.0),
+            503.0 / 3.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (5.0, 2.0),
+            29.0 / 2.0,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (5.0, 0.01),
+            1.5186393661368275330,
+            TOL2,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (-5.5, 0.01),
+            1.8584945633829063516,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (-5.5, -1.0 / 8.0),
+            1.0883319303552135488,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (-5.5, -1.0 / 256.0),
+            1.7678268037726177453,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            pochrel_e,
+            (-5.5, -11.0),
+            0.09090909090939652475,
             TOL1,
             SpecFunCode::Success
         );

@@ -1,4 +1,5 @@
 use log::warn;
+use num::Num;
 
 /// Codes supplying additional information about special function evaluations.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -23,26 +24,40 @@ pub enum SpecFunCode {
     MaxIterErr = 8,
     /// Sanity check failed... should never happen
     SanityCheckErr = 9,
+    /// Some sort of Failure occured
+    Failure = 10,
+}
+
+impl Default for SpecFunCode {
+    fn default() -> Self {
+        return SpecFunCode::Success;
+    }
 }
 
 /// Result structure from a special function evaluation, contianing the value,
 /// error and code
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct SpecFunResult<T> {
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Default)]
+pub struct SpecFunResult<T>
+where
+    T: Num,
+{
     pub val: T,
     pub err: T,
     pub code: SpecFunCode,
 }
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub(crate) struct SpecFunResultE10<T> {
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Default)]
+pub(crate) struct SpecFunResultE10<T>
+where
+    T: Num,
+{
     pub val: T,
     pub err: T,
     pub code: SpecFunCode,
     pub e10: i32,
 }
 
-impl<T: std::fmt::Debug> SpecFunResult<T> {
+impl<T: std::fmt::Debug + Num> SpecFunResult<T> {
     /// Generate a warning message for a function call with a given set of
     /// arguments and a SpecFunResult
     pub fn issue_warning(&self, fname: &str, vars: &[T]) {
@@ -82,13 +97,17 @@ impl<T: std::fmt::Debug> SpecFunResult<T> {
             ),
             SpecFunCode::SanityCheckErr => warn!(
                 "SanityCheckErr: Sanity check failed in {:?} with args {:?}",
+                fname, vars
+            ),
+            SpecFunCode::Failure => warn!(
+                "Failure: Unknown failure occured in {:?} with args {:?}",
                 fname, vars
             ),
         }
     }
 }
 
-impl<T: std::fmt::Debug> SpecFunResultE10<T> {
+impl<T: std::fmt::Debug + Num> SpecFunResultE10<T> {
     /// Generate a warning message for a function call with a given set of
     /// arguments and a SpecFunResult
     pub fn issue_warning(&self, fname: &str, vars: &[T]) {
@@ -128,6 +147,10 @@ impl<T: std::fmt::Debug> SpecFunResultE10<T> {
             ),
             SpecFunCode::SanityCheckErr => warn!(
                 "SanityCheckErr: Sanity check failed in {:?} with args {:?}",
+                fname, vars
+            ),
+            SpecFunCode::Failure => warn!(
+                "Failure: Unknown failure occured in {:?} with args {:?}",
                 fname, vars
             ),
         }

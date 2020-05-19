@@ -30,7 +30,7 @@
 use crate::cheb::cheb_eval_e;
 use crate::consts::{ROOT5_DBL_EPS, ROOT6_DBL_EPS};
 use crate::result::{SpecFunCode, SpecFunResult};
-use num::Complex;
+use num::{Complex, Num};
 
 pub trait Logarithm {
     /// Compute the natural logarithm of a number and the associated error.
@@ -43,7 +43,7 @@ pub trait Logarithm {
     /// ```
     fn ln_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute the natural log of the absolute value of a number and the
     /// associated error (value equivalent to x.abs().ln()).
     ///
@@ -55,7 +55,7 @@ pub trait Logarithm {
     /// ```
     fn ln_abs_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute the natural log of the absolute value of a
     /// number
     ///
@@ -67,7 +67,7 @@ pub trait Logarithm {
     /// ```
     fn ln_abs(&self) -> Self
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute the natural log of (1 + x) along with error
     /// estimate.
     ///
@@ -79,7 +79,7 @@ pub trait Logarithm {
     /// ```
     fn ln_p1_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute the natural log(1 + x) - x along with error
     /// estimate.
     ///
@@ -91,7 +91,7 @@ pub trait Logarithm {
     /// ```
     fn ln_p1_mx_e(&self) -> SpecFunResult<Self>
     where
-        Self: Sized;
+        Self: Sized + Num;
     /// Compute the natural log(1 + x) - x.
     ///
     /// # Example
@@ -102,7 +102,7 @@ pub trait Logarithm {
     /// ```
     fn ln_p1_mx(&self) -> Self
     where
-        Self: Sized;
+        Self: Sized + Num;
 }
 
 impl Logarithm for f64 {
@@ -404,6 +404,11 @@ pub fn ln_p1_mx_e(x: f64) -> SpecFunResult<f64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::result::SpecFunCode;
+    use crate::test_check_result_and_code;
+    use crate::test_utils::*;
+
+    const TOL0: f64 = 2.0 * f64::EPSILON;
 
     #[test]
     fn test_ln_e() {
@@ -434,8 +439,63 @@ mod tests {
     }
     #[test]
     fn test_ln_p1_e() {
-        let res = ln_p1_e(9.0);
-        assert!((res.val - 2.302_585_092_994_046).abs() < 1e-10);
+        test_check_result_and_code!(
+            ln_p1_e,
+            (1.0e-10),
+            9.999999999500000000e-11,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            ln_p1_e,
+            (1.0e-8),
+            9.999999950000000333e-09,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            ln_p1_e,
+            (1.0e-4),
+            0.00009999500033330833533,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            ln_p1_e,
+            (0.1),
+            0.09531017980432486004,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            ln_p1_e,
+            (0.49),
+            0.3987761199573677730,
+            TOL0,
+            SpecFunCode::Success
+        );
+
+        test_check_result_and_code!(
+            ln_p1_e,
+            (-0.49),
+            -0.6733445532637655964,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            ln_p1_e,
+            (1.0),
+            std::f64::consts::LN_2,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            ln_p1_e,
+            (-0.99),
+            -4.605170185988091368,
+            TOL0,
+            SpecFunCode::Success
+        );
     }
     #[test]
     fn test_ln_p1_mx() {

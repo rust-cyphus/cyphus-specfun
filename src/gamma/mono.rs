@@ -860,3 +860,46 @@ pub(crate) fn lngamma_complex_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> 
         lngamma_lanczos_complex_e(z)
     }
 }
+
+/// Compute the taylor coefficient x^n / n! for x >= 0 and n >= 0
+pub(crate) fn taylorcoeff_e(n: i32, x: f64) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+    if x < 0.0 || n < 0 {
+        result.code = SpecFunCode::DomainErr;
+        result.val = f64::NAN;
+        result.err = f64::NAN;
+        result
+    } else if n == 0 {
+        result.val = 1.0;
+        result
+    } else if x == 0.0 {
+        result
+    } else {
+        let log2pi = crate::consts::LNPI + std::f64::consts::LN_2;
+        let ln_test = n as f64 * (1.0 + x.ln()) + 1.0 - (n as f64 + 0.5) * (n as f64 + 1.0).ln()
+            + 0.5 * log2pi;
+        if ln_test < crate::consts::LN_DBL_MIN + 1.0 {
+            result.code = SpecFunCode::UnderflowErr;
+            result
+        } else if ln_test > crate::consts::LN_DBL_MAX - 1.0 {
+            result.val = f64::INFINITY;
+            result.err = f64::INFINITY;
+            result
+        } else {
+            let mut product = 1.0;
+            for k in 1..(n + 1) {
+                product *= x / k as f64;
+            }
+            result.val = product;
+            result.err = n as f64 * product * f64::EPSILON;
+            if result.val.abs() < std::f64::MIN_POSITIVE {
+                result.val = 0.0;
+                result.err = 0.0;
+                result.code = SpecFunCode::UnderflowErr;
+                result
+            } else {
+                result
+            }
+        }
+    }
+}

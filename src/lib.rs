@@ -1,3 +1,4 @@
+pub mod airy;
 pub mod bessel;
 pub mod cheb;
 pub(crate) mod consts;

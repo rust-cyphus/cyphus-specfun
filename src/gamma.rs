@@ -30,7 +30,7 @@ pub trait Gamma {
     // Compute the digamma function of a number along with the error.
     ///
     /// ```
-    /// use stercus::specfun::gamma::DiGamma;
+    /// use cyphus::specfun::gamma::Gamma;
     ///
     /// let res = 2.0_f64.digamma_e();
     /// let abserr = (res.val + 0.5772156649).abs();
@@ -40,7 +40,7 @@ pub trait Gamma {
     /// Compute the digamma function of a number.
     ///
     /// ```
-    /// use stercus::specfun::gamma::DiGamma;
+    /// use cyphus::specfun::gamma::Gamma;
     ///
     /// let res = 2.0_f64.digamma_e();
     /// let abserr = (res.val + 0.5772156649).abs();
@@ -51,7 +51,7 @@ pub trait Gamma {
     /// Compute the trigamma function of a number along with the error.
     ///
     /// ```
-    /// use stercus::specfun::gamma::TriGamma;
+    /// use cyphus::specfun::gamma::Gamma;
     ///
     /// let res = 2.0_f64.trigamma_e();
     /// let abserr = (res.val - 1.644934067).abs();
@@ -62,7 +62,7 @@ pub trait Gamma {
     /// Compute the trigamma function of a number.
     ///
     /// ```
-    /// use stercus::specfun::gamma::TriGamma;
+    /// use cyphus::specfun::gamma::Gamma;
     ///
     /// let res = 2.0_f64.trigamma();
     /// let abserr = (res - 1.644934067).abs();
@@ -72,7 +72,7 @@ pub trait Gamma {
     /// Compute the polygamma function of a number along with the error.
     ///
     /// ```
-    /// use stercus::specfun::gamma::PolyGamma;
+    /// use cyphus::specfun::gamma::Gamma;
     ///
     /// let res = 2.0_f64.polygamma_e(5);
     /// let abserr = (res.val - 122.0811674).abs();
@@ -83,13 +83,42 @@ pub trait Gamma {
     /// Compute the polygamma function of a number.
     ///
     /// ```
-    /// use stercus::specfun::gamma::PolyGamma;
+    /// use cyphus::specfun::gamma::Gamma;
     ///
     /// let res = 2.0_f64.polygamma_e(5);
     /// let abserr = (res.val - 122.0811674).abs();
     /// assert!(abserr < 1e-10);
     /// ```
     fn polygamma(&self, n: usize) -> f64;
+    /// Compute the Pochhammer symbol (self)_x = gamma(self + x) / gamma(self)
+    /// along with the associated error.
+    /// ```
+    /// use cyphus::specfun::gamma::Gamma;
+    /// let a:f64 = 10.0;
+    /// let x:f64 = -1.0;
+    /// // Compute (10)_{-1} = 1/9
+    /// assert!((a.poch_e(x).val - 1.0/9.0) < 1e-10);
+    /// ```
+    fn poch_e(&self, x: f64) -> SpecFunResult<f64>;
+    /// Compute the Pochhammer symbol (self)_x = gamma(self + x) / gamma(self).
+    /// ```
+    /// use cyphus::specfun::gamma::Gamma;
+    /// let a:f64 = 10.0;
+    /// let x:f64 = -1.0;
+    /// // Compute (10)_{-1} = 1/9
+    /// assert!((a.poch(x) - 1.0/9.0) < 1e-10);
+    /// ```
+    fn poch(&self, x: f64) -> f64;
+    /// Compute the relative Pochhammer symbol ((self)_x - 1) / x with the
+    /// associated error.
+    fn pochrel_e(&self, x: f64) -> SpecFunResult<f64>;
+    /// Compute the relative Pochhammer symbol ((self)_x - 1) / x.
+    fn pochrel(&self, x: f64) -> f64;
+    /// Compute the nautral log of the Pochhammer symbol along with the
+    /// associated error.
+    fn lnpoch_e(&self, x: f64) -> SpecFunResult<f64>;
+    /// Compute the nautral log of the Pochhammer symbol.
+    fn lnpoch(&self, x: f64) -> f64;
 }
 
 macro_rules! impl_gamma_int {
@@ -136,6 +165,24 @@ macro_rules! impl_gamma_int {
             }
             fn polygamma(&self, n: usize) -> f64 {
                 polygamma_e(n, *self as f64).val
+            }
+            fn poch_e(&self, x: f64) -> SpecFunResult<f64> {
+                poch_e(*self as f64, x as f64)
+            }
+            fn poch(&self, x: f64) -> f64 {
+                poch_e(*self as f64, x as f64).val
+            }
+            fn pochrel_e(&self, x: f64) -> SpecFunResult<f64> {
+                pochrel_e(*self as f64, x as f64)
+            }
+            fn pochrel(&self, x: f64) -> f64 {
+                pochrel_e(*self as f64, x as f64).val
+            }
+            fn lnpoch_e(&self, x: f64) -> SpecFunResult<f64> {
+                lnpoch_e(*self as f64, x as f64)
+            }
+            fn lnpoch(&self, x: f64) -> f64 {
+                lnpoch_e(*self as f64, x as f64).val
             }
         }
     };
@@ -185,6 +232,24 @@ macro_rules! impl_gamma_float {
             }
             fn polygamma(&self, n: usize) -> f64 {
                 polygamma_e(n, *self as f64).val
+            }
+            fn poch_e(&self, x: f64) -> SpecFunResult<f64> {
+                poch_e(*self as f64, x as f64)
+            }
+            fn poch(&self, x: f64) -> f64 {
+                poch_e(*self as f64, x as f64).val
+            }
+            fn pochrel_e(&self, x: f64) -> SpecFunResult<f64> {
+                pochrel_e(*self as f64, x as f64)
+            }
+            fn pochrel(&self, x: f64) -> f64 {
+                pochrel_e(*self as f64, x as f64).val
+            }
+            fn lnpoch_e(&self, x: f64) -> SpecFunResult<f64> {
+                lnpoch_e(*self as f64, x as f64)
+            }
+            fn lnpoch(&self, x: f64) -> f64 {
+                lnpoch_e(*self as f64, x as f64).val
             }
         }
     };
@@ -678,6 +743,66 @@ mod tests {
             pochrel_e,
             (-5.5, -11.0),
             0.09090909090939652475,
+            TOL1,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_taylorcoeff_e() {
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (10, 1.0 / 1048576.0),
+            1.7148961854776073928e-67,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (10, 1.0 / 1024.0),
+            2.1738891788497900281e-37,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (10, 1.0),
+            2.7557319223985890653e-07,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (10, 5.0),
+            2.6911444554673721340,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (10, 500.0),
+            2.6911444554673721340e+20,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (100, 100.0),
+            1.0715102881254669232e+42,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (1000, 200.0),
+            2.6628790558154746898e-267,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            taylorcoeff_e,
+            (1000, 500.0),
+            2.3193170139740855074e+131,
             TOL1,
             SpecFunCode::Success
         );

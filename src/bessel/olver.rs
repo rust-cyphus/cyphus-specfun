@@ -1,3 +1,4 @@
+use crate::airy::Airy;
 use crate::cheb::cheb_eval_e;
 use crate::result::{SpecFunCode, SpecFunResult};
 use lazy_static::lazy_static;
@@ -396,358 +397,364 @@ static ref A4_lt1_data: [f64;30] = [
 /// Invert [Abramowitz+Stegun, 9.3.39].
 /// Assumes minus_zeta >= 0.
 fn gsl_sf_bessel_Olver_zofmzeta(minus_zeta: f64) -> f64 {
-  if minus_zeta < 1.0 {
-    let x = 2.0 * minus_zeta - 1.0;
-    let c = cheb_eval_e(x, &(*zofmzeta_a_data), -1.0, 1.0);
-    return c.val;
-  } else if minus_zeta < 10.0 {
-    let x = (2.0 * minus_zeta - 11.0) / 9.0;
-    let c = cheb_eval_e(x, &(*zofmzeta_b_data), -1.0, 1.0);
-    return c.val;
-  } else {
-    let TEN_32 = 31.62277660168379332; // 10^(3/2)
-    let p = (minus_zeta).powf(3.0 / 2.0);
-    let x = 2.0 * TEN_32 / p - 1.0;
-    let c = cheb_eval_e(x, &(*zofmzeta_c_data), -1.0, 1.0);
-    return c.val * p;
-  }
+    if minus_zeta < 1.0 {
+        let x = 2.0 * minus_zeta - 1.0;
+        let c = cheb_eval_e(x, &(*zofmzeta_a_data), -1.0, 1.0);
+        return c.val;
+    } else if minus_zeta < 10.0 {
+        let x = (2.0 * minus_zeta - 11.0) / 9.0;
+        let c = cheb_eval_e(x, &(*zofmzeta_b_data), -1.0, 1.0);
+        return c.val;
+    } else {
+        let TEN_32 = 31.62277660168379332; // 10^(3/2)
+        let p = (minus_zeta).powf(3.0 / 2.0);
+        let x = 2.0 * TEN_32 / p - 1.0;
+        let c = cheb_eval_e(x, &(*zofmzeta_c_data), -1.0, 1.0);
+        return c.val * p;
+    }
 }
 
 fn olver_b0(z: f64, abs_zeta: f64) -> f64 {
-  if z < 0.98 {
-    let t = 1.0 / (1.0 - z * z).sqrt();
-    -5.0 / (48.0 * abs_zeta * abs_zeta) + t * (-3.0 + 5.0 * t * t) / (24.0 * (abs_zeta).sqrt())
-  } else if z < 1.02 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = 0.0179988721413553309252458658183;
-    let c1: f64 = 0.0111992982212877614645974276203;
-    let c2: f64 = 0.0059404069786014304317781160605;
-    let c3: f64 = 0.0028676724516390040844556450173;
-    let c4: f64 = 0.0012339189052567271708525111185;
-    let c5: f64 = 0.0004169250674535178764734660248;
-    let c6: f64 = 0.0000330173385085949806952777365;
-    let c7: f64 = -0.0001318076238578203009990106425;
-    let c8: f64 = -0.0001906870370050847239813945647;
+    if z < 0.98 {
+        let t = 1.0 / (1.0 - z * z).sqrt();
+        -5.0 / (48.0 * abs_zeta * abs_zeta) + t * (-3.0 + 5.0 * t * t) / (24.0 * (abs_zeta).sqrt())
+    } else if z < 1.02 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = 0.0179988721413553309252458658183;
+        let c1: f64 = 0.0111992982212877614645974276203;
+        let c2: f64 = 0.0059404069786014304317781160605;
+        let c3: f64 = 0.0028676724516390040844556450173;
+        let c4: f64 = 0.0012339189052567271708525111185;
+        let c5: f64 = 0.0004169250674535178764734660248;
+        let c6: f64 = 0.0000330173385085949806952777365;
+        let c7: f64 = -0.0001318076238578203009990106425;
+        let c8: f64 = -0.0001906870370050847239813945647;
 
-    c8.mul_add(a, c7)
-      .mul_add(a, c6)
-      .mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
-    -5.0 / (48.0 * abs_zeta * abs_zeta) + t * (3.0 + 5.0 * t * t) / (24.0 * (abs_zeta).sqrt())
-  }
+        c8.mul_add(a, c7)
+            .mul_add(a, c6)
+            .mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
+        -5.0 / (48.0 * abs_zeta * abs_zeta) + t * (3.0 + 5.0 * t * t) / (24.0 * (abs_zeta).sqrt())
+    }
 }
 
 fn olver_b1(z: f64, abs_zeta: f64) -> f64 {
-  if z < 0.88 {
-    let t = 1.0 / (1.0 - z * z).sqrt();
-    let t2 = t * t;
-    let rz = (abs_zeta).sqrt();
-    let z32 = rz * rz * rz;
-    let z92 = z32 * z32 * z32;
-    let term1 =
-      t * t * t * (30375.0 - 369603.0 * t2 + 765765.0 * t2 * t2 - 425425.0 * t2 * t2 * t2)
-        / 414720.0;
-    let term2 = 85085.0 / (663552.0 * z92);
-    let term3 = 385.0 / 110592. * t * (3.0 - 5.0 * t2) / (abs_zeta * abs_zeta * abs_zeta);
-    let term4 = 5.0 / 55296.0 * t2 * (81.0 - 462.0 * t2 + 385.0 * t2 * t2) / z32;
-    -(term1 + term2 + term3 + term4) / rz
-  } else if z < 1.12 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = -0.00149282953213429172050073403334;
-    let c1: f64 = -0.00175640941909277865678308358128;
-    let c2: f64 = -0.00113346148874174912576929663517;
-    let c3: f64 = -0.00034691090981382974689396961817;
-    let c4: f64 = 0.00022752516104839243675693256916;
-    let c5: f64 = 0.00051764145724244846447294636552;
-    let c6: f64 = 0.00058906174858194233998714243010;
-    let c7: f64 = 0.00053485514521888073087240392846;
-    let c8: f64 = 0.00042891792986220150647633418796;
-    let c9: f64 = 0.00031639765900613633260381972850;
-    let c10: f64 = 0.00021908147678699592975840749194;
+    if z < 0.88 {
+        let t = 1.0 / (1.0 - z * z).sqrt();
+        let t2 = t * t;
+        let rz = (abs_zeta).sqrt();
+        let z32 = rz * rz * rz;
+        let z92 = z32 * z32 * z32;
+        let term1 =
+            t * t * t * (30375.0 - 369603.0 * t2 + 765765.0 * t2 * t2 - 425425.0 * t2 * t2 * t2)
+                / 414720.0;
+        let term2 = 85085.0 / (663552.0 * z92);
+        let term3 = 385.0 / 110592. * t * (3.0 - 5.0 * t2) / (abs_zeta * abs_zeta * abs_zeta);
+        let term4 = 5.0 / 55296.0 * t2 * (81.0 - 462.0 * t2 + 385.0 * t2 * t2) / z32;
+        -(term1 + term2 + term3 + term4) / rz
+    } else if z < 1.12 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = -0.00149282953213429172050073403334;
+        let c1: f64 = -0.00175640941909277865678308358128;
+        let c2: f64 = -0.00113346148874174912576929663517;
+        let c3: f64 = -0.00034691090981382974689396961817;
+        let c4: f64 = 0.00022752516104839243675693256916;
+        let c5: f64 = 0.00051764145724244846447294636552;
+        let c6: f64 = 0.00058906174858194233998714243010;
+        let c7: f64 = 0.00053485514521888073087240392846;
+        let c8: f64 = 0.00042891792986220150647633418796;
+        let c9: f64 = 0.00031639765900613633260381972850;
+        let c10: f64 = 0.00021908147678699592975840749194;
 
-    c10
-      .mul_add(a, c9)
-      .mul_add(a, c8)
-      .mul_add(a, c7)
-      .mul_add(a, c6)
-      .mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let t = 1.0 / (z * sqrt(1.0 - 1.0 / (z * z)));
-    let t2 = t * t;
-    let rz = sqrt(abs_zeta);
-    let z32 = rz * rz * rz;
-    let z92 = z32 * z32 * z32;
-    let term1 =
-      -t2 * t * (30375.0 + 369603.0 * t2 + 765765.0 * t2 * t2 + 425425.0 * t2 * t2 * t2) / 414720.0;
-    let term2 = 85085.0 / (663552.0 * z92);
-    let term3 = -385.0 / 110592.0 * t * (3.0 + 5.0 * t2) / (abs_zeta * abs_zeta * abs_zeta);
-    let term4 = 5.0 / 55296.0 * t2 * (81.0 + 462.0 * t2 + 385.0 * t2 * t2) / z32;
-    (term1 + term2 + term3 + term4) / rz
-  }
+        c10.mul_add(a, c9)
+            .mul_add(a, c8)
+            .mul_add(a, c7)
+            .mul_add(a, c6)
+            .mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
+        let t2 = t * t;
+        let rz = abs_zeta.sqrt();
+        let z32 = rz * rz * rz;
+        let z92 = z32 * z32 * z32;
+        let term1 =
+            -t2 * t * (30375.0 + 369603.0 * t2 + 765765.0 * t2 * t2 + 425425.0 * t2 * t2 * t2)
+                / 414720.0;
+        let term2 = 85085.0 / (663552.0 * z92);
+        let term3 = -385.0 / 110592.0 * t * (3.0 + 5.0 * t2) / (abs_zeta * abs_zeta * abs_zeta);
+        let term4 = 5.0 / 55296.0 * t2 * (81.0 + 462.0 * t2 + 385.0 * t2 * t2) / z32;
+        (term1 + term2 + term3 + term4) / rz
+    }
 }
 
 fn olver_b2(z: f64) -> f64 {
-  if z < 0.8 {
-    let x = 5.0 * z / 2.0 - 1.0;
-    let c = cheb_eval_e(x, &(*B2_lt1_data), -1.0, 1.0);
-    c.val / z
-  } else if z <= 1.2 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = 0.00055221307672129279005986982501;
-    let c1: f64 = 0.00089586516310476929281129228969;
-    let c2: f64 = 0.00067015003441569770883539158863;
-    let c3: f64 = 0.00010166263361949045682945811828;
-    let c4: f64 = -0.00044086345133806887291336488582;
-    let c5: f64 = -0.00073963081508788743392883072523;
-    let c6: f64 = -0.00076745494377839561259903887331;
-    let c7: f64 = -0.00060829038106040362291568012663;
-    let c8: f64 = -0.00037128707528893496121336168683;
-    let c9: f64 = -0.00014116325105702609866850307176;
+    if z < 0.8 {
+        let x = 5.0 * z / 2.0 - 1.0;
+        let c = cheb_eval_e(x, &(*B2_lt1_data), -1.0, 1.0);
+        c.val / z
+    } else if z <= 1.2 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = 0.00055221307672129279005986982501;
+        let c1: f64 = 0.00089586516310476929281129228969;
+        let c2: f64 = 0.00067015003441569770883539158863;
+        let c3: f64 = 0.00010166263361949045682945811828;
+        let c4: f64 = -0.00044086345133806887291336488582;
+        let c5: f64 = -0.00073963081508788743392883072523;
+        let c6: f64 = -0.00076745494377839561259903887331;
+        let c7: f64 = -0.00060829038106040362291568012663;
+        let c8: f64 = -0.00037128707528893496121336168683;
+        let c9: f64 = -0.00014116325105702609866850307176;
 
-    c9.mul_add(a, c8)
-      .mul_add(a, c7)
-      .mul_add(a, c6)
-      .mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let zi = 1.0 / z;
-    let x = 12.0 / 5.0 * zi - 1.0;
-    let c = cheb_eval_e(x, &(*B2_gt1_data), -1.0, 1.0);
-    c.val * zi * zi * zi
-  }
+        c9.mul_add(a, c8)
+            .mul_add(a, c7)
+            .mul_add(a, c6)
+            .mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let zi = 1.0 / z;
+        let x = 12.0 / 5.0 * zi - 1.0;
+        let c = cheb_eval_e(x, &(*B2_gt1_data), -1.0, 1.0);
+        c.val * zi * zi * zi
+    }
 }
 
 fn olver_b3(z: f64) -> f64 {
-  if z < 0.8 {
-    let x = 5.0 * z / 2.0 - 1.0;
-    let c = cheb_eval_e(x, &(*B3_lt1_data), -1.0, 1.0);
-    c.val
-  } else if z < 1.2 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = -0.00047461779655995980754441833105;
-    let c1: f64 = -0.00095572913429464297452176811898;
-    let c2: f64 = -0.00080369634512082892655558133973;
-    let c3: f64 = -0.00000727921669154784138080600339;
-    let c4: f64 = 0.00093162500331581345235746518994;
-    let c5: f64 = 0.00149848796913751497227188612403;
-    let c6: f64 = 0.00148406039675949727870390426462;
+    if z < 0.8 {
+        let x = 5.0 * z / 2.0 - 1.0;
+        let c = cheb_eval_e(x, &(*B3_lt1_data), -1.0, 1.0);
+        c.val
+    } else if z < 1.2 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = -0.00047461779655995980754441833105;
+        let c1: f64 = -0.00095572913429464297452176811898;
+        let c2: f64 = -0.00080369634512082892655558133973;
+        let c3: f64 = -0.00000727921669154784138080600339;
+        let c4: f64 = 0.00093162500331581345235746518994;
+        let c5: f64 = 0.00149848796913751497227188612403;
+        let c6: f64 = 0.00148406039675949727870390426462;
 
-    c6.mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let x = 12.0 / (5.0 * z) - 1.0;
-    let zi2 = 1.0 / (z * z);
-    let c = cheb_eval_e(x, &(*B3_gt1_data), -1.0, 1.0);
-    c.val * zi2 * zi2 * zi2
-  }
+        c6.mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let x = 12.0 / (5.0 * z) - 1.0;
+        let zi2 = 1.0 / (z * z);
+        let c = cheb_eval_e(x, &(*B3_gt1_data), -1.0, 1.0);
+        c.val * zi2 * zi2 * zi2
+    }
 }
 
 fn olver_a1(z: f64, abs_zeta: f64) -> (f64, f64) {
-  if z < 0.98 {
-    let t = 1.0 / (1.0 - z * z).sqrt();
-    let rz = abs_zeta.sqrt();
-    let t2 = t * t;
-    let term1 = t2 * (81.0 - 462.0 * t2 + 385.0 * t2 * t2) / 1152.0;
-    let term2 = -455.0 / (4608.0 * abs_zeta * abs_zeta * abs_zeta);
-    let term3 = 7.0 * t * (-3.0 + 5.0 * t2) / (1152.0 * rz * rz * rz);
-    let err = 2.0 * f64::EPSILON * (term1.abs() + term2.abs() + term3.abs());
-    (term1 + term2 + term3, err)
-  } else if z < 1.02 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = -0.00444444444444444444444444444444;
-    let c1: f64 = -0.00184415584415584415584415584416;
-    let c2: f64 = 0.00056812076812076812076812076812;
-    let c3: f64 = 0.00168137865661675185484709294233;
-    let c4: f64 = 0.00186744042139000122193399504324;
-    let c5: f64 = 0.00161330105833747826430066790326;
-    let c6: f64 = 0.00123177312220625816558607537838;
-    let c7: f64 = 0.00087334711007377573881689318421;
-    let c8: f64 = 0.00059004942455353250141217015410;
-    let sum = c8
-      .mul_add(a, c7)
-      .mul_add(a, c6)
-      .mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0);
+    if z < 0.98 {
+        let t = 1.0 / (1.0 - z * z).sqrt();
+        let rz = abs_zeta.sqrt();
+        let t2 = t * t;
+        let term1 = t2 * (81.0 - 462.0 * t2 + 385.0 * t2 * t2) / 1152.0;
+        let term2 = -455.0 / (4608.0 * abs_zeta * abs_zeta * abs_zeta);
+        let term3 = 7.0 * t * (-3.0 + 5.0 * t2) / (1152.0 * rz * rz * rz);
+        let err = 2.0 * f64::EPSILON * (term1.abs() + term2.abs() + term3.abs());
+        (term1 + term2 + term3, err)
+    } else if z < 1.02 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = -0.00444444444444444444444444444444;
+        let c1: f64 = -0.00184415584415584415584415584416;
+        let c2: f64 = 0.00056812076812076812076812076812;
+        let c3: f64 = 0.00168137865661675185484709294233;
+        let c4: f64 = 0.00186744042139000122193399504324;
+        let c5: f64 = 0.00161330105833747826430066790326;
+        let c6: f64 = 0.00123177312220625816558607537838;
+        let c7: f64 = 0.00087334711007377573881689318421;
+        let c8: f64 = 0.00059004942455353250141217015410;
+        let sum = c8
+            .mul_add(a, c7)
+            .mul_add(a, c6)
+            .mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0);
 
-    let err = 2.0 * f64::EPSILON * sum.abs();
-    (sum, err)
-  } else {
-    let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
-    let rz = (abs_zeta).sqrt();
-    let t2 = t * t;
-    let term1 = -t2 * (81.0 + 462.0 * t2 + 385.0 * t2 * t2) / 1152.0;
-    let term2 = 455.0 / (4608.0 * abs_zeta * abs_zeta * abs_zeta);
-    let term3 = -7.0 * t * (3.0 + 5.0 * t2) / (1152.0 * rz * rz * rz);
-    let err = 2.0 * f64::EPSILON * (term1.abs() + term2.abs() + term3.abs());
-    (term1 + term2 + term3, err)
-  }
+        let err = 2.0 * f64::EPSILON * sum.abs();
+        (sum, err)
+    } else {
+        let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
+        let rz = (abs_zeta).sqrt();
+        let t2 = t * t;
+        let term1 = -t2 * (81.0 + 462.0 * t2 + 385.0 * t2 * t2) / 1152.0;
+        let term2 = 455.0 / (4608.0 * abs_zeta * abs_zeta * abs_zeta);
+        let term3 = -7.0 * t * (3.0 + 5.0 * t2) / (1152.0 * rz * rz * rz);
+        let err = 2.0 * f64::EPSILON * (term1.abs() + term2.abs() + term3.abs());
+        (term1 + term2 + term3, err)
+    }
 }
 
 fn olver_a2(z: f64, abs_zeta: f64) -> f64 {
-  if z < 0.88 {
-    let t = 1.0 / (1.0 - z * z).sqrt();
-    let t2 = t * t;
-    let t4 = t2 * t2;
-    let t6 = t4 * t2;
-    let t8 = t4 * t4;
-    let rz = abs_zeta.sqrt();
-    let z3 = abs_zeta * abs_zeta * abs_zeta;
-    let z32 = rz * rz * rz;
-    let z92 = z3 * z32;
-    let term1 = t4
-      * (4465125.0 - 94121676.0 * t2 + 349922430.0 * t4 - 446185740.0 * t6 + 185910725.0 * t8)
-      / 39813120.0;
-    let term2 = -40415375.0 / (127401984.0 * z3 * z3);
-    let term3 = -95095.0 / 15925248.0 * t * (3.0 - 5.0 * t2) / z92;
-    let term4 = -455.0 / 5308416.0 * t2 * (81.0 - 462.0 * t2 + 385.0 * t4) / z3;
-    let term5 =
-      -7.0 / 19906560.0 * t * t2 * (30375.0 - 369603.0 * t2 + 765765.0 * t4 - 425425.0 * t6) / z32;
-    term1 + term2 + term3 + term4 + term5
-  } else if z < 1.12 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = 0.000693735541354588973636592684210;
-    let c1: f64 = 0.000464483490365843307019777608010;
-    let c2: f64 = -0.000289036254605598132482570468291;
-    let c3: f64 = -0.000874764943953712638574497548110;
-    let c4: f64 = -0.001029716376139865629968584679350;
-    let c5: f64 = -0.000836857329713810600584714031650;
-    let c6: f64 = -0.000488910893527218954998270124540;
-    let c7: f64 = -0.000144236747940817220502256810151;
-    let c8: f64 = 0.000114363800986163478038576460325;
-    let c9: f64 = 0.000266806881492777536223944807117;
-    let c10: f64 = -0.011975517576151069627471048587000;
-    c10
-      .mul_add(a, c9)
-      .mul_add(a, c8)
-      .mul_add(a, c7)
-      .mul_add(a, c6)
-      .mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
-    let t2 = t * t;
-    let t4 = t2 * t2;
-    let t6 = t4 * t2;
-    let t8 = t4 * t4;
-    let rz = abs_zeta.sqrt();
-    let z3 = abs_zeta * abs_zeta * abs_zeta;
-    let z32 = rz * rz * rz;
-    let z92 = z3 * z32;
-    let term1 = t4
-      * (4465125.0 + 94121676.0 * t2 + 349922430.0 * t4 + 446185740.0 * t6 + 185910725.0 * t8)
-      / 39813120.0;
-    let term2 = -40415375.0 / (127401984.0 * z3 * z3);
-    let term3 = 95095.0 / 15925248.0 * t * (3.0 + 5.0 * t2) / z92;
-    let term4 = -455.0 / 5308416.0 * t2 * (81.0 + 462.0 * t2 + 385.0 * t4) / z3;
-    let term5 =
-      7.0 / 19906560.0 * t * t2 * (30375.0 + 369603.0 * t2 + 765765.0 * t4 + 425425.0 * t6) / z32;
-    term1 + term2 + term3 + term4 + term5
-  }
+    if z < 0.88 {
+        let t = 1.0 / (1.0 - z * z).sqrt();
+        let t2 = t * t;
+        let t4 = t2 * t2;
+        let t6 = t4 * t2;
+        let t8 = t4 * t4;
+        let rz = abs_zeta.sqrt();
+        let z3 = abs_zeta * abs_zeta * abs_zeta;
+        let z32 = rz * rz * rz;
+        let z92 = z3 * z32;
+        let term1 = t4
+            * (4465125.0 - 94121676.0 * t2 + 349922430.0 * t4 - 446185740.0 * t6
+                + 185910725.0 * t8)
+            / 39813120.0;
+        let term2 = -40415375.0 / (127401984.0 * z3 * z3);
+        let term3 = -95095.0 / 15925248.0 * t * (3.0 - 5.0 * t2) / z92;
+        let term4 = -455.0 / 5308416.0 * t2 * (81.0 - 462.0 * t2 + 385.0 * t4) / z3;
+        let term5 =
+            -7.0 / 19906560.0 * t * t2 * (30375.0 - 369603.0 * t2 + 765765.0 * t4 - 425425.0 * t6)
+                / z32;
+        term1 + term2 + term3 + term4 + term5
+    } else if z < 1.12 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = 0.000693735541354588973636592684210;
+        let c1: f64 = 0.000464483490365843307019777608010;
+        let c2: f64 = -0.000289036254605598132482570468291;
+        let c3: f64 = -0.000874764943953712638574497548110;
+        let c4: f64 = -0.001029716376139865629968584679350;
+        let c5: f64 = -0.000836857329713810600584714031650;
+        let c6: f64 = -0.000488910893527218954998270124540;
+        let c7: f64 = -0.000144236747940817220502256810151;
+        let c8: f64 = 0.000114363800986163478038576460325;
+        let c9: f64 = 0.000266806881492777536223944807117;
+        let c10: f64 = -0.011975517576151069627471048587000;
+        c10.mul_add(a, c9)
+            .mul_add(a, c8)
+            .mul_add(a, c7)
+            .mul_add(a, c6)
+            .mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let t = 1.0 / (z * (1.0 - 1.0 / (z * z)).sqrt());
+        let t2 = t * t;
+        let t4 = t2 * t2;
+        let t6 = t4 * t2;
+        let t8 = t4 * t4;
+        let rz = abs_zeta.sqrt();
+        let z3 = abs_zeta * abs_zeta * abs_zeta;
+        let z32 = rz * rz * rz;
+        let z92 = z3 * z32;
+        let term1 = t4
+            * (4465125.0
+                + 94121676.0 * t2
+                + 349922430.0 * t4
+                + 446185740.0 * t6
+                + 185910725.0 * t8)
+            / 39813120.0;
+        let term2 = -40415375.0 / (127401984.0 * z3 * z3);
+        let term3 = 95095.0 / 15925248.0 * t * (3.0 + 5.0 * t2) / z92;
+        let term4 = -455.0 / 5308416.0 * t2 * (81.0 + 462.0 * t2 + 385.0 * t4) / z3;
+        let term5 =
+            7.0 / 19906560.0 * t * t2 * (30375.0 + 369603.0 * t2 + 765765.0 * t4 + 425425.0 * t6)
+                / z32;
+        term1 + term2 + term3 + term4 + term5
+    }
 }
 
 fn olver_a3(z: f64) -> f64 {
-  if z < 0.9 {
-    let x = 20.0 * z / 9.0 - 1.0;
-    let c = cheb_eval_e(x, &(*A3_lt1_data), -1.0, 1.0);
-    return c.val;
-  } else if z < 1.1 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = -0.000354211971457743840771125759200;
-    let c1: f64 = -0.000312322527890318832782774881353;
-    let c2: f64 = 0.000277947465383133980329617631915;
-    let c3: f64 = 0.000919803044747966977054155192400;
-    let c4: f64 = 0.001147600388275977640983696906320;
-    let c5: f64 = 0.000869239326123625742931772044544;
-    let c6: f64 = 0.000287392257282507334785281718027;
-    c6.mul_add(a, c5)
-      .mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let x = 11.0 / (5.0 * z) - 1.0;
-    let zi2 = 1.0 / (z * z);
-    let c = cheb_eval_e(x, &(*A3_gt1_data), -1.0, 1.0);
-    c.val * zi2 * zi2 * zi2
-  }
+    if z < 0.9 {
+        let x = 20.0 * z / 9.0 - 1.0;
+        let c = cheb_eval_e(x, &(*A3_lt1_data), -1.0, 1.0);
+        return c.val;
+    } else if z < 1.1 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = -0.000354211971457743840771125759200;
+        let c1: f64 = -0.000312322527890318832782774881353;
+        let c2: f64 = 0.000277947465383133980329617631915;
+        let c3: f64 = 0.000919803044747966977054155192400;
+        let c4: f64 = 0.001147600388275977640983696906320;
+        let c5: f64 = 0.000869239326123625742931772044544;
+        let c6: f64 = 0.000287392257282507334785281718027;
+        c6.mul_add(a, c5)
+            .mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let x = 11.0 / (5.0 * z) - 1.0;
+        let zi2 = 1.0 / (z * z);
+        let c = cheb_eval_e(x, &(*A3_gt1_data), -1.0, 1.0);
+        c.val * zi2 * zi2 * zi2
+    }
 }
 
 fn olver_a4(z: f64) -> f64 {
-  if z < 0.8 {
-    let x = 5.0 * z / 2.0 - 1.0;
-    let c = cheb_eval_e(x, &(*A4_lt1_data), -1.0, 1.0);
-    c.val
-  } else if z < 1.2 {
-    let a: f64 = 1.0 - z;
-    let c0: f64 = 0.00037819419920177291402661228437;
-    let c1: f64 = 0.00040494390552363233477213857527;
-    let c2: f64 = -0.00045764735528936113047289344569;
-    let c3: f64 = -0.00165361044229650225813161341879;
-    let c4: f64 = -0.00217527517983360049717137015539;
-    let c5: f64 = -0.00152003287866490735107772795537;
-    c5.mul_add(a, c4)
-      .mul_add(a, c3)
-      .mul_add(a, c2)
-      .mul_add(a, c1)
-      .mul_add(a, c0)
-  } else {
-    let x = 12.0 / (5.0 * z) - 1.0;
-    let zi2 = 1.0 / (z * z);
-    let c = cheb_eval_e(x, &(*A4_gt1_data), -1.0, 1.0);
-    c.val * zi2 * zi2 * zi2 * zi2
-  }
+    if z < 0.8 {
+        let x = 5.0 * z / 2.0 - 1.0;
+        let c = cheb_eval_e(x, &(*A4_lt1_data), -1.0, 1.0);
+        c.val
+    } else if z < 1.2 {
+        let a: f64 = 1.0 - z;
+        let c0: f64 = 0.00037819419920177291402661228437;
+        let c1: f64 = 0.00040494390552363233477213857527;
+        let c2: f64 = -0.00045764735528936113047289344569;
+        let c3: f64 = -0.00165361044229650225813161341879;
+        let c4: f64 = -0.00217527517983360049717137015539;
+        let c5: f64 = -0.00152003287866490735107772795537;
+        c5.mul_add(a, c4)
+            .mul_add(a, c3)
+            .mul_add(a, c2)
+            .mul_add(a, c1)
+            .mul_add(a, c0)
+    } else {
+        let x = 12.0 / (5.0 * z) - 1.0;
+        let zi2 = 1.0 / (z * z);
+        let c = cheb_eval_e(x, &(*A4_gt1_data), -1.0, 1.0);
+        c.val * zi2 * zi2 * zi2 * zi2
+    }
 }
 
 #[inline]
 fn olver_asum(nu: f64, z: f64, abs_zeta: f64) -> (f64, f64) {
-  let nu2 = nu * nu;
-  let (a1, a1_err) = olver_a1(z, abs_zeta);
-  let a2 = olver_a2(z, abs_zeta);
-  let a3 = olver_a3(z);
-  let a4 = olver_a4(z);
-  let err = a1_err / nu2 + f64::EPSILON;
-  (
-    1.0 + a1 / nu2 + a2 / (nu2 * nu2) + a3 / (nu2 * nu2 * nu2) + a4 / (nu2 * nu2 * nu2 * nu2),
-    err,
-  )
+    let nu2 = nu * nu;
+    let (a1, a1_err) = olver_a1(z, abs_zeta);
+    let a2 = olver_a2(z, abs_zeta);
+    let a3 = olver_a3(z);
+    let a4 = olver_a4(z);
+    let err = a1_err / nu2 + f64::EPSILON;
+    (
+        1.0 + a1 / nu2 + a2 / (nu2 * nu2) + a3 / (nu2 * nu2 * nu2) + a4 / (nu2 * nu2 * nu2 * nu2),
+        err,
+    )
 }
 
 #[inline]
 fn olver_bsum(nu: f64, z: f64, abs_zeta: f64) -> f64 {
-  let nu2 = nu * nu;
-  let b0 = olver_b0(z, abs_zeta);
-  let b1 = olver_b1(z, abs_zeta);
-  let b2 = olver_b2(z);
-  let b3 = olver_b3(z);
-  b0 + b1 / nu2 + b2 / (nu2 * nu2) + b3 / (nu2 * nu2 * nu2 * nu2)
+    let nu2 = nu * nu;
+    let b0 = olver_b0(z, abs_zeta);
+    let b1 = olver_b1(z, abs_zeta);
+    let b2 = olver_b2(z);
+    let b3 = olver_b3(z);
+    b0 + b1 / nu2 + b2 / (nu2 * nu2) + b3 / (nu2 * nu2 * nu2 * nu2)
 }
 
 /* uniform asymptotic, nu -> Inf, [Abramowitz+Stegun, 9.3.35]
@@ -760,81 +767,81 @@ fn olver_bsum(nu: f64, z: f64, abs_zeta: f64) -> f64 {
  *
  */
 fn bessel_jnu_asymp_olver_e(nu: f64, x: f64) -> SpecFunResult<f64> {
-  let mut result = SpecFunResult::<f64>::default();
+    let mut result = SpecFunResult::<f64>::default();
 
-  if x <= 0.0 || nu <= 0.0 {
-    result.code = SpecFunCode::DomainErr;
-    result.val = f64::NAN;
-    result.err = f64::NAN;
-    result
-  } else {
-    let z = x / nu;
-    let crnu = nu.powf(1.0 / 3.0);
-    let nu3 = nu * nu * nu;
-    let nu11 = nu3 * nu3 * nu3 * nu * nu;
-    let mut pre;
-    let mut zeta;
-    let mut abs_zeta;
-
-    if (1.0 - z).abs() < 0.02 {
-      let a: f64 = 1.0 - z;
-      let c0: f64 = 1.25992104989487316476721060728;
-      let c1: f64 = 0.37797631496846194943016318218;
-      let c2: f64 = 0.230385563409348235843147082474;
-      let c3: f64 = 0.165909603649648694839821892031;
-      let c4: f64 = 0.12931387086451008907;
-      let c5: f64 = 0.10568046188858133991;
-      let c6: f64 = 0.08916997952268186978;
-      let c7: f64 = 0.07700014900618802456;
-
-      let pre = c7
-        .mul_add(a, c6)
-        .mul_add(a, c5)
-        .mul_add(a, c4)
-        .mul_add(a, c3)
-        .mul_add(a, c2)
-        .mul_add(a, c1)
-        .mul_add(a, c0);
-
-      zeta = a * pre;
-      pre = (2.0 * (pre / (1.0 + z)).sqrt()).sqrt();
-      abs_zeta = zeta.abs();
-    } else if z < 1.0 {
-      let rt = (1.0 - z * z).sqrt();
-      abs_zeta = 1.5 * (((1.0 + rt) / z).ln() - rt).powf(2.0 / 3.0);
-      zeta = abs_zeta;
-      pre = (2.0 * (abs_zeta / (rt * rt)).sqrt()).sqrt();
+    if x <= 0.0 || nu <= 0.0 {
+        result.code = SpecFunCode::DomainErr;
+        result.val = f64::NAN;
+        result.err = f64::NAN;
+        result
     } else {
-      /* z > 1 */
-      let rt = z * (1.0 - 1.0 / (z * z)).sqrt();
-      abs_zeta = 1.5 * (rt - (1.0 / z).acos()).powf(2.0 / 3.0);
-      zeta = -abs_zeta;
-      pre = (2.0 * (abs_zeta / (rt * rt)).sqrt()).sqrt();
+        let z = x / nu;
+        let crnu = nu.powf(1.0 / 3.0);
+        let nu3 = nu * nu * nu;
+        let nu11 = nu3 * nu3 * nu3 * nu * nu;
+        let mut pre;
+        let mut zeta;
+        let mut abs_zeta;
+
+        if (1.0 - z).abs() < 0.02 {
+            let a: f64 = 1.0 - z;
+            let c0: f64 = 1.25992104989487316476721060728;
+            let c1: f64 = 0.37797631496846194943016318218;
+            let c2: f64 = 0.230385563409348235843147082474;
+            let c3: f64 = 0.165909603649648694839821892031;
+            let c4: f64 = 0.12931387086451008907;
+            let c5: f64 = 0.10568046188858133991;
+            let c6: f64 = 0.08916997952268186978;
+            let c7: f64 = 0.07700014900618802456;
+
+            pre = c7
+                .mul_add(a, c6)
+                .mul_add(a, c5)
+                .mul_add(a, c4)
+                .mul_add(a, c3)
+                .mul_add(a, c2)
+                .mul_add(a, c1)
+                .mul_add(a, c0);
+
+            zeta = a * pre;
+            pre = (2.0 * (pre / (1.0 + z)).sqrt()).sqrt();
+            abs_zeta = zeta.abs();
+        } else if z < 1.0 {
+            let rt = (1.0 - z * z).sqrt();
+            abs_zeta = 1.5 * (((1.0 + rt) / z).ln() - rt).powf(2.0 / 3.0);
+            zeta = abs_zeta;
+            pre = (2.0 * (abs_zeta / (rt * rt)).sqrt()).sqrt();
+        } else {
+            /* z > 1 */
+            let rt = z * (1.0 - 1.0 / (z * z)).sqrt();
+            abs_zeta = 1.5 * (rt - (1.0 / z).acos()).powf(2.0 / 3.0);
+            zeta = -abs_zeta;
+            pre = (2.0 * (abs_zeta / (rt * rt)).sqrt()).sqrt();
+        }
+
+        let (asum, asum_err) = olver_asum(nu, z, abs_zeta);
+        let bsum = olver_bsum(nu, z, abs_zeta);
+
+        let arg = crnu * crnu * zeta;
+        let ai = arg.airy_ai_e();
+        let aip = SpecFunResult::<f64>::default(); //gsl_sf_airy_Ai_deriv_e(arg, GSL_MODE_DEFAULT);
+
+        result.val = pre * (ai.val * asum / crnu + aip.val * bsum / (nu * crnu * crnu));
+        result.err = pre * (ai.err * (asum / crnu).abs());
+        result.err += pre * ai.val.abs() * asum_err / crnu;
+        result.err += pre * (ai.val * asum).abs() / (crnu * nu11);
+        result.err += 8.0 * f64::EPSILON * result.val.abs();
+
+        result
     }
-
-    let (asum, asum_err) = olver_asum(nu, z, abs_zeta);
-    let bsum = olver_bsum(nu, z, abs_zeta);
-
-    let arg = crnu * crnu * zeta;
-    let ai = gsl_sf_airy_Ai_e(arg, GSL_MODE_DEFAULT);
-    let aip = gsl_sf_airy_Ai_deriv_e(arg, GSL_MODE_DEFAULT);
-
-    result.val = pre * (ai.val * asum / crnu + aip.val * bsum / (nu * crnu * crnu));
-    result.err = pre * (ai.err * (asum / crnu).abs());
-    result.err += pre * ai.val.abs() * asum_err / crnu;
-    result.err += pre * (ai.val * asum).abs() / (crnu * nu11);
-    result.err += 8.0 * f64::EPSILON * result.val.abs();
-
-    result
-  }
 }
 
 #[cfg(test)]
 mod test {
-  use super::*;
+    use super::*;
 
-  #[test]
-  fn test_1() {
-    assert!(zofmzeta_a_data[0] == 2.9332563730829348990);
-  }
+    #[test]
+    fn test_1() {
+        assert!(zofmzeta_a_data[0] == 2.9332563730829348990);
+    }
 }

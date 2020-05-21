@@ -2,10 +2,11 @@ use crate::airy::data::*;
 use crate::cheb::cheb_eval_e;
 use crate::result::{SpecFunCode, SpecFunResult};
 use crate::trig::{cos_err_e, sin_err_e};
-/* Airy modulus and phase for x < -1 */
+
+// Airy modulus and phase for x < -1
 fn airy_mod_phase(x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
-    let mut result_m = SpecFunResult::<f64>::default();
-    let mut result_p = SpecFunResult::<f64>::default();
+    let result_m: SpecFunResult<f64>;
+    let result_p: SpecFunResult<f64>;
     let mut result_mod = SpecFunResult::<f64>::default();
     let mut result_phase = SpecFunResult::<f64>::default();
 
@@ -40,7 +41,7 @@ fn airy_mod_phase(x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
     (result_mod, result_phase)
 }
 
-// assumes x >= 1.0 */
+// assumes x >= 1.0
 #[inline]
 fn airy_aie(x: f64) -> SpecFunResult<f64> {
     let sqx = x.sqrt();

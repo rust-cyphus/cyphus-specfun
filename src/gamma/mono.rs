@@ -473,7 +473,7 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
 // --------------------------------
 
 /// Compute the factorial of a number, returning an f64
-pub fn factorial(n: usize) -> SpecFunResult<f64> {
+pub(crate) fn fact_e(n: usize) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
         err: 0.0,
@@ -489,13 +489,13 @@ pub fn factorial(n: usize) -> SpecFunResult<f64> {
         result.val = f64::INFINITY;
         result.err = f64::INFINITY;
         result.code = SpecFunCode::OverflowErr;
-        result.issue_warning("factorial", &[n as f64]);
+        result.issue_warning("fact_e", &[n as f64]);
     }
     result
 }
 
-/// Compute the double factorial of a number, returning an f64
-pub fn double_factorial(n: usize) -> SpecFunResult<f64> {
+/// Compute the double fact_e of a number, returning an f64
+pub(crate) fn doublefact_e(n: usize) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
         err: 0.0,
@@ -511,7 +511,7 @@ pub fn double_factorial(n: usize) -> SpecFunResult<f64> {
         result.val = f64::INFINITY;
         result.err = f64::INFINITY;
         result.code = SpecFunCode::OverflowErr;
-        result.issue_warning("double_factorial", &[n as f64]);
+        result.issue_warning("doublefact_e", &[n as f64]);
     }
     result
 }
@@ -528,6 +528,89 @@ pub(crate) fn lnfact_e(n: usize) -> SpecFunResult<f64> {
     } else {
         lngamma_e((n as f64) + 1.0)
     }
+}
+
+/// Compute the natural log of n!!
+pub(crate) fn lndoublefact_e(n: usize) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+    if n <= DOUBLE_FACT_TABLE.len() {
+        result.val = DOUBLE_FACT_TABLE[n].ln();
+        result.err = 2.0 * f64::EPSILON * result.val.abs();
+    } else if n % 2 == 1 {
+        let lg = lngamma_e(0.5 * (n + 2) as f64);
+        result.val =
+            0.5 * (n as f64 + 1.0) * std::f64::consts::LN_2 - 0.5 * crate::consts::LNPI + lg.val;
+        result.err = 2.0 * f64::EPSILON * result.val + lg.err;
+    } else {
+        let lg = lngamma_e(0.5 * (n as f64) + 1.0);
+        result.val = 0.5 * n as f64 * std::f64::consts::LN_2 + lg.val;
+        result.err = 2.0 * f64::EPSILON * result.val.abs() + lg.err;
+    }
+    result
+}
+
+/// Compute the binomial coefficient n! / (m! * (n-m)!)
+pub(crate) fn choose_e(n: usize, m: usize) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+
+    if m > n {
+        result.code = SpecFunCode::DomainErr;
+        result.val = f64::NAN;
+        result.err = f64::NAN;
+    } else if m == n || m == 0 {
+        result.val = 1.0;
+        result.err = 0.0;
+    } else if n <= FACT_TABLE.len() {
+        result.val = (FACT_TABLE[n] / FACT_TABLE[m]) / FACT_TABLE[n - m];
+        result.err = 6.0 * f64::EPSILON * result.val.abs();
+    } else {
+        let m = if m * 2 < n { n - m } else { m };
+
+        if n - m < 64
+        // compute product for a manageable number of terms
+        {
+            let mut prod = 1.0;
+
+            for k in ((m + 1)..(n + 1)).rev() {
+                let tk = k as f64 / (k - m) as f64;
+                if tk > f64::MAX / prod {
+                    result.code = SpecFunCode::OverflowErr;
+                    result.val = f64::INFINITY;
+                    result.err = f64::INFINITY;
+                    return result;
+                }
+                prod *= tk;
+            }
+            result.val = prod;
+            result.err = 2.0 * f64::EPSILON * prod * ((n - m) as f64).abs();
+        } else {
+            let lc = lnchoose_e(n, m);
+            result = exp_err_e(lc.val, lc.err);
+        }
+    }
+    result
+}
+
+/// Compute the natural log of the binomial coefficient: ln(n! / (m! * (n-m)!))
+pub(crate) fn lnchoose_e(n: usize, m: usize) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+    if m > n {
+        result.code = SpecFunCode::DomainErr;
+        result.val = f64::NAN;
+        result.err = f64::NAN;
+    } else if m == n || m == 0 {
+        result.val = 0.0;
+        result.err = 0.0;
+    } else {
+        let m = if m * 2 > n { n - m } else { m };
+        let nf = lnfact_e(n);
+        let mf = lnfact_e(m);
+        let nmmf = lnfact_e(n - m);
+        result.val = nf.val - mf.val - nmmf.val;
+        result.err = nf.err + mf.err + nmmf.err;
+        result.err += 2.0 * f64::EPSILON * result.val.abs();
+    }
+    result
 }
 
 /// ln(gamma(x)) where x is not a negative integer

@@ -76,7 +76,34 @@ impl<T: Float> ChebSeries<T> {
     }
     /// Evaluate the Chebyshev series at x and return result and error.
     pub fn eval(&self, x: T) -> SpecFunResult<T> {
-        cheb_eval_e(x, &self.coeffs, self.a, self.b)
+        let mut d = T::zero();
+        let mut dd = T::zero();
+        let two = T::from(2).unwrap();
+        let lb: T = self.a;
+        let ub: T = self.b;
+
+        let y = (two * x - lb - ub) / (ub - lb);
+        let y2 = two * y;
+
+        let mut e = T::zero();
+
+        for j in (1..(self.coeffs.len())).rev() {
+            let temp = d;
+            d = y2 * d - dd + self.coeffs[j];
+            e = e + (y2 * temp).abs() + dd.abs() + self.coeffs[j].abs();
+            dd = temp;
+        }
+
+        {
+            let temp = d;
+            d = y * d - dd + self.coeffs[0] / two;
+            e = e + (y * temp).abs() + dd.abs() + T::from(0.5).unwrap() * self.coeffs[0].abs();
+        }
+
+        let val = d;
+        let err = T::epsilon() * e + self.coeffs.last().unwrap().abs();
+        let code = SpecFunCode::Success;
+        SpecFunResult { val, err, code }
     }
 }
 
@@ -91,5 +118,12 @@ mod tests {
         let sinhalf = 0.5_f64.sin();
         let cheb = cheb_eval_e(x, &coeffs, -1.0, 1.0).val;
         assert!((sinhalf - cheb).abs() < 1e-5);
+
+        let cheb = ChebSeries {
+            coeffs: vec![0.0, 0.880101, 0.0, -0.0391267, 0.0, 0.00050252],
+            a: -1.0,
+            b: 1.0,
+        };
+        assert!((sinhalf - cheb.eval(x).val).abs() < 1e-5);
     }
 }

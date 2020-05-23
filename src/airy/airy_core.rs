@@ -1,5 +1,4 @@
-use crate::airy::data::*;
-use crate::cheb::cheb_eval_e;
+use crate::airy::airy_data::*;
 use crate::result::{SpecFunCode, SpecFunResult};
 use crate::trig::{cos_err_e, sin_err_e};
 
@@ -10,14 +9,17 @@ fn airy_mod_phase(x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
     let mut result_mod = SpecFunResult::<f64>::default();
     let mut result_phase = SpecFunResult::<f64>::default();
 
+    // cheb_eval_e\((.+?),\s(.+?), -1.0, 1.0\);
+    // %2.eval($1);
+
     if x < -2.0 {
         let z = 16.0 / (x * x * x) + 1.0;
-        result_m = cheb_eval_e(z, &(*AM21_DATA), -1.0, 1.0);
-        result_p = cheb_eval_e(z, &(*ATH1_DATA), -1.0, 1.0);
+        result_m = (*AM21_CHEB).eval(z);
+        result_p = (*ATH1_CHEB).eval(z);
     } else if x <= -1.0 {
         let z = (16.0 / (x * x * x) + 9.0) / 7.0;
-        result_m = cheb_eval_e(z, &(*AM22_DATA), -1.0, 1.0);
-        result_p = cheb_eval_e(z, &(*ATH2_DATA), -1.0, 1.0);
+        result_m = (*AM22_CHEB).eval(z);
+        result_p = (*ATH2_CHEB).eval(z);
     } else {
         result_mod.val = 0.0;
         result_mod.err = 0.0;
@@ -47,7 +49,7 @@ fn airy_aie(x: f64) -> SpecFunResult<f64> {
     let sqx = x.sqrt();
     let z = 2.0 / (x * sqx) - 1.0;
     let y = sqx.sqrt();
-    let result_c = cheb_eval_e(z, &(*AIP_DATA), -1.0, 1.0);
+    let result_c = (*AIP_CHEB).eval(z);
     let mut result = SpecFunResult::<f64>::default();
     result.val = (0.28125 + result_c.val) / y;
     result.err = result_c.err / y + f64::EPSILON * result.val.abs();
@@ -65,14 +67,14 @@ fn airy_bie(x: f64) -> SpecFunResult<f64> {
         let sqx = x.sqrt();
         let z = atr / (x * sqx) + btr;
         let y = sqx.sqrt();
-        let result_c = cheb_eval_e(z, &(*BIP_DATA), -1.0, 1.0);
+        let result_c = &(*BIP_CHEB).eval(z);
         result.val = (0.625 + result_c.val) / y;
         result.err = result_c.err / y + f64::EPSILON * result.val.abs();
     } else {
         let sqx = x.sqrt();
         let z = 16.0 / (x * sqx) - 1.0;
         let y = sqx.sqrt();
-        let result_c = cheb_eval_e(z, &(*BIP2_DATA), -1.0, 1.0);
+        let result_c = (*BIP2_CHEB).eval(z);
         result.val = (0.625 + result_c.val) / y;
         result.err = result_c.err / y + f64::EPSILON * result.val.abs();
     }
@@ -92,14 +94,14 @@ pub(crate) fn airy_ai_e(x: f64) -> SpecFunResult<f64> {
         result
     } else if x <= 1.0 {
         let z = x * x * x;
-        let result_c0 = cheb_eval_e(z, &(*AI_DATA_F), -1.0, 1.0);
-        let result_c1 = cheb_eval_e(z, &(*AI_DATA_G), -1.0, 1.0);
+        let result_c0 = (*AIF_CHEB).eval(z);
+        let result_c1 = (*AIG_CHEB).eval(z);
         result.val = 0.375 + (result_c0.val - x * (0.25 + result_c1.val));
         result.err = result_c0.err + (x * result_c1.err).abs();
         result.err += f64::EPSILON * result.val.abs();
         result
     } else {
-        let x32 = x * x.abs();
+        let x32 = x * x.sqrt();
         let s = (-2.0 * x32 / 3.0).exp();
         let result_aie = airy_aie(x);
         result.val = result_aie.val * s;
@@ -126,8 +128,8 @@ pub(crate) fn airy_ai_scaled_e(x: f64) -> SpecFunResult<f64> {
         result
     } else if x <= 1.0 {
         let z = x * x * x;
-        let result_c0 = cheb_eval_e(z, &(*AI_DATA_F), -1.0, 1.0);
-        let result_c1 = cheb_eval_e(z, &(*AI_DATA_G), -1.0, 1.0);
+        let result_c0 = (*AIF_CHEB).eval(z);
+        let result_c1 = (*AIG_CHEB).eval(z);
         result.val = 0.375 + (result_c0.val - x * (0.25 + result_c1.val));
         result.err = result_c0.err + (x * result_c1.err).abs();
         result.err += f64::EPSILON * result.val.abs();
@@ -156,15 +158,15 @@ pub(crate) fn airy_bi_e(x: f64) -> SpecFunResult<f64> {
         result.err += f64::EPSILON * result.val.abs();
     } else if x <= 1.0 {
         let z = x * x * x;
-        let result_c0 = cheb_eval_e(z, &(*BIF_DATA), -1.0, 1.0);
-        let result_c1 = cheb_eval_e(z, &(*BIG_DATA), -1.0, 1.0);
+        let result_c0 = (*BIF_CHEB).eval(z);
+        let result_c1 = (*BIG_CHEB).eval(z);
         result.val = 0.625 + (result_c0.val + x * (0.4375 + result_c1.val));
         result.err = result_c0.err + (x * result_c1.err).abs();
         result.err += f64::EPSILON * result.val.abs();
     } else if x <= 2.0 {
         let z = (2.0 * x * x * x - 9.0) / 7.0;
-        let result_c0 = cheb_eval_e(z, &(*BIF2_DATA), -1.0, 1.0);
-        let result_c1 = cheb_eval_e(z, &(*BIG2_DATA), -1.0, 1.0);
+        let result_c0 = (*BIF2_CHEB).eval(z);
+        let result_c1 = (*BIG2_CHEB).eval(z);
         result.val = 1.125 + result_c0.val + x * (0.625 + result_c1.val);
         result.err = result_c0.err + (x * result_c1.err).abs();
         result.err += f64::EPSILON * result.val.abs();
@@ -199,8 +201,8 @@ pub(crate) fn airy_bi_scaled_e(x: f64) -> SpecFunResult<f64> {
         result.err += f64::EPSILON * result.val.abs();
     } else if x <= 1.0 {
         let z = x * x * x;
-        let result_c0 = cheb_eval_e(z, &(*BIF_DATA), -1.0, 1.0);
-        let result_c1 = cheb_eval_e(z, &(*BIG_DATA), -1.0, 1.0);
+        let result_c0 = (*BIF_CHEB).eval(z);
+        let result_c1 = (*BIG_CHEB).eval(z);
         result.val = 0.625 + (result_c0.val + x * (0.4375 + result_c1.val));
         result.err = result_c0.err + (x * result_c1.err).abs();
         result.err += f64::EPSILON * result.val.abs();
@@ -213,8 +215,8 @@ pub(crate) fn airy_bi_scaled_e(x: f64) -> SpecFunResult<f64> {
         let x3 = x * x * x;
         let z = (2.0 * x3 - 9.0) / 7.0;
         let s = (-2.0 / 3.0 * x3.sqrt()).exp();
-        let result_c0 = cheb_eval_e(z, &(*BIF2_DATA), -1.0, 1.0);
-        let result_c1 = cheb_eval_e(z, &(*BIG2_DATA), -1.0, 1.0);
+        let result_c0 = (*BIF2_CHEB).eval(z);
+        let result_c1 = (*BIG2_CHEB).eval(z);
         result.val = s * (1.125 + result_c0.val + x * (0.625 + result_c1.val));
         result.err = s * (result_c0.err + (x * result_c1.err).abs());
         result.err += f64::EPSILON * result.val.abs();

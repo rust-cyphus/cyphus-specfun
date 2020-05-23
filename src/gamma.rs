@@ -1,10 +1,12 @@
 mod data;
+pub(crate) mod inc;
 pub(crate) mod mono;
 pub(crate) mod poch;
 pub(crate) mod psi;
 
 use crate::result::SpecFunResult;
 
+use inc::*;
 use mono::*;
 use poch::*;
 use psi::*;
@@ -125,10 +127,10 @@ macro_rules! impl_gamma_int {
     ($T:ty) => {
         impl Gamma for $T {
             fn gamma_e(&self) -> SpecFunResult<f64> {
-                factorial(*self as usize)
+                fact_e(*self as usize)
             }
             fn gamma(&self) -> f64 {
-                factorial(*self as usize).val
+                fact_e(*self as usize).val
             }
             fn gammastar_e(&self) -> SpecFunResult<f64> {
                 gammastar_e(*self as f64)
@@ -804,6 +806,124 @@ mod tests {
             (1000, 500.0),
             2.3193170139740855074e+131,
             TOL1,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_fact_e() {
+        test_check_result_and_code!(fact_e, (0), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(fact_e, (1), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(fact_e, (7), 5040.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
+            fact_e,
+            (33),
+            8.683317618811886496e+36,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_doublefact_e() {
+        test_check_result_and_code!(doublefact_e, (0), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(doublefact_e, (1), 1.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(doublefact_e, (7), 105.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
+            doublefact_e,
+            (33),
+            6.332659870762850625e+18,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_lndoublefact_e() {
+        test_check_result_and_code!(lndoublefact_e, (0), 0.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
+            lndoublefact_e,
+            (7),
+            4.653960350157523371,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lndoublefact_e,
+            (33),
+            43.292252022541719660,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lndoublefact_e,
+            (34),
+            45.288575519655959140,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lndoublefact_e,
+            (1034),
+            3075.6383796271197707,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lndoublefact_e,
+            (1035),
+            3078.8839081731809169,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_choose_e() {
+        test_check_result_and_code!(choose_e, (7, 3), 35.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(choose_e, (7, 4), 35.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(choose_e, (5, 2), 10.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(choose_e, (5, 3), 10.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(
+            choose_e,
+            (500, 495),
+            255244687600.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            choose_e,
+            (500, 5),
+            255244687600.0,
+            TOL0,
+            SpecFunCode::Success
+        );
+        //TODO: This test fails
+        test_check_result_and_code!(
+            choose_e,
+            (500, 200),
+            5.054949849935532221e+144,
+            TOL5,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            choose_e,
+            (500, 300),
+            5.054949849935532221e+144,
+            TOL5,
+            SpecFunCode::Success
+        );
+    }
+    #[test]
+    fn test_lnchoose_e() {
+        test_check_result_and_code!(
+            lnchoose_e,
+            (7, 3),
+            3.555348061489413680,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            lnchoose_e,
+            (5, 2),
+            2.302585092994045684,
+            TOL0,
             SpecFunCode::Success
         );
     }

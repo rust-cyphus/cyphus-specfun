@@ -6,6 +6,7 @@ use crate::result::SpecFunResult;
 
 use airy_core::*;
 use airy_deriv::*;
+use airy_zeros::*;
 
 pub trait Airy {
     /// Compute the Airy function Ai(x) along with an error estimate.
@@ -28,34 +29,150 @@ pub trait Airy {
     /// Compute the Airy function Bi(x) scaled by S(x) = exp(-2x^{3/2}/3)
     /// for x > 0 and 1 for x < 0.
     fn airy_bi_scaled(&self) -> f64;
+    /// Compute first derivative of the Airy function Ai(x) along with an
+    /// error estimate.
+    fn airy_ai_deriv_e(&self) -> SpecFunResult<f64>;
+    /// Compute first derivative of the Airy function Ai(x).
+    fn airy_ai_deriv(&self) -> f64;
+    /// Compute the first derivative of the Airy function Ai(x) along with an
+    /// error estimate, scaled by S(x) = exp(2x^{3/2}/3) for x > 0 and 1 for
+    /// x < 0.
+    fn airy_ai_deriv_scaled_e(&self) -> SpecFunResult<f64>;
+    /// Compute the first derivative of the Airy function Ai(x) scaled by
+    /// S(x) = exp(2x^{3/2}/3) for x > 0 and 1 for x < 0.
+    fn airy_ai_deriv_scaled(&self) -> f64;
+    /// Compute first derivative of the Airy function Bi(x) along with an
+    /// error estimate.
+    fn airy_bi_deriv_e(&self) -> SpecFunResult<f64>;
+    /// Compute first derivative of the Airy function Bi(x).
+    fn airy_bi_deriv(&self) -> f64;
+    /// Compute the first derivative of the Airy function Bi(x) along with an
+    /// error estimate, scaled by S(x) = exp(-2x^{3/2}/3) for x > 0 and 1 for
+    /// x < 0.
+    fn airy_bi_deriv_scaled_e(&self) -> SpecFunResult<f64>;
+    /// Compute the first derivative of the Airy function Bi(x) scaled by
+    /// S(x) = exp(-2x^{3/2}/3) for x > 0 and 1 for x < 0.
+    fn airy_bi_deriv_scaled(&self) -> f64;
 }
 
-impl Airy for f64 {
-    fn airy_ai_e(&self) -> SpecFunResult<f64> {
-        airy_ai_e(*self)
-    }
-    fn airy_ai_scaled_e(&self) -> SpecFunResult<f64> {
-        airy_ai_scaled_e(*self)
-    }
-    fn airy_ai(&self) -> f64 {
-        airy_ai_e(*self).val
-    }
-    fn airy_ai_scaled(&self) -> f64 {
-        airy_ai_scaled_e(*self).val
-    }
-    fn airy_bi_e(&self) -> SpecFunResult<f64> {
-        airy_bi_e(*self)
-    }
-    fn airy_bi_scaled_e(&self) -> SpecFunResult<f64> {
-        airy_bi_scaled_e(*self)
-    }
-    fn airy_bi(&self) -> f64 {
-        airy_bi_e(*self).val
-    }
-    fn airy_bi_scaled(&self) -> f64 {
-        airy_bi_scaled_e(*self).val
-    }
+macro_rules! impl_airy_float {
+    ($T:ty) => {
+        impl Airy for $T {
+            fn airy_ai_e(&self) -> SpecFunResult<f64> {
+                airy_ai_e(*self as f64)
+            }
+            fn airy_ai_scaled_e(&self) -> SpecFunResult<f64> {
+                airy_ai_scaled_e(*self as f64)
+            }
+            fn airy_ai(&self) -> f64 {
+                airy_ai_e(*self as f64).val
+            }
+            fn airy_ai_scaled(&self) -> f64 {
+                airy_ai_scaled_e(*self as f64).val
+            }
+            fn airy_bi_e(&self) -> SpecFunResult<f64> {
+                airy_bi_e(*self as f64)
+            }
+            fn airy_bi_scaled_e(&self) -> SpecFunResult<f64> {
+                airy_bi_scaled_e(*self as f64)
+            }
+            fn airy_bi(&self) -> f64 {
+                airy_bi_e(*self as f64).val
+            }
+            fn airy_bi_scaled(&self) -> f64 {
+                airy_bi_scaled_e(*self as f64).val
+            }
+
+            fn airy_ai_deriv_e(&self) -> SpecFunResult<f64> {
+                airy_ai_deriv_e(*self as f64)
+            }
+            fn airy_ai_deriv(&self) -> f64 {
+                airy_ai_deriv_e(*self as f64).val
+            }
+            fn airy_ai_deriv_scaled_e(&self) -> SpecFunResult<f64> {
+                airy_ai_deriv_scaled_e(*self as f64)
+            }
+            fn airy_ai_deriv_scaled(&self) -> f64 {
+                airy_ai_deriv_scaled_e(*self as f64).val
+            }
+
+            fn airy_bi_deriv_e(&self) -> SpecFunResult<f64> {
+                airy_bi_deriv_e(*self as f64)
+            }
+            fn airy_bi_deriv(&self) -> f64 {
+                airy_bi_deriv_e(*self as f64).val
+            }
+            fn airy_bi_deriv_scaled_e(&self) -> SpecFunResult<f64> {
+                airy_bi_deriv_scaled_e(*self as f64)
+            }
+            fn airy_bi_deriv_scaled(&self) -> f64 {
+                airy_bi_deriv_scaled_e(*self as f64).val
+            }
+        }
+    };
 }
+
+impl_airy_float!(f32);
+impl_airy_float!(f64);
+
+trait AiryZero {
+    /// Compute a zero of the Airy function Ai(x) along with an error estimate.
+    fn airy_zero_ai_e(&self) -> SpecFunResult<f64>;
+    /// Compute a zero of the Airy function Ai(x).
+    fn airy_zero_ai(&self) -> f64;
+    /// Compute a zero of the first derivative of the Airy function Ai(x) along
+    /// with an error estimate.
+    fn airy_zero_ai_deriv_e(&self) -> SpecFunResult<f64>;
+    /// Compute a zero of the first derivative of the Airy function Ai(x).
+    fn airy_zero_ai_deriv(&self) -> f64;
+    /// Compute a zero of the Airy function Bi(x) along with an error estimate.
+    fn airy_zero_bi_e(&self) -> SpecFunResult<f64>;
+    /// Compute a zero of the Airy function Bi(x).
+    fn airy_zero_bi(&self) -> f64;
+    /// Compute a zero of the first derivative of the Airy function Bi(x) along
+    /// with an error estimate.
+    fn airy_zero_bi_deriv_e(&self) -> SpecFunResult<f64>;
+    /// Compute a zero of the first derivative of the Airy function Bi(x).
+    fn airy_zero_bi_deriv(&self) -> f64;
+}
+
+macro_rules! impl_airy_zero_int {
+    ($T:ty) => {
+        impl AiryZero for $T {
+            fn airy_zero_ai_e(&self) -> SpecFunResult<f64> {
+                airy_zero_ai_e(*self as usize)
+            }
+            fn airy_zero_ai(&self) -> f64 {
+                airy_zero_ai_e(*self as usize).val
+            }
+            fn airy_zero_ai_deriv_e(&self) -> SpecFunResult<f64> {
+                airy_zero_ai_deriv_e(*self as usize)
+            }
+            fn airy_zero_ai_deriv(&self) -> f64 {
+                airy_zero_ai_deriv_e(*self as usize).val
+            }
+
+            fn airy_zero_bi_e(&self) -> SpecFunResult<f64> {
+                airy_zero_bi_e(*self as usize)
+            }
+            fn airy_zero_bi(&self) -> f64 {
+                airy_zero_bi_e(*self as usize).val
+            }
+            fn airy_zero_bi_deriv_e(&self) -> SpecFunResult<f64> {
+                airy_zero_bi_deriv_e(*self as usize)
+            }
+            fn airy_zero_bi_deriv(&self) -> f64 {
+                airy_zero_bi_deriv_e(*self as usize).val
+            }
+        }
+    };
+}
+
+impl_airy_zero_int!(u8);
+impl_airy_zero_int!(u16);
+impl_airy_zero_int!(u32);
+impl_airy_zero_int!(u64);
+impl_airy_zero_int!(usize);
 
 #[cfg(test)]
 mod test {
@@ -66,12 +183,8 @@ mod test {
     use crate::test_check_result_and_code;
     use crate::test_utils::*;
     const TOL0: f64 = 2.0 * f64::EPSILON;
-    const SQRT_TOL0: f64 = 2.0 * crate::consts::SQRT_DLB_EPS;
     const TOL1: f64 = 16.0 * f64::EPSILON;
-    const TOL2: f64 = 256.0 * f64::EPSILON;
-    const TOL3: f64 = 2048.0 * f64::EPSILON;
     const TOL4: f64 = 16384.0 * f64::EPSILON;
-    const TOL5: f64 = 131072.0 * f64::EPSILON;
 
     #[test]
     fn test_airy_ai_e() {

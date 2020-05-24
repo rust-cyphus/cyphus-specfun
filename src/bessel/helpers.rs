@@ -1,6 +1,56 @@
+use crate::cheb::ChebSeries;
 use crate::consts::{ROOT5_DBL_EPS, SQRT_DLB_EPS};
 use crate::gamma::Gamma;
 use crate::result::{SpecFunCode, SpecFunResult};
+use lazy_static::lazy_static;
+use std::f64::consts::PI;
+
+lazy_static! {
+    // nu = (x+1)/4, -1<x<1, 1/(2nu)(1/Gamma[1-nu]-1/Gamma[1+nu])
+    static ref G1_CHEB: ChebSeries<f64> = ChebSeries {
+        coeffs: vec![
+            -1.14516408366268311786898152867,
+            0.00636085311347084238122955495,
+            0.00186245193007206848934643657,
+            0.000152833085873453507081227824,
+            0.000017017464011802038795324732,
+            -6.4597502923347254354668326451e-07,
+            -5.1819848432519380894104312968e-08,
+            4.5189092894858183051123180797e-10,
+            3.2433227371020873043666259180e-11,
+            6.8309434024947522875432400828e-13,
+            2.8353502755172101513119628130e-14,
+            -7.9883905769323592875638087541e-16,
+            -3.3726677300771949833341213457e-17,
+            -3.6586334809210520744054437104e-20,
+        ],
+        a: -1.0,
+        b: 1.0,
+    };
+
+    // nu = (x+1)/4, -1<x<1,  1/2 (1/Gamma[1-nu]+1/Gamma[1+nu])
+    static ref G2_CHEB: ChebSeries<f64> = ChebSeries {
+        coeffs: vec![
+            1.882645524949671835019616975350,
+            -0.077490658396167518329547945212,
+            -0.018256714847324929419579340950,
+            0.0006338030209074895795923971731,
+            0.0000762290543508729021194461175,
+            -9.5501647561720443519853993526e-07,
+            -8.8927268107886351912431512955e-08,
+            -1.9521334772319613740511880132e-09,
+            -9.4003052735885162111769579771e-11,
+            4.6875133849532393179290879101e-12,
+            2.2658535746925759582447545145e-13,
+            -1.1725509698488015111878735251e-15,
+            -7.0441338200245222530843155877e-17,
+            -2.4377878310107693650659740228e-18,
+            -7.5225243218253901727164675011e-20,
+        ],
+        a: -1.0,
+        b: 1.0,
+    };
+}
 
 #[inline]
 fn debye_u1(tpow: &[f64]) -> f64 {
@@ -35,6 +85,7 @@ fn debye_u5(tpow: &[f64]) -> f64 {
 
 /// These are of use in calculating the oscillating Bessel functions.
 // cos(y - pi/4 + eps)
+#[allow(dead_code)]
 pub(super) fn bessel_cos_pi4_e(y: f64, eps: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -80,6 +131,7 @@ pub(super) fn bessel_cos_pi4_e(y: f64, eps: f64) -> SpecFunResult<f64> {
 
 /// These are of use in calculating the oscillating Bessel functions.
 // sin(y - pi/4 + eps)
+#[allow(dead_code)]
 pub(super) fn bessel_sin_pi4_e(y: f64, eps: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -253,6 +305,7 @@ pub(super) fn besseljv_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
 }
 
 // x >> nu*nu+1
+#[allow(dead_code)]
 pub(super) fn besselyv_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
@@ -279,6 +332,7 @@ pub(super) fn besselyv_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
 }
 
 // x >> nu*nu+1
+#[allow(dead_code)]
 pub(super) fn besseliv_scaled_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     let mu = 4.0 * nu * nu;
@@ -291,6 +345,7 @@ pub(super) fn besseliv_scaled_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     result
 }
 
+#[allow(dead_code)]
 pub(super) fn besselkv_scaled_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     let mu = 4.0 * nu * nu;
@@ -332,7 +387,7 @@ pub(super) fn besselkv_scaled_asympx_e(nu: f64, x: f64) -> SpecFunResult<f64> {
 // since the polynomial term will be evaluated near t=1, so the bound
 // on nu will become constant for small x. Furthermore, increasing x with
 // nu fixed will decrease the error.
-//
+#[allow(dead_code)]
 pub(super) fn besseliv_scaled_asymp_unif_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     let z = x / nu;
@@ -372,6 +427,7 @@ pub(super) fn besseliv_scaled_asymp_unif_e(nu: f64, x: f64) -> SpecFunResult<f64
 }
 
 // nu -> Inf; uniform in x > 0  [Abramowitz+Stegun, 9.7.8]
+#[allow(dead_code)]
 pub(super) fn besselkv_scaled_asymp_unif_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
@@ -393,10 +449,10 @@ pub(super) fn besselkv_scaled_asymp_unif_e(nu: f64, x: f64) -> SpecFunResult<f64
         for i in 1..16 {
             tpow[i] = t * tpow[i - 1];
         }
-        let sum = 1.0 - debye_u1(&tpow) / nu + debye_u2(&tpow) / (nu * nu) -
-            debye_u3(&tpow) / (nu * nu * nu) +
-            debye_u4(&tpow) / (nu * nu * nu * nu) -
-            debye_u5(&tpow) / (nu * nu * nu * nu * nu);
+        let sum = 1.0 - debye_u1(&tpow) / nu + debye_u2(&tpow) / (nu * nu)
+            - debye_u3(&tpow) / (nu * nu * nu)
+            + debye_u4(&tpow) / (nu * nu * nu * nu)
+            - debye_u5(&tpow) / (nu * nu * nu * nu * nu);
         result.val = pre * ex_result.val * sum;
         result.err = pre * ex_result.err * sum.abs();
         result.err += pre * ex_result.val / (nu * nu * nu * nu * nu * nu);
@@ -408,10 +464,17 @@ pub(super) fn besselkv_scaled_asymp_unif_e(nu: f64, x: f64) -> SpecFunResult<f64
     result
 }
 
-/* Evaluate J_mu(x),J_{mu+1}(x) and Y_mu(x),Y_{mu+1}(x)  for |mu| < 1/2
- */
-pub(super) fn besseljyv_restricted(mu: f64, x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>,
-                                                        SpecFunResult<f64>, SpecFunResult<f64>) {
+// Evaluate J_mu(x),J_{mu+1}(x) and Y_mu(x),Y_{mu+1}(x)  for |mu| < 1/2
+#[allow(dead_code)]
+pub(super) fn besseljyv_restricted(
+    mu: f64,
+    x: f64,
+) -> (
+    SpecFunResult<f64>,
+    SpecFunResult<f64>,
+    SpecFunResult<f64>,
+    SpecFunResult<f64>,
+) {
     let mut jmu = SpecFunResult::<f64>::default();
     let mut jmup1 = SpecFunResult::<f64>::default();
     let mut ymu = SpecFunResult::<f64>::default();
@@ -426,7 +489,7 @@ pub(super) fn besseljyv_restricted(mu: f64, x: f64) -> (SpecFunResult<f64>, Spec
         ymu.err = 0.0;
         ymup1.val = 0.0;
         ymup1.err = 0.0;
-        //GSL_ERROR("error", GSL_EDOM);
+    //GSL_ERROR("error", GSL_EDOM);
     } else if x == 0.0 {
         if mu == 0.0 {
             jmu.val = 1.0;
@@ -441,7 +504,7 @@ pub(super) fn besseljyv_restricted(mu: f64, x: f64) -> (SpecFunResult<f64>, Spec
         ymu.err = 0.0;
         ymup1.val = 0.0;
         ymup1.err = 0.0;
-        //GSL_ERROR("error", GSL_EDOM);
+    //GSL_ERROR("error", GSL_EDOM);
     } else {
         if x < 2.0 {
             // Use Taylor series for J and the Temme series for Y.
@@ -459,19 +522,20 @@ pub(super) fn besseljyv_restricted(mu: f64, x: f64) -> (SpecFunResult<f64>, Spec
             ymup1 = y_res.1;
         } else if x < 1000.0 {
             let (j_ratio, j_sgn) = besselj_cf1(mu, x);
-            let (p, q) = bessel_jy_steed_cf2(mu, x);
+            let (p, q) = besseljy_steed_cf2(mu, x);
             let jprime_j_ratio = mu / x - j_ratio.val;
-            let gamma = (p - jprime_j_ratio) / q;
-            jmu.val = j_sgn * (2.0 / (std::f64::consts::PI * x) / (q + gamma * (p -
-                jprime_j_ratio)))
-                .sqrt();
+            let gamma = (p.val - jprime_j_ratio) / q.val;
+            jmu.val = j_sgn
+                * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - jprime_j_ratio)))
+                    .sqrt();
             jmu.err = 4.0 * f64::EPSILON * (jmu.val).abs();
-            jmup1.val = j_ratio * jmu.val;
-            jmup1.err = (j_ratio).abs() * jmu.err;
+            jmup1.val = j_ratio.val * jmu.val;
+            jmup1.err = j_ratio.val.abs() * jmu.err;
             ymu.val = gamma * jmu.val;
             ymu.err = (gamma).abs() * jmu.err;
-            ymup1.val = ymu.val * (mu / x - p - q / gamma);
-            ymup1.err = ymu.err * (mu / x - p - q / gamma).abs() + 4.0 * f64::EPSILON * ymup1.val.abs();
+            ymup1.val = ymu.val * (mu / x - p.val - q.val / gamma);
+            ymup1.err = ymu.err * (mu / x - p.val - q.val / gamma).abs()
+                + 4.0 * f64::EPSILON * ymup1.val.abs();
         } else {
             /* Use asymptotics for large argument. */
             jmu = besseljv_asympx_e(mu, x);
@@ -484,16 +548,17 @@ pub(super) fn besseljyv_restricted(mu: f64, x: f64) -> (SpecFunResult<f64>, Spec
     (jmu, jmup1, ymu, ymup1)
 }
 
+#[allow(dead_code)]
 pub(super) fn besselj_cf1(nu: f64, x: f64) -> (SpecFunResult<f64>, f64) {
-    let recur_big = GSL_SQRT_DBL_MAX;
-    let recur_small = GSL_SQRT_DBL_MIN;
+    let recur_big = crate::consts::SQRT_DBL_MAX;
+    let recur_small = crate::consts::SQRT_DBL_MIN;
     let maxiter = 10000;
     let mut n = 1;
     let mut anm2 = 1.0;
     let mut bnm2 = 0.0;
     let mut anm1 = 0.0;
     let mut bnm1 = 1.0;
-    let mut a1 = x / (2.0 * (nu + 1.0));
+    let a1 = x / (2.0 * (nu + 1.0));
     let mut aan = anm1 + a1 * anm2;
     let mut bbn = bnm1 + a1 * bnm2;
     let mut an;
@@ -516,14 +581,11 @@ pub(super) fn besselj_cf1(nu: f64, x: f64) -> (SpecFunResult<f64>, f64) {
             bbn /= recur_big;
             anm1 /= recur_big;
             bnm1 /= recur_big;
-            anm2 /= recur_big;
         } else if aan.abs() < recur_small || (bbn).abs() < recur_small {
             aan /= recur_small;
             bbn /= recur_small;
             anm1 /= recur_small;
             bnm1 /= recur_small;
-            anm2 /= recur_small;
-            bnm2 /= recur_small;
         }
 
         let old_fn = ffn;
@@ -540,7 +602,7 @@ pub(super) fn besselj_cf1(nu: f64, x: f64) -> (SpecFunResult<f64>, f64) {
     }
 
     /* FIXME: we should return an error term here as well, because the
-       error from this recurrence affects the overall error estimate. */
+    error from this recurrence affects the overall error estimate. */
 
     let mut ratio = SpecFunResult::<f64>::default();
     ratio.val = ffn;
@@ -554,6 +616,7 @@ pub(super) fn besselj_cf1(nu: f64, x: f64) -> (SpecFunResult<f64>, f64) {
 
 // Evaluate the continued fraction CF1 for I_{nu+1}/I_nu
 // using Gautschi (Euler) equivalent series.
+#[allow(dead_code)]
 pub(super) fn besseli_cf1_ser(nu: f64, x: f64) -> SpecFunResult<f64> {
     let maxk = 20000;
     let mut tk = 1.0;
@@ -579,6 +642,7 @@ pub(super) fn besseli_cf1_ser(nu: f64, x: f64) -> SpecFunResult<f64> {
     result
 }
 
+#[allow(dead_code)]
 pub(super) fn besseljy_steed_cf2(nu: f64, x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
     let max_iter = 10000;
     let small = 1.0e-100;
@@ -588,11 +652,11 @@ pub(super) fn besseljy_steed_cf2(nu: f64, x: f64) -> (SpecFunResult<f64>, SpecFu
 
     let mut i = 1;
 
-    let mut x_inv = 1.0 / x;
+    let x_inv = 1.0 / x;
     let mut a = 0.25 - nu * nu;
     p.val = -0.5 * x_inv;
     q.val = 1.0;
-    let mut br = 2.0 * x;
+    let br = 2.0 * x;
     let mut bi = 2.0;
     let mut fact = a * x_inv / (p.val * p.val + q.val * q.val);
     let mut cr = br + q.val * fact;
@@ -608,7 +672,7 @@ pub(super) fn besseljy_steed_cf2(nu: f64, x: f64) -> (SpecFunResult<f64>, SpecFu
 
     while i <= max_iter {
         i += 1;
-        a += 2 * (i - 1) as f64;
+        a += (2 * (i - 1)) as f64;
         bi += 2.0;
         dr = a * dr + br;
         di = a * di + bi;
@@ -639,4 +703,340 @@ pub(super) fn besseljy_steed_cf2(nu: f64, x: f64) -> (SpecFunResult<f64>, SpecFu
         q.code = SpecFunCode::MaxIterErr;
     }
     (p, q)
+}
+
+/* Evaluate continued fraction CF2, using Thompson-Barnett-Temme method,
+ * to obtain values of exp(x)*K_nu and exp(x)*K_{nu+1}.
+ *
+ * This is unstable for small x; x > 2 is a good cutoff.
+ * Also requires |nu| < 1/2.
+*/
+#[allow(dead_code)]
+fn besselk_scaled_steed_temme_cf2(
+    nu: f64,
+    x: f64,
+) -> (SpecFunResult<f64>, SpecFunResult<f64>, SpecFunResult<f64>) {
+    let maxiter = 10000;
+
+    let mut knu = SpecFunResult::<f64>::default();
+    let mut knup1 = SpecFunResult::<f64>::default();
+    let mut kpnu = SpecFunResult::<f64>::default();
+
+    let mut bi = 2.0 * (1.0 + x);
+    let mut di = 1.0 / bi;
+    let mut delhi = di;
+    let mut hi = di;
+
+    let mut qi = 0.0;
+    let mut qip1 = 1.0;
+
+    let mut ai = -(0.25 - nu * nu);
+    let a1 = ai;
+    let mut ci = -ai;
+    let mut qqi = -ai;
+
+    let mut s = 1.0 + qqi * delhi;
+
+    for i in 2..(maxiter + 1) {
+        ai -= (2 * (i - 1)) as f64;
+        ci = -ai * ci / i as f64;
+        let tmp = (qi - bi * qip1) / ai;
+        qi = qip1;
+        qip1 = tmp;
+        qqi += ci * qip1;
+        bi += 2.0;
+        di = 1.0 / (bi + ai * di);
+        delhi = (bi * di - 1.0) * delhi;
+        hi += delhi;
+        let dels = qqi * delhi;
+        s += dels;
+        if (dels / s).abs() < f64::EPSILON {
+            break;
+        }
+
+        if i == maxiter - 1 {
+            knu.code = SpecFunCode::MaxIterErr;
+            knup1.code = SpecFunCode::MaxIterErr;
+            kpnu.code = SpecFunCode::MaxIterErr;
+        }
+    }
+
+    hi *= -a1;
+
+    knu.val = (std::f64::consts::PI / (2.0 * x)).sqrt() / s;
+    knup1.val = knu.val * (nu + x + 0.5 - hi) / x;
+    kpnu.val = -knup1.val + nu / x * knu.val;
+
+    (knu, knup1, kpnu)
+}
+
+pub(super) fn temme_gamma(nu: f64) -> (f64, f64, f64, f64) {
+    let anu = nu.abs(); // functions are even
+    let x: f64 = 4.0 * anu - 1.0;
+    let rg1 = (*G1_CHEB).eval(x);
+    let rg2 = (*G2_CHEB).eval(x);
+    let g1 = rg1.val;
+    let g2 = rg2.val;
+    let g1mnu = 1.0 / (rg2.val + nu * rg1.val);
+    let g1pnu = 1.0 / (rg2.val - nu * rg1.val);
+    (g1pnu, g1mnu, g1, g2)
+}
+
+#[allow(dead_code)]
+pub(super) fn bessely_temme(nu: f64, x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
+    let mut ynu = SpecFunResult::<f64>::default();
+    let mut ynup1 = SpecFunResult::<f64>::default();
+
+    let max_iter = 15000;
+    let half_x = 0.5 * x;
+    let ln_half_x = half_x.ln();
+    let half_x_nu = (nu * ln_half_x).exp();
+    let pi_nu = std::f64::consts::PI * nu;
+    let alpha = pi_nu / 2.0;
+    let sigma = -nu * ln_half_x;
+    let sinrat = if pi_nu.abs() < f64::EPSILON {
+        1.0
+    } else {
+        pi_nu / pi_nu.sin()
+    };
+    let sinhrat = if sigma.abs() < f64::EPSILON {
+        1.0
+    } else {
+        sigma.sinh() / sigma
+    };
+    let sinhalf = if alpha.abs() < f64::EPSILON {
+        1.0
+    } else {
+        alpha.sin() / alpha
+    };
+    let sin_sqr = nu * PI * PI * 0.5 * sinhalf * sinhalf;
+
+    let (g1pnu, g1mnu, g1, g2) = temme_gamma(nu);
+
+    let mut fk = 2.0 / PI * sinrat * (sigma.cosh() * g1 - sinhrat * ln_half_x * g2);
+    let mut pk = 1.0 / PI / half_x_nu * g1pnu;
+    let mut qk = 1.0 / PI * half_x_nu * g1mnu;
+    let mut hk;
+    let mut ck = 1.0;
+
+    let mut sum0 = fk + sin_sqr * qk;
+    let mut sum1 = pk;
+
+    let mut k = 0;
+
+    while k < max_iter {
+        k += 1;
+        fk = (k as f64 * fk + pk + qk) / ((k * k) as f64 - nu * nu);
+        ck *= -half_x * half_x / k as f64;
+        pk /= k as f64 - nu;
+        qk /= k as f64 + nu;
+        let gk = fk + sin_sqr * qk;
+        hk = -k as f64 * gk + pk;
+        let del0 = ck * gk;
+        let del1 = ck * hk;
+        sum0 += del0;
+        sum1 += del1;
+        if del0.abs() < 0.5 * (1.0 + sum0.abs()) * f64::EPSILON {
+            break;
+        }
+    }
+
+    ynu.val = -sum0;
+    ynu.err = (2.0 + 0.5 * k as f64) * f64::EPSILON * ynu.val.abs();
+    ynup1.val = -sum1 * 2.0 / x;
+    ynup1.err = (2.0 + 0.5 * k as f64) * f64::EPSILON * ynup1.val.abs();
+
+    if k >= max_iter {
+        ynu.code = SpecFunCode::MaxIterErr;
+        ynup1.code = SpecFunCode::MaxIterErr;
+    }
+
+    (ynu, ynup1)
+}
+
+#[allow(dead_code)]
+pub(super) fn besselk_scaled_temme(
+    nu: f64,
+    x: f64,
+) -> (SpecFunResult<f64>, SpecFunResult<f64>, SpecFunResult<f64>) {
+    let max_iter = 15000;
+
+    let mut knu = SpecFunResult::<f64>::default();
+    let mut knup1 = SpecFunResult::<f64>::default();
+    let mut kpnu = SpecFunResult::<f64>::default();
+
+    let half_x = 0.5 * x;
+    let ln_half_x = half_x.ln();
+    let half_x_nu = (nu * ln_half_x).exp();
+    let pi_nu = PI * nu;
+    let sigma = -nu * ln_half_x;
+    let sinrat = if pi_nu.abs() < f64::EPSILON {
+        1.0
+    } else {
+        pi_nu / pi_nu.sin()
+    };
+    let sinhrat = if sigma.abs() < f64::EPSILON {
+        1.0
+    } else {
+        sigma.sinh() / sigma
+    };
+    let ex = x.exp();
+
+    let mut k = 0;
+
+    let (g1pnu, g1mnu, g1, g2) = temme_gamma(nu);
+
+    let mut fk = sinrat * (sigma.cosh() * g1 - sinhrat * ln_half_x * g2);
+    let mut pk = 0.5 / half_x_nu * g1pnu;
+    let mut qk = 0.5 * half_x_nu * g1mnu;
+    let mut hk = pk;
+    let mut ck = 1.0;
+    let mut sum0 = fk;
+    let mut sum1 = hk;
+    while k < max_iter {
+        k += 1;
+        fk = (k as f64 * fk + pk + qk) / ((k * k) as f64 - nu * nu);
+        ck *= half_x * half_x / k as f64;
+        pk /= k as f64 - nu;
+        qk /= k as f64 + nu;
+        hk = -k as f64 * fk + pk;
+        let del0 = ck * fk;
+        let del1 = ck * hk;
+        sum0 += del0;
+        sum1 += del1;
+        if del0.abs() < 0.5 * sum0.abs() * f64::EPSILON {
+            break;
+        }
+    }
+
+    knu.val = sum0 * ex;
+    knup1.val = sum1 * 2.0 / x * ex;
+    kpnu.val = -knup1.val + nu / x * knu.val;
+
+    if k == max_iter {
+        knu.code = SpecFunCode::MaxIterErr;
+        knup1.code = SpecFunCode::MaxIterErr;
+        kpnu.code = SpecFunCode::MaxIterErr;
+    }
+
+    (knu, knup1, kpnu)
+}
+
+#[allow(dead_code)]
+pub(super) fn besseljv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+
+    if x == 0.0 {
+        if nu == 0.0 {
+            result.val = 1.0;
+            result.err = 0.0;
+        } else {
+            result.val = 0.0;
+            result.err = 0.0;
+        }
+    } else if x * x < 10.0 * (nu + 1.0) {
+        return bessel_ij_taylor_e(nu, x, -1, 100, f64::EPSILON);
+    } else if nu > 50.0 {
+        return super::olver::besseljv_asymp_olver_e(nu, x);
+    } else if x > 1000.0 {
+        // We need this to avoid feeding large x to CF1; note that
+        // due to the above check, we know that n <= 50. See similar
+        // block in bessel_Jn.c.
+        return besseljv_asympx_e(nu, x);
+    } else {
+        // -1/2 <= mu <= 1/2
+        let N = (nu + 0.5) as usize;
+        let mu = nu - N as f64;
+
+        // Determine the J ratio at nu.
+        let (mut Jnup1_Jnu, mut sgn_Jnu) = besselj_cf1(nu, x);
+
+        if x < 2.0 {
+            // Determine Y_mu, Y_mup1 directly and recurse forward to nu.
+            // Then use the CF1 information to solve for J_nu and J_nup1.
+            let (ymu, ymup1) = bessely_temme(mu, x);
+
+            let mut ynm1 = ymu.val;
+            let mut yn = ymup1.val;
+            let mut ynp1 = 0.0;
+
+            for n in 1..N {
+                ynp1 = 2.0 * (mu + n as f64) / x * yn - ynm1;
+                ynm1 = yn;
+                yn = ynp1;
+            }
+
+            result.val = 2.0 / (std::f64::consts::PI * x) / (Jnup1_Jnu.val * yn - ynp1);
+            result.err = f64::EPSILON * (N as f64 + 2.0) * result.val.abs();
+        } else {
+            // Recurse backward from nu to mu, determining the J ratio
+            // at mu. Use this together with a Steed method CF2 to
+            // determine the actual J_mu, and thus obtain the normalization.
+
+            let (p, q) = besseljy_steed_cf2(mu, x);
+
+            let mut Jnp1 = sgn_Jnu * crate::consts::SQRT_DBL_MIN * Jnup1_Jnu.val;
+            let mut Jn = sgn_Jnu * crate::consts::SQRT_DBL_MIN;
+
+            for n in (1..(N + 1)).rev() {
+                let Jnm1 = 2.0 * (mu + n as f64) / x * Jn - Jnp1;
+                Jnp1 = Jn;
+                Jn = Jnm1;
+            }
+            let Jmup1_Jmu = Jnp1 / Jn;
+            let sgn_Jmu = Jn.signum();
+            let Jmuprime_Jmu = mu / x - Jmup1_Jmu;
+
+            let gamma = (p.val - Jmuprime_Jmu) / q.val;
+            let Jmu = sgn_Jmu
+                * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - Jmuprime_Jmu)))
+                    .sqrt();
+
+            result.val = Jmu * (sgn_Jnu * crate::consts::SQRT_DBL_MIN) / Jn;
+            result.err = 2.0 * f64::EPSILON * (N as f64 + 2.0) * result.val.abs();
+        }
+    }
+    result
+}
+
+#[allow(dead_code)]
+pub(super) fn besselyv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+    if nu > 50.0 {
+        return super::olver::besselyv_asymp_olver_e(nu, x);
+    } else {
+        /* -1/2 <= mu <= 1/2 */
+        let N = (nu + 0.5) as usize;
+        let mu = nu - N as f64;
+
+        let (ymu, ymup1) = if x < 2.0 {
+            // Determine Ymu, Ymup1 directly. This is really
+            // an optimization since this case could as well
+            // be handled by a call to gsl_sf_bessel_JY_mu_restricted(),
+            // as below.
+            bessely_temme(mu, x)
+        } else {
+            // Determine Ymu, Ymup1 and Jmu, Jmup1.
+            // &J_mu, &J_mup1, &Y_mu, &Y_mup1
+            let res = besseljyv_restricted(mu, x);
+            (res.2, res.3)
+        };
+
+        /* Forward recursion to get Ynu, Ynup1.
+         */
+        let mut ynm1 = ymu.val;
+        let mut yn = ymup1.val;
+        for n in 1..(N + 1) {
+            let ynp1 = 2.0 * (mu + n as f64) / x * yn - ynm1;
+            ynm1 = yn;
+            yn = ynp1;
+        }
+
+        result.val = ynm1;
+        result.err = (N as f64 + 1.0)
+            * ynm1.abs()
+            * ((ymu.err / ymu.val).abs() + (ymup1.err / ymup1.val).abs());
+        result.err += 2.0 * f64::EPSILON * ynm1.abs();
+    }
+    result
 }

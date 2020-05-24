@@ -382,7 +382,7 @@ pub(crate) fn exprel_2_e(x: f64) -> SpecFunResult<f64> {
 
 /// Evaluate continued fraction for exprel
 /// Ref: Abramowitz + Stegun, 4.2.41
-pub(crate) fn exprel_n_cf_e(nn: usize, x: f64) -> SpecFunResult<f64> {
+pub(crate) fn exprel_n_cf_e(nn: f64, x: f64) -> SpecFunResult<f64> {
     let recur_big = SQRT_DBL_MAX;
     let maxiter = 5000;
     let mut n = 1;
@@ -393,7 +393,7 @@ pub(crate) fn exprel_n_cf_e(nn: usize, x: f64) -> SpecFunResult<f64> {
     let a1: f64 = 1.0;
     let b1: f64 = 1.0;
     let a2: f64 = -x;
-    let b2: f64 = (nn + 1) as f64;
+    let b2: f64 = nn + 1.0;
 
     let mut aan = b1 * anm1 + a1 * anm2; /* A1 */
     let mut bbn = b1 * bnm1 + a1 * bnm2; /* B1 */
@@ -419,9 +419,9 @@ pub(crate) fn exprel_n_cf_e(nn: usize, x: f64) -> SpecFunResult<f64> {
         let an = if n % 2 == 1 {
             ((n - 1) / 2) as f64 * x
         } else {
-            -((nn + (n / 2) - 1) as f64) * x
+            -(nn + ((n / 2) - 1) as f64) * x
         };
-        let bn = (nn + n - 1) as f64;
+        let bn = nn + (n - 1) as f64;
         aan = bn * anm1 + an * anm2;
         bbn = bn * bnm1 + an * bnm2;
 
@@ -524,7 +524,7 @@ pub(crate) fn exprel_n_e(n: usize, x: f64) -> SpecFunResult<f64> {
             result
         }
     } else if x > -10.0 * nd {
-        exprel_n_cf_e(n, x)
+        exprel_n_cf_e(n as f64, x)
     } else {
         // x -> -Inf asymptotic:
         // exprel_n(x) ~ e^x n!/x^n - n/x (1 + (n-1)/x + (n-1)(n-2)/x + ...)

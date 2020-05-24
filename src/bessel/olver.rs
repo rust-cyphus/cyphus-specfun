@@ -765,7 +765,7 @@ fn olver_bsum(nu: f64, z: f64, abs_zeta: f64) -> f64 {
  *    nu = 20: uniformly good to > 13D
  *
 */
-fn bessel_jnu_asymp_olver_e(nu: f64, x: f64) -> SpecFunResult<f64> {
+pub(super) fn besseljv_asymp_olver_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
     if x <= 0.0 || nu <= 0.0 {
@@ -843,7 +843,7 @@ fn bessel_jnu_asymp_olver_e(nu: f64, x: f64) -> SpecFunResult<f64> {
  *    nu = 10: uniformly good to > 10D
  *    nu = 20: uniformly good to > 13D
 */
-fn bessel_ynu_asymp_olver_e(nu: f64, x: f64) -> SpecFunResult<f64> {
+pub(super) fn besselyv_asymp_olver_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
     if x <= 0.0 || nu <= 0.0 {

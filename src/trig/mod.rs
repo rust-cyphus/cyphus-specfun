@@ -28,6 +28,7 @@ use crate::logarithm::{complex_ln_e, ln_p1_e};
 use crate::result::{SpecFunCode, SpecFunResult};
 use num::{Complex, Num};
 mod data;
+mod sincos;
 use data::*;
 
 pub trait Trig {

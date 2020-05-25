@@ -144,7 +144,6 @@ pub(super) fn besselyn_e(n: i32, x: f64) -> SpecFunResult<f64> {
 
     let n = if n < 0 {
         /* reduce to case n >= 0 */
-        n = -n;
         if n % 2 == 1 {
             sign = -1.0;
         }
@@ -206,8 +205,8 @@ pub(super) fn besselyv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     } else if nu < 0.0 {
         let jres = super::helpers::besseljv_pos_e(-nu, x);
         let yres = super::helpers::besselyv_pos_e(-nu, x);
-        let spi = crate::trig::sin_pi_e(nu);
-        let cpi = crate::trig::cos_pi_e(nu);
+        let spi = crate::trig::sincos::sin_pi_e(nu);
+        let cpi = crate::trig::sincos::cos_pi_e(nu);
 
         result.val = cpi.val * yres.val - spi.val * jres.val;
         result.err = (cpi.val * yres.err).abs()

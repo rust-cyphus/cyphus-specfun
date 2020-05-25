@@ -22,14 +22,17 @@
 
 //! Implementations of various trig functions and their assoiciated errors.
 
+mod data;
+pub(crate) mod sincos;
+
 use crate::cheb::cheb_eval_e;
 use crate::consts::{LN_DBL_EPS, LN_DBL_MAX, ROOT4_DBL_EPS, SQRT_DLB_EPS};
 use crate::logarithm::{complex_ln_e, ln_p1_e};
 use crate::result::{SpecFunCode, SpecFunResult};
 use num::{Complex, Num};
-mod data;
-mod sincos;
+
 use data::*;
+use sincos::*;
 
 pub trait Trig {
     /// Compute sine of a number along with the error estimate.
@@ -41,8 +44,8 @@ pub trait Trig {
     /// assert!((x.sin_e().val - 0.841470984807897).abs() < 1e-10)
     /// ```
     fn sin_e(&self) -> SpecFunResult<Self>
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute cosine of a number along with the error estimate.
     ///
     /// ## Examples
@@ -52,8 +55,8 @@ pub trait Trig {
     /// assert!((x.cos_e().val - 0.540302305868140).abs() < 1e-10)
     /// ```
     fn cos_e(&self) -> SpecFunResult<Self>
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute sqrt(x^2+y^2) along with the error estimate.
     ///
     /// ## Examples
@@ -64,8 +67,8 @@ pub trait Trig {
     /// assert!((x.hypot_e(y).val - 2.2360679774997897).abs() < 1e-10)
     /// ```
     fn hypot_e(&self, other: Self) -> SpecFunResult<Self>
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute sinc(x) = sin(pi*x) / (pi*x) along with error estimate.
     ///
     /// # Examples
@@ -74,8 +77,8 @@ pub trait Trig {
     /// assert!((x.sinc_e().val - -0.21220659078919378).abs() < 1e-10)
     /// ```
     fn sinc_e(&self) -> SpecFunResult<Self>
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute sinc(x) = sin(pi*x) / (pi*x).
     ///
     /// # Examples
@@ -84,8 +87,8 @@ pub trait Trig {
     /// assert!((x.sinc() - -0.21220659078919378).abs() < 1e-10)
     /// ```
     fn sinc(&self) -> Self
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute log(sinh(x)) for a positive real number x and the associated error
     ///
     /// # Examples
@@ -95,8 +98,8 @@ pub trait Trig {
     /// assert!((x.lnsinh_e().val - 9.3068528173789011).abs() < 1e-10);
     /// ```
     fn lnsinh_e(&self) -> SpecFunResult<Self>
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute log(sinh(x)) for a positive real number x.
     ///
     /// # Examples
@@ -106,8 +109,8 @@ pub trait Trig {
     /// assert!((x.lnsinh() - 9.3068528173789011).abs() < 1e-10);
     /// ```
     fn lnsinh(&self) -> Self
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute ln(cosh(x)) for a real number x and the associated error
     ///
     /// # Examples
@@ -117,8 +120,8 @@ pub trait Trig {
     /// assert!((x.lncosh_e().val -9.3068528215012083).abs() < 1e-10);
     /// ```
     fn lncosh_e(&self) -> SpecFunResult<Self>
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
     /// Compute ln(cosh(x)) for a real number x.
     ///
     /// # Examples
@@ -128,8 +131,8 @@ pub trait Trig {
     /// assert!((x.lncosh() -9.3068528215012083).abs() < 1e-10);
     /// ```
     fn lncosh(&self) -> Self
-    where
-        Self: Sized + Num;
+        where
+            Self: Sized + Num;
 }
 
 impl Trig for f64 {
@@ -648,10 +651,10 @@ pub fn angle_restrict_symm_e(theta: f64) -> SpecFunResult<f64> {
         let err = 2.0
             * f64::EPSILON
             * if delta < std::f64::consts::PI {
-                delta
-            } else {
-                std::f64::consts::PI
-            };
+            delta
+        } else {
+            std::f64::consts::PI
+        };
         SpecFunResult {
             val,
             err,
@@ -723,10 +726,10 @@ pub fn angle_restrict_pos_e(theta: f64) -> SpecFunResult<f64> {
         let err = 2.0
             * f64::EPSILON
             * if delta < std::f64::consts::PI {
-                delta
-            } else {
-                std::f64::consts::PI
-            };
+            delta
+        } else {
+            std::f64::consts::PI
+        };
         SpecFunResult {
             val,
             err,
@@ -814,18 +817,28 @@ pub fn sinc_e(x: f64) -> SpecFunResult<f64> {
 mod tests {
     use super::*;
 
+    #[macro_use]
+    use crate::test_utils::*;
+    use crate::result::SpecFunCode;
+    use crate::test_check_result_and_code;
+    use std::os::macos::raw::off_t;
+
+    const TOL0: f64 = 2.0 * f64::EPSILON;
+
     #[test]
     fn test_sin_e() {
         let x = 1.0;
         assert!((sin_e(x).val - 0.841470984807897).abs() < 1e-10);
         assert!((x.sin_e().val - 0.841470984807897).abs() < 1e-10);
     }
+
     #[test]
     fn test_cos_e() {
         let x = 1.0;
         assert!((cos_e(x).val - 0.540_302_305_868_139_8).abs() < 1e-10);
         assert!((x.cos_e().val - 0.540_302_305_868_139_8).abs() < 1e-10);
     }
+
     #[test]
     fn test_hypot_e() {
         let x = 1.0;
@@ -833,6 +846,7 @@ mod tests {
         assert!((hypot_e(x, y).val - 2.236_067_977_499_79).abs() < 1e-10);
         assert!((x.hypot_e(y).val - 2.236_067_977_499_79).abs() < 1e-10);
     }
+
     #[test]
     fn test_complex_sin_e() {
         let z1 = Complex::new(1.0, 1.0);
@@ -857,6 +871,7 @@ mod tests {
         assert!((w4.re - -0.3755928499348538).abs() < 1e-10);
         assert!((w4.im - -3.608_741_212_689_743).abs() < 1e-10);
     }
+
     #[test]
     fn test_complex_cos_e() {
         let z = Complex::new(1.0, 1.0);
@@ -864,6 +879,7 @@ mod tests {
         assert!((w.re - 0.833_730_025_131_149).abs() < 1e-10);
         assert!((w.im + 0.988_897_705_762_865_1).abs() < 1e-10);
     }
+
     #[test]
     fn test_complex_lnsin_e() {
         let z = Complex::new(2.0, -1.0);
@@ -872,6 +888,7 @@ mod tests {
         assert!((w.re - 0.396_025_370_029_847_3).abs() < 1e-10);
         assert!((w.im - 0.335_381_868_970_327_5).abs() < 1e-10);
     }
+
     #[test]
     fn test_lnsinh_e() {
         let x = 10.0_f64;
@@ -879,6 +896,7 @@ mod tests {
         assert!((x.lnsinh_e().val - 9.306_852_817_378_902).abs() < 1e-10);
         assert!((x.lnsinh() - 9.306_852_817_378_902).abs() < 1e-10);
     }
+
     #[test]
     fn test_lncosh_e() {
         let x = 10.0_f64;
@@ -886,30 +904,35 @@ mod tests {
         assert!((x.lncosh_e().val - 9.306_852_821_501_208).abs() < 1e-10);
         assert!((x.lncosh() - 9.306_852_821_501_208).abs() < 1e-10);
     }
+
     #[test]
     fn test_angle_restrict_symm_e() {
         let theta = 2.5 * std::f64::consts::PI;
         let clipped = angle_restrict_symm_e(theta);
         assert!((clipped.val - 0.5 * std::f64::consts::PI).abs() < 1e-10);
     }
+
     #[test]
     fn test_angle_restrict_symm() {
         let theta = 2.5 * std::f64::consts::PI;
         let clipped = angle_restrict_symm(theta);
         assert!((clipped - 0.5 * std::f64::consts::PI).abs() < 1e-10);
     }
+
     #[test]
     fn test_angle_restrict_pos_e() {
         let theta = 2.5 * std::f64::consts::PI;
         let clipped = angle_restrict_pos_e(theta);
         assert!((clipped.val - 0.5 * std::f64::consts::PI).abs() < 1e-10);
     }
+
     #[test]
     fn test_angle_restrict_pos() {
         let theta = 2.5 * std::f64::consts::PI;
         let clipped = angle_restrict_pos(theta);
         assert!((clipped - 0.5 * std::f64::consts::PI).abs() < 1e-10);
     }
+
     #[test]
     fn test_polar_to_rect() {
         let r = 10.0_f64;
@@ -918,6 +941,7 @@ mod tests {
         assert!((z.val.re - r * theta.cos()).abs() < 1e-10);
         assert!((z.val.im - r * theta.sin()).abs() < 1e-10);
     }
+
     #[test]
     fn test_rect_to_polar() {
         let z = Complex::new(10.0, -4.0);
@@ -926,21 +950,414 @@ mod tests {
         assert!((r.val - z.re.hypot(z.im)).abs() < 1e-10);
         assert!((t.val - z.arg()).abs() < 1e-10);
     }
+
     #[test]
     fn test_sin_err_e() {
         let x = 1.0_f64;
         let dx = 0.0_f64;
         assert!((sin_err_e(x, dx).val - 0.841_470_984_807_896_5).abs() < 1e-10);
     }
+
     #[test]
     fn test_cos_err_e() {
         let x = 1.0_f64;
         let dx = 0.0_f64;
         assert!((cos_err_e(x, dx).val - 0.540_302_305_868_139_8).abs() < 1e-10);
     }
+
     #[test]
     fn test_sinc_e() {
         let x = 1.5_f64;
         assert!((sinc_e(x).val - -0.212_206_590_789_193_77).abs() < 1e-10)
+    }
+
+    #[test]
+    fn test_sin_pi_e() {
+        let mut s = 0;
+        let mut k = 0;
+        let mut kmax = 12;
+        let mut x: f64 = 0.0;
+        let mut ix: f64 = 0.0;
+        let mut fx: f64;
+        let mut exact: f64;
+
+        /* sin_pi tests */
+        fx = 0.5;
+        exact = 1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -0.5;
+        exact = -1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 1.5;
+        exact = -1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -1.5;
+        exact = 1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 2.5;
+        exact = 1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -2.5;
+        exact = -1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 3.5;
+        exact = -1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -3.5;
+        exact = 1.0;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 0.375;
+        exact = 0.923879532511286756128183189397;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -0.375;
+        exact = -0.923879532511286756128183189397;
+        test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 0.0;
+        exact = 0.0;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = (3f64).powf((k + 1) as f64);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = exact.abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powf((k + 1) as f64);
+        }
+
+        fx = 0.5;
+        exact = 1.0;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powf((k + 1) as f64);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = exact.abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powf((k + 1) as f64);
+        }
+
+        fx = 0.03125;
+        exact = 0.0980171403295606019941955638886;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powf((k + 1) as f64);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = exact.abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powf((k + 1) as f64);
+        }
+
+        fx = 0.0625;
+        exact = 0.195090322016128267848284868477;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powf((k + 1) as f64);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powf((k + 1) as f64);
+        }
+
+        fx = 0.75;
+        exact = 0.707106781186547524400844362105;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powf((k + 1) as f64);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powf((k + 1) as f64);
+        }
+
+        fx = 0.0078125;
+        exact = 0.0245412285229122880317345294593;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powf((k + 1) as f64);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powf((k + 1) as f64);
+        }
+    }
+
+    #[test]
+    fn test_sin_pi_e_large_arg() {
+        let kmax = 12;
+        let mut fx = 0.0625;
+        let mut exact = 0.195090322016128267848284868477;
+        let mut ix = i32::MAX as f64 + 1.0;
+        ix += (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
+
+        for k in 0..kmax {
+            let mut x = ix + fx;
+            x -= ix; /* careful with compiler optimization */
+            if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
+                break;
+            }
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix += 101.0;
+            exact = -exact;
+        }
+
+        fx = -0.0625;
+        exact = -0.195090322016128267848284868477;
+        ix = i32::MAX as f64 - 1.0;
+        ix -= (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
+
+        for k in 0..kmax {
+            let mut x = ix + fx;
+            x -= ix; /* careful with compiler optimization */
+            if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
+                break;
+            }
+            test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix -= 101.0;
+            exact = -exact;
+        }
+    }
+
+    #[test]
+    fn test_cos_pi_e() {
+        let mut s = 0;
+        let mut k = 0;
+        let mut kmax = 12;
+        let mut x: f64 = 0.0;
+        let mut ix: f64 = 0.0;
+        let mut fx: f64;
+        let mut exact: f64;
+
+        ix = 0.0;
+        fx = 0.0;
+        exact = 1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 1.0;
+        exact = -1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -1.0;
+        exact = -1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 2.0;
+        exact = 1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -2.0;
+        exact = 1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 3.0;
+        exact = -1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -3.0;
+        exact = -1.0;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 0.375;
+        exact = 0.382683432365089771728459984030;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = -0.375;
+        exact = 0.382683432365089771728459984030;
+
+        test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+
+        fx = 0.0;
+        exact = 1.0;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powi(k + 1);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powi(k + 1);
+        }
+
+        fx = 0.5;
+        exact = 0.0;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powi(k + 1);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powi(k + 1);
+        }
+
+        fx = 0.0625;
+        exact = 0.980785280403230449126182236134;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powi(k + 1);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powi(k + 1);
+        }
+
+        fx = 0.4375;
+        exact = 0.195090322016128267848284868477;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powi(k + 1);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powi(k + 1);
+        }
+
+        fx = 0.4921875;
+        exact = 0.0245412285229122880317345294593;
+
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 3f64.powi(k + 1);
+            if k == 0 {
+                exact = -exact;
+            }
+        }
+
+        exact = (exact).abs();
+        ix = 0.0;
+        for k in 0..kmax {
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix = 10f64.powi(k + 1);
+        }
+    }
+
+    #[test]
+    fn test_cos_pi_e_large_arg() {
+        let kmax = 12;
+        let mut fx = 0.0625;
+        let mut exact = 0.980785280403230449126182236134;
+        let mut ix = i32::MAX as f64 + 1.0;
+        ix += (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
+
+        for k in 0..kmax {
+            let mut x = ix + fx;
+            x -= ix; /* careful with compiler optimization */
+            if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
+                break;
+            }
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix += 101.0;
+            exact = -exact;
+        }
+
+        fx = -0.0625;
+        exact = 0.980785280403230449126182236134;
+        ix = i32::MAX as f64 - 1.0;
+        ix -= (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
+
+        for k in 0..kmax {
+            let mut x = ix + fx;
+            x -= ix; /* careful with compiler optimization */
+            if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
+                break;
+            }
+            test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
+            ix -= 101.0;
+            exact = -exact;
+        }
     }
 }

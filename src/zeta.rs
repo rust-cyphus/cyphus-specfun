@@ -62,7 +62,7 @@ pub trait Zeta {
     fn zeta_e(&self) -> SpecFunResult<f64>;
     /// Compute the Riemann-zeta function
     fn zeta(&self) -> f64;
-    /// Compute zeta(self) - 1 with error estimate
+    /// Compute Rieman-zeta function minus one zeta(self) - 1 with error estimate
     fn zeta_m1_e(&self) -> SpecFunResult<f64>;
     /// Compute zeta(self) - 1
     fn zeta_m1(&self) -> f64;

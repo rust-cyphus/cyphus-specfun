@@ -2,13 +2,10 @@ use crate::result::{SpecFunCode, SpecFunResult};
 
 use crate::gamma::mono::gamma_e;
 use crate::zeta::{data::*, internal::*};
+use std::num::FpCategory;
 
 pub(crate) fn zeta_e(s: f64) -> SpecFunResult<f64> {
-    let mut result = SpecFunResult {
-        val: 0.0,
-        err: 0.0,
-        code: SpecFunCode::Success,
-    };
+    let mut result = SpecFunResult::<f64>::default();
 
     if (s - 1.0).abs() < std::f64::EPSILON {
         result.val = f64::NAN;
@@ -21,15 +18,15 @@ pub(crate) fn zeta_e(s: f64) -> SpecFunResult<f64> {
     } else {
         // reflection formula, [Abramowitz+Stegun, 23.2.5]
         let zeta_one_minus_s = riemann_zeta1ms_slt0(s);
-        let fmod = s - (s / 2.0).floor() * 2.0;
-        let sin_term = if fmod.abs() < std::f64::EPSILON {
+        let fmod = s - (s / 2.0).trunc() * 2.0;
+        let sin_term = if fmod.classify() == FpCategory::Zero {
             0.0
         } else {
-            let fmod = s - (s / 4.0).floor() * 4.0;
+            let fmod = s - (s / 4.0).trunc() * 4.0;
             (0.5 * std::f64::consts::PI * fmod).sin() / std::f64::consts::PI
         };
 
-        if sin_term.abs() < std::f64::EPSILON {
+        if sin_term.classify() == FpCategory::Zero {
             result
         } else if s > -170.0 {
             // We have to be careful about losing digits

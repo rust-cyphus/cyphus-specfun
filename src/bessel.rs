@@ -4,9 +4,7 @@ pub(crate) mod bessel_data;
 mod bessel_helpers;
 mod olver;
 
-use crate::bessel::cyl_bessel_j::cyl_bessel_j0_e;
 use crate::result::SpecFunResult;
-
 use cyl_bessel_j::*;
 use cyl_bessel_y::*;
 
@@ -211,6 +209,7 @@ impl CylBesselY for f64 {
 #[cfg(test)]
 mod test {
     use crate::bessel::cyl_bessel_j::*;
+    use crate::bessel::cyl_bessel_y::*;
     use crate::consts::SQRT_DLB_EPS;
     use crate::test_utils::*;
     use crate::result::SpecFunCode;
@@ -344,5 +343,33 @@ mod test {
         test_check_result_and_code!(cyl_bessel_jv_e, (10.0,   1.0), 2.6306151236874532070e-10, TOL0, SpecFunCode::Success);
         test_check_result_and_code!(cyl_bessel_jv_e, (10.0, 100.0), -0.05473217693547201474,   TOL2, SpecFunCode::Success);
         test_check_result_and_code!(cyl_bessel_jv_e, (10.2, 100.0), -0.03548919161046526864,   TOL2, SpecFunCode::Success);
+    }
+
+    #[test]
+    fn test_cyl_bessel_y0_e() {
+        test_check_result_and_code!(cyl_bessel_y0_e, (0.1),         -1.5342386513503668441,    TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_y0_e, (2.0), 0.5103756726497451196,TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_y0_e, (256.0),       -0.03381290171792454909 ,  TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_y0_e, (4294967296.0), 3.657903190017678681e-06, SQRT_TOL0, SpecFunCode::Success);
+    }
+
+    #[test]
+    fn test_cyl_bessel_y1_e() {
+        test_check_result_and_code!(cyl_bessel_y1_e, (0.1),         -6.45895109470202698800,     TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_y1_e, (2.0),         -0.10703243154093754689,
+        TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_y1_e, (100.0),       -0.020372312002759793305,    TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_y1_e, (4294967296.0), 0.000011612249378370766284, TOL4, SpecFunCode::Success);
+    }
+
+    #[test]
+    fn test_cyl_bessel_yn_e() {
+        test_check_result_and_code!(cyl_bessel_yn_e, (4, 0.1),            -305832.29793353160319,    TOL1, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_yn_e, (5, 2.0),              -9.935989128481974981,
+             TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_yn_e, (100, 100.0),        -0.16692141141757650654,   TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(cyl_bessel_yn_e, (100, 4294967296.0),  3.657889671577715808e-06, SQRT_TOL0, SpecFunCode::Success);
+        //FIXME: This test fails
+        test_check_result_and_code!(cyl_bessel_yn_e, (1000, 4294967296.0), 3.656551321485397501e-06, 2.0e-05, SpecFunCode::Success);
     }
 }

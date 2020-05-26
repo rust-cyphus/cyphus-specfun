@@ -4,6 +4,210 @@ pub(crate) mod bessel_data;
 mod bessel_helpers;
 mod olver;
 
+use crate::bessel::cyl_bessel_j::cyl_bessel_j0_e;
+use crate::result::SpecFunResult;
+
+use cyl_bessel_j::*;
+use cyl_bessel_y::*;
+
+
+pub trait CylBesselJ {
+    /// Compute the cylindrical Bessel-function of the first kind of order 0
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_j0_e().val - 0.7651976865579666).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_j0_e(&self) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the first kind of order 0.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_j0() - 0.7651976865579666).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_j0(&self) -> Self;
+    /// Compute the cylindrical Bessel-function ofof the first kind  order 1
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_j1_e().val - 0.4400505857449335).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_j1_e(&self) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the first kind of order 1.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_j1() - 0.4400505857449335).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_j1(&self) -> Self;
+    /// Compute the cylindrical Bessel-function of the first kind of order n
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_jn_e(5).val - 0.002476638964109955).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_jn_e(&self, n: i32) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the first kind of order n.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_jn(5) - 0.002476638964109955).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_jn(&self, n: i32) -> Self;
+    /// Compute the cylindrical Bessel-function of the first kind of order nu
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_jv_e(0.5).val - 0.6713967071418031).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_jv_e(&self, nu: Self) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the first kind of order nu.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselJ;
+    /// assert!((1f64.cyl_bessel_jv(0.5) - 0.6713967071418031).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_jv(&self, nu: Self) -> Self;
+}
+
+impl CylBesselJ for f64 {
+    fn cyl_bessel_j0_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_j0_e(*self)
+    }
+    fn cyl_bessel_j0(&self) -> Self {
+        cyl_bessel_j0_e(*self).val
+    }
+    fn cyl_bessel_j1_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_j1_e(*self)
+    }
+    fn cyl_bessel_j1(&self) -> Self {
+        cyl_bessel_j0_e(*self).val
+    }
+    fn cyl_bessel_jn_e(&self, n: i32) -> SpecFunResult<Self> {
+        cyl_bessel_jn_e(n, *self)
+    }
+    fn cyl_bessel_jn(&self, n: i32) -> Self {
+        cyl_bessel_jn_e(n, *self).val
+    }
+    fn cyl_bessel_jv_e(&self, nu: Self) -> SpecFunResult<Self> {
+        cyl_bessel_jv_e(nu, *self)
+    }
+    fn cyl_bessel_jv(&self, nu: Self) -> Self {
+        cyl_bessel_jv_e(nu, *self).val
+    }
+}
+
+pub trait CylBesselY {
+    /// Compute the cylindrical Bessel-function of the second kind of order 0
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_y0_e().val - 0.08825696421567696).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_y0_e(&self) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the second kind of order 0.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_y0() - 0.08825696421567696).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_y0(&self) -> Self;
+    /// Compute the cylindrical Bessel-function of the second kind of order 1
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_y1_e().val + 0.7812128213002887).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_y1_e(&self) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the second kind of order 1
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_y1() + 0.7812128213002887).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_y1(&self) -> Self;
+    /// Compute the cylindrical Bessel-function of the second kind of order n
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_yn_e(5).val + 260.4058666258122).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_yn_e(&self, n: i32) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the second kind of order n.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_yn(5) + 260.4058666258122).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_yn(&self, n: i32) -> Self;
+    /// Compute the cylindrical Bessel-function of the second kind of order nu
+    /// along with an error estimate.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_yv_e().val + 0.4310988680183761).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_yv_e(&self, nu: Self) -> SpecFunResult<Self> where Self: num::Num;
+    /// Compute the cylindrical Bessel-function of the second kind of order nu.
+    ///
+    /// # Examples
+    /// ```rust
+    /// # use cyphus_specfun::bessel::CylBesselY;
+    /// assert!((1f64.cyl_bessel_yv() + 0.4310988680183761).abs() < 1e-10);
+    /// ```
+    fn cyl_bessel_yv(&self, nu: Self) -> Self;
+}
+
+impl CylBesselY for f64 {
+    fn cyl_bessel_y0_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_y0_e(*self)
+    }
+    fn cyl_bessel_y0(&self) -> Self {
+        cyl_bessel_y0_e(*self).val
+    }
+    fn cyl_bessel_y1_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_y1_e(*self)
+    }
+    fn cyl_bessel_y1(&self) -> Self {
+        cyl_bessel_y1_e(*self).val
+    }
+    fn cyl_bessel_yn_e(&self, n: i32) -> SpecFunResult<Self> {
+        cyl_bessel_yn_e(n, *self)
+    }
+    fn cyl_bessel_yn(&self, n: i32) -> Self {
+        cyl_bessel_yn_e(n, *self).val
+    }
+    fn cyl_bessel_yv_e(&self, nu: Self) -> SpecFunResult<Self> {
+        cyl_bessel_yv_e(nu, *self)
+    }
+    fn cyl_bessel_yv(&self, nu: Self) -> Self {
+        cyl_bessel_yv_e(nu, *self).val
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::bessel::cyl_bessel_j::*;

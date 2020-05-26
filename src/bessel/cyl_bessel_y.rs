@@ -1,9 +1,9 @@
-use super::data::*;
+use super::bessel_data::*;
 use crate::gamma::Gamma;
 use crate::result::{SpecFunCode, SpecFunResult};
 
 #[allow(dead_code)]
-pub(super) fn bessely0_e(x: f64) -> SpecFunResult<f64> {
+pub(super) fn cyl_bessel_y0_e(x: f64) -> SpecFunResult<f64> {
     let two_over_pi = 2.0 / std::f64::consts::PI;
     let xmax = 1.0 / f64::EPSILON;
 
@@ -12,7 +12,7 @@ pub(super) fn bessely0_e(x: f64) -> SpecFunResult<f64> {
     if x <= 0.0 {
         result.code = SpecFunCode::DomainErr;
     } else if x < 4.0 {
-        let j0 = super::besselj::besselj0_e(x);
+        let j0 = super::cyl_bessel_j::cyl_bessel_j0_e(x);
         let c = (*BY0_CHEB).eval(0.125 * x * x - 1.0);
         result.val = two_over_pi * (-std::f64::consts::LN_2 + x.ln()) * j0.val + 0.375 + c.val;
         result.err = 2.0 * f64::EPSILON * result.val.abs() + c.err;
@@ -23,7 +23,7 @@ pub(super) fn bessely0_e(x: f64) -> SpecFunResult<f64> {
         let z = 32.0 / (x * x) - 1.0;
         let c1 = (*BESSEL_AMP_PHASE_BM0_CHEB).eval(z);
         let c2 = (*BESSEL_AMP_PHASE_BTH0_CHEB).eval(z);
-        let sp = super::helpers::bessel_sin_pi4_e(x, c2.val / x);
+        let sp = super::bessel_helpers::bessel_sin_pi4_e(x, c2.val / x);
         let sqrtx = x.sqrt();
         let ampl = (0.75 + c1.val) / sqrtx;
         result.val = ampl * sp.val;
@@ -36,7 +36,7 @@ pub(super) fn bessely0_e(x: f64) -> SpecFunResult<f64> {
 }
 
 #[allow(dead_code)]
-pub(super) fn bessely1_e(x: f64) -> SpecFunResult<f64> {
+pub(super) fn cyl_bessel_y1_e(x: f64) -> SpecFunResult<f64> {
     let two_over_pi = 2.0 / std::f64::consts::PI;
     let xmin = 1.571 * f64::MIN_POSITIVE;
     let x_small = 2.0 * crate::consts::SQRT_DLB_EPS;
@@ -54,21 +54,21 @@ pub(super) fn bessely1_e(x: f64) -> SpecFunResult<f64> {
         result.err = f64::INFINITY;
     } else if x < x_small {
         let lnterm = (0.5 * x).ln();
-        let j1 = super::besselj::besselj1_e(x);
+        let j1 = super::cyl_bessel_j::cyl_bessel_j1_e(x);
         let c = (*BY1_CHEB).eval(-1.0);
         result.val = two_over_pi * lnterm * j1.val + (0.5 + c.val) / x;
         result.err = lnterm.abs() * ((f64::EPSILON * j1.val).abs() + j1.err) + c.err / x;
     } else if x < 4.0 {
         let lnterm = (0.5 * x).ln();
         let c = (*BY1_CHEB).eval(0.125 * x * x - 1.0);
-        let j1 = super::besselj::besselj1_e(x);
+        let j1 = super::cyl_bessel_j::cyl_bessel_j1_e(x);
         result.val = two_over_pi * lnterm * j1.val + (0.5 + c.val) / x;
         result.err = lnterm.abs() * ((f64::EPSILON * j1.val).abs() + j1.err) + c.err / x;
     } else if x < xmax {
         let z = 32.0 / (x * x) - 1.0;
         let ca = (*BESSEL_AMP_PHASE_BM1_CHEB).eval(z);
         let ct = (*BESSEL_AMP_PHASE_BTH1_CHEB).eval(z);
-        let cp = super::helpers::bessel_cos_pi4_e(x, ct.val / x);
+        let cp = super::bessel_helpers::bessel_cos_pi4_e(x, ct.val / x);
         let sqrtx = x.sqrt();
         let ampl = (0.75 + ca.val) / sqrtx;
         result.val = -ampl * cp.val;
@@ -83,7 +83,7 @@ pub(super) fn bessely1_e(x: f64) -> SpecFunResult<f64> {
 
 /* assumes n >= 1 */
 #[allow(dead_code)]
-fn besselyn_small_x(n: usize, x: f64) -> SpecFunResult<f64> {
+fn cyl_bessel_yn_small_x(n: usize, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
     let y = 0.25 * x * x;
@@ -138,7 +138,7 @@ fn besselyn_small_x(n: usize, x: f64) -> SpecFunResult<f64> {
 }
 
 #[allow(dead_code)]
-pub(super) fn besselyn_e(n: i32, x: f64) -> SpecFunResult<f64> {
+pub(super) fn cyl_bessel_yn_e(n: i32, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     let mut sign = 1.0;
 
@@ -153,10 +153,10 @@ pub(super) fn besselyn_e(n: i32, x: f64) -> SpecFunResult<f64> {
     };
 
     if n == 0 {
-        result = bessely0_e(x);
+        result = cyl_bessel_y0_e(x);
         result.val *= sign;
     } else if n == 1 {
-        result = bessely1_e(x);
+        result = cyl_bessel_y1_e(x);
         result.val *= sign;
     } else {
         if x <= 0.0 {
@@ -165,18 +165,18 @@ pub(super) fn besselyn_e(n: i32, x: f64) -> SpecFunResult<f64> {
             result.err = f64::NAN;
         }
         if x < 5.0 {
-            result = besselyn_small_x(n, x);
+            result = cyl_bessel_yn_small_x(n, x);
             result.val *= sign;
         } else if crate::consts::ROOT3_DBL_EPS * x > ((n * n) as f64 + 1.0) {
-            result = super::helpers::besselyv_asympx_e(n as f64, x);
+            result = super::bessel_helpers::besselyv_asympx_e(n as f64, x);
             result.val *= sign;
         } else if n > 50 {
             result = super::olver::besselyv_asymp_olver_e(n as f64, x);
             result.val *= sign;
         } else {
             let two_over_x = 2.0 / x;
-            let r_by = bessely1_e(x);
-            let r_bym = bessely0_e(x);
+            let r_by = cyl_bessel_y1_e(x);
+            let r_bym = cyl_bessel_y0_e(x);
             let mut bym = r_bym.val;
             let mut by = r_by.val;
 
@@ -195,7 +195,7 @@ pub(super) fn besselyn_e(n: i32, x: f64) -> SpecFunResult<f64> {
 }
 
 #[allow(dead_code)]
-pub(super) fn besselyv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
+pub(super) fn cyl_bessel_yv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
     if x <= 0.0 {
@@ -204,8 +204,8 @@ pub(super) fn besselyv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
         result.err = f64::NAN;
         result
     } else if nu < 0.0 {
-        let jres = super::helpers::besseljv_pos_e(-nu, x);
-        let yres = super::helpers::besselyv_pos_e(-nu, x);
+        let jres = super::bessel_helpers::besseljv_pos_e(-nu, x);
+        let yres = super::bessel_helpers::besselyv_pos_e(-nu, x);
         let spi = crate::trig::sincos::sin_pi_e(nu);
         let cpi = crate::trig::sincos::cos_pi_e(nu);
 
@@ -216,6 +216,6 @@ pub(super) fn besselyv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
             + (spi.err * jres.val).abs();
         result
     } else {
-        super::helpers::besselyv_pos_e(nu, x)
+        super::bessel_helpers::besselyv_pos_e(nu, x)
     }
 }

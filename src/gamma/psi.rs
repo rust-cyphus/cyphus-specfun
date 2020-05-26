@@ -22,7 +22,7 @@ fn psi_x_e(x: f64) -> SpecFunResult<f64> {
         result
     } else if y >= 2.0 {
         let t = 8.0 / (y * y) - 1.0;
-        let result_c = cheb_eval_e(t, &APSICS_DATA, -1.0, 1.0);
+        let result_c = cheb_eval_e(t, &(*APSICS_DATA), -1.0, 1.0);
         if x < 0.0 {
             let s = (x * std::f64::consts::PI).sin();
             let c = (x * std::f64::consts::PI).cos();
@@ -60,7 +60,7 @@ fn psi_x_e(x: f64) -> SpecFunResult<f64> {
         let t1 = 1.0 / x;
         let t2 = 1.0 / (x + 1.0);
         let t3 = 1.0 / v;
-        let result_c = cheb_eval_e(2.0 * v - 1.0, &PSICS_DATA, -1.0, 1.0);
+        let result_c = cheb_eval_e(2.0 * v - 1.0, &(*PSICS_DATA), -1.0, 1.0);
 
         let val = -(t1 + t2 + t3) + result_c.val;
         let mut err = f64::EPSILON * (t1.abs() + (x / (t2 * t2)).abs() + (x / (t3 * t3)).abs());
@@ -75,7 +75,7 @@ fn psi_x_e(x: f64) -> SpecFunResult<f64> {
         let v = x + 1.0;
         let t1 = 1.0 / x;
         let t2 = 1.0 / v;
-        let result_c = cheb_eval_e(2.0 * v - 1.0, &PSICS_DATA, -1.0, 1.0);
+        let result_c = cheb_eval_e(2.0 * v - 1.0, &(*PSICS_DATA), -1.0, 1.0);
 
         let val = -(t1 + t2) + result_c.val;
         let mut err = f64::EPSILON * (t1.abs() + (x / (t2 * t2)).abs());
@@ -88,7 +88,7 @@ fn psi_x_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if x < 1.0 {
         let t1 = 1.0 / x;
-        let result_c = cheb_eval_e(2.0 * x - 1.0, &PSICS_DATA, -1.0, 1.0);
+        let result_c = cheb_eval_e(2.0 * x - 1.0, &(*PSICS_DATA), -1.0, 1.0);
 
         let val = -t1 + result_c.val;
         let mut err = f64::EPSILON * t1;
@@ -101,12 +101,13 @@ fn psi_x_e(x: f64) -> SpecFunResult<f64> {
         }
     } else {
         let v = x - 1.0;
-        cheb_eval_e(2.0 * v - 1.0, &PSICS_DATA, -1.0, 1.0)
+        cheb_eval_e(2.0 * v - 1.0, &(*PSICS_DATA), -1.0, 1.0)
     }
 }
 
 /// Compute psi(z) for large |z| in the right-half plane
 /// ref: [Abramowitz + Stegun, 6.3.18]
+#[allow(dead_code)]
 fn psi_complex_asymp(z: Complex<f64>) -> Complex<f64> {
     // coefficients in the asymptotic expansion for large z;
     // let w = z^(-2) and write the expression in the form
@@ -139,6 +140,7 @@ fn psi_complex_asymp(z: Complex<f64>) -> Complex<f64> {
 }
 
 /// Compute Psi(z) for complex z in the right-half plane
+#[allow(dead_code)]
 fn psi_complex_rhp(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
     let mut n_recurse: usize = 0;
     let mut res = SpecFunResult {

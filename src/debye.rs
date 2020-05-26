@@ -5,19 +5,19 @@ use lazy_static::lazy_static;
 lazy_static! {
     static ref ADEB1_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            2.4006597190381410194,
-            0.1937213042189360089,
-            -0.62329124554895770e-02,
-            0.3511174770206480e-03,
-            -0.228222466701231e-04,
-            0.15805467875030e-05,
-            -0.1135378197072e-06,
-            0.83583361188e-08,
-            -0.6264424787e-09,
-            0.476033489e-10,
-            -0.36574154e-11,
-            0.2835431e-12,
-            -0.221473e-13,
+            2.400_659_719_038_141,
+            0.193_721_304_218_936_02,
+            -6.232_912_455_489_577e-3,
+            3.511_174_770_206_48e-4,
+            -0.228_222_466_701_231e-04,
+            0.158_054_678_750_30e-05,
+            -0.113_537_819_707_2e-06,
+            0.835_833_611_88e-08,
+            -0.626_442_478_7e-09,
+            0.476_033_489e-10,
+            -0.365_741_54e-11,
+            0.283_543_1e-12,
+            -0.221_473e-13,
             0.17409e-14,
             -0.1376e-15,
             0.109e-16,
@@ -28,19 +28,19 @@ lazy_static! {
     };
     static ref ADEB2_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            2.5943810232570770282,
-            0.2863357204530719834,
-            -0.102062656158046713e-01,
-            0.6049109775346844e-03,
-            -0.405257658950210e-04,
-            0.28633826328811e-05,
-            -0.2086394303065e-06,
-            0.155237875826e-07,
-            -0.11731280087e-08,
-            0.897358589e-10,
-            -0.69317614e-11,
-            0.5398057e-12,
-            -0.423241e-13,
+            2.594_381_023_257_077,
+            0.286_335_720_453_072,
+            -1.020_626_561_580_467_2e-2,
+            6.049_109_775_346_844e-4,
+            -0.405_257_658_950_210e-04,
+            0.286_338_263_288_11e-05,
+            -0.208_639_430_306_5e-06,
+            0.155_237_875_826e-07,
+            -0.117_312_800_87e-08,
+            0.897_358_589e-10,
+            -0.693_176_14e-11,
+            0.539_805_7e-12,
+            -0.423_241e-13,
             0.33378e-14,
             -0.2645e-15,
             0.211e-16,
@@ -52,19 +52,19 @@ lazy_static! {
     };
     static ref ADEB3_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            2.707737068327440945,
-            0.340068135211091751,
-            -0.12945150184440869e-01,
-            0.7963755380173816e-03,
-            -0.546360009590824e-04,
-            0.39243019598805e-05,
-            -0.2894032823539e-06,
-            0.217317613962e-07,
-            -0.16542099950e-08,
-            0.1272796189e-09,
-            -0.987963460e-11,
-            0.7725074e-12,
-            -0.607797e-13,
+            2.707_737_068_327_441,
+            0.340_068_135_211_091_75,
+            -1.294_515_018_444_087e-2,
+            7.963_755_380_173_816e-4,
+            -0.546_360_009_590_824e-04,
+            0.392_430_195_988_05e-05,
+            -0.289_403_282_353_9e-06,
+            0.217_317_613_962e-07,
+            -0.165_420_999_50e-08,
+            0.127_279_618_9e-09,
+            -0.987_963_460e-11,
+            0.772_507_4e-12,
+            -0.607_797e-13,
             0.48076e-14,
             -0.3820e-15,
             0.305e-16,
@@ -75,19 +75,19 @@ lazy_static! {
     };
     static ref ADEB4_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            2.781869415020523460,
-            0.374976783526892863,
-            -0.14940907399031583e-01,
-            0.945679811437042e-03,
-            -0.66132916138933e-04,
-            0.4815632982144e-05,
-            -0.3588083958759e-06,
-            0.271601187416e-07,
-            -0.20807099122e-08,
-            0.1609383869e-09,
-            -0.125470979e-10,
-            0.9847265e-12,
-            -0.777237e-13,
+            2.781_869_415_020_523_7,
+            0.374_976_783_526_892_84,
+            -1.494_090_739_903_158_4e-2,
+            0.945_679_811_437_042e-03,
+            -0.661_329_161_389_33e-04,
+            0.481_563_298_214_4e-05,
+            -0.358_808_395_875_9e-06,
+            0.271_601_187_416e-07,
+            -0.208_070_991_22e-08,
+            0.160_938_386_9e-09,
+            -0.125_470_979e-10,
+            0.984_726_5e-12,
+            -0.777_237e-13,
             0.61648e-14,
             -0.4911e-15,
             0.393e-16,
@@ -98,19 +98,19 @@ lazy_static! {
     };
     static ref ADEB5_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            2.8340269546834530149,
-            0.3994098857106266445,
-            -0.164566764773099646e-1,
-            0.10652138340664541e-2,
-            -0.756730374875418e-4,
-            0.55745985240273e-5,
-            -0.4190692330918e-6,
-            0.319456143678e-7,
-            -0.24613318171e-8,
-            0.1912801633e-9,
-            -0.149720049e-10,
-            0.11790312e-11,
-            -0.933329e-13,
+            2.834_026_954_683_453,
+            0.399_409_885_710_626_63,
+            -1.645_667_647_730_996_6e-2,
+            1.065_213_834_066_454e-3,
+            -0.756_730_374_875_418e-4,
+            0.557_459_852_402_73e-5,
+            -0.419_069_233_091_8e-6,
+            0.319_456_143_678e-7,
+            -0.246_133_181_71e-8,
+            0.191_280_163_3e-9,
+            -0.149_720_049e-10,
+            0.117_903_12e-11,
+            -0.933_329e-13,
             0.74218e-14,
             -0.5925e-15,
             0.475e-16,
@@ -121,19 +121,19 @@ lazy_static! {
     };
     static ref ADEB6_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            2.8726727134130122113,
-            0.4174375352339027746,
-            -0.176453849354067873e-1,
-            0.11629852733494556e-2,
-            -0.837118027357117e-4,
-            0.62283611596189e-5,
-            -0.4718644465636e-6,
-            0.361950397806e-7,
-            -0.28030368010e-8,
-            0.2187681983e-9,
-            -0.171857387e-10,
-            0.13575809e-11,
-            -0.1077580e-12,
+            2.872_672_713_413_012_3,
+            0.417_437_535_233_902_76,
+            -1.764_538_493_540_678_7e-2,
+            1.162_985_273_349_455_5e-3,
+            -0.837_118_027_357_117e-4,
+            0.622_836_115_961_89e-5,
+            -0.471_864_446_563_6e-6,
+            0.361_950_397_806e-7,
+            -0.280_303_680_10e-8,
+            0.218_768_198_3e-9,
+            -0.171_857_387e-10,
+            0.135_758_09e-11,
+            -0.107_758_0e-12,
             0.85893e-14,
             -0.6872e-15,
             0.552e-16,
@@ -145,7 +145,7 @@ lazy_static! {
 }
 
 pub fn debye1_e(x: f64) -> SpecFunResult<f64> {
-    let val_infinity = 1.64493406684822644;
+    let val_infinity = 1.644_934_066_848_226_4;
     let xcut = -crate::consts::LN_DBL_MIN;
 
     let mut result = SpecFunResult::<f64>::default();
@@ -168,7 +168,7 @@ pub fn debye1_e(x: f64) -> SpecFunResult<f64> {
         let mut sum = 0.0;
         let mut xk = x * nexp as f64;
         let mut rk = nexp as f64;
-        for i in (1..(nexp + 1)).rev() {
+        for _i in (1..(nexp + 1)).rev() {
             sum *= ex;
             sum += 1f64.mul_add(xk.recip(), 1.0) / rk;
             rk -= 1.0;
@@ -187,7 +187,7 @@ pub fn debye1_e(x: f64) -> SpecFunResult<f64> {
 }
 
 pub fn debye2_e(x: f64) -> SpecFunResult<f64> {
-    let val_infinity = 4.80822761263837714;
+    let val_infinity = 4.808_227_612_638_377;
     let xcut = -crate::consts::LN_DBL_MIN;
 
     let mut result = SpecFunResult::<f64>::default();
@@ -210,7 +210,7 @@ pub fn debye2_e(x: f64) -> SpecFunResult<f64> {
         let mut sum = 0.0;
         let mut xk = x * nexp as f64;
         let mut rk = nexp as f64;
-        for i in (1..(nexp + 1)).rev() {
+        for _i in (1..(nexp + 1)).rev() {
             let xk_inv = xk.recip();
             sum *= ex;
             sum += 2f64.mul_add(xk_inv, 2.0).mul_add(xk_inv, 1.0) / rk;
@@ -232,7 +232,7 @@ pub fn debye2_e(x: f64) -> SpecFunResult<f64> {
 }
 
 pub fn debye3_e(x: f64) -> SpecFunResult<f64> {
-    let val_infinity = 19.4818182068004875;
+    let val_infinity = 19.481_818_206_800_487;
     let xcut = -crate::consts::LN_DBL_MIN;
 
     let mut result = SpecFunResult::<f64>::default();
@@ -255,7 +255,7 @@ pub fn debye3_e(x: f64) -> SpecFunResult<f64> {
         let mut sum = 0.0;
         let mut xk = x * nexp as f64;
         let mut rk = nexp as f64;
-        for i in (1..(nexp + 1)).rev() {
+        for _i in (1..(nexp + 1)).rev() {
             let xk_inv = 1.0 / xk;
             sum *= ex;
             sum += 6f64
@@ -281,7 +281,7 @@ pub fn debye3_e(x: f64) -> SpecFunResult<f64> {
 }
 
 pub fn debye4_e(x: f64) -> SpecFunResult<f64> {
-    let val_infinity = 99.5450644937635129;
+    let val_infinity = 99.545_064_493_763_52;
     let xcut = -crate::consts::LN_DBL_MIN;
 
     let mut result = SpecFunResult::<f64>::default();
@@ -332,7 +332,7 @@ pub fn debye4_e(x: f64) -> SpecFunResult<f64> {
 }
 
 pub fn debye5_e(x: f64) -> SpecFunResult<f64> {
-    let val_infinity = 610.405837190669483828710757875;
+    let val_infinity = 610.405_837_190_669_4;
     let xcut = -crate::consts::LN_DBL_MIN;
 
     let mut result = SpecFunResult::<f64>::default();
@@ -355,7 +355,7 @@ pub fn debye5_e(x: f64) -> SpecFunResult<f64> {
         let mut sum = 0.0;
         let mut xk = x * nexp as f64;
         let mut rk = nexp as f64;
-        for i in (1..(nexp + 1)).rev() {
+        for _i in (1..(nexp + 1)).rev() {
             let xk_inv = 1.0 / xk;
             sum *= ex;
             sum += 120f64
@@ -386,7 +386,7 @@ pub fn debye5_e(x: f64) -> SpecFunResult<f64> {
 }
 
 pub fn debye6_e(x: f64) -> SpecFunResult<f64> {
-    let val_infinity = 4356.06887828990661194792541535;
+    let val_infinity = 4_356.068_878_289_907;
     let xcut = -crate::consts::LN_DBL_MIN;
 
     let mut result = SpecFunResult::<f64>::default();
@@ -409,7 +409,7 @@ pub fn debye6_e(x: f64) -> SpecFunResult<f64> {
         let mut sum = 0.0;
         let mut xk = x * nexp as f64;
         let mut rk = nexp as f64;
-        for i in (1..(nexp + 1)).rev() {
+        for _i in (1..(nexp + 1)).rev() {
             let xk_inv = 1.0 / xk;
             sum *= ex;
             sum += 720f64
@@ -453,141 +453,146 @@ mod test {
         test_check_result_and_code!(
             debye1_e,
             (0.1),
-            0.975277750004723276,
+            0.975_277_750_004_723_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye1_e,
             (1.0),
-            0.777504634112248239,
+            0.777_504_634_112_248_2,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye1_e,
             (10.0),
-            0.164443465679946027,
+            0.164_443_465_679_946_03,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_debye2_e() {
         test_check_result_and_code!(
             debye2_e,
             (0.1),
-            0.967083287045302664,
+            0.967_083_287_045_302_7,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye2_e,
             (1.0),
-            0.70787847562782924,
+            0.707_878_475_627_829_2,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye2_e,
             (10.0),
-            0.0479714980201218708,
+            0.047_971_498_020_121_87,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_debye3_e() {
         test_check_result_and_code!(
             debye3_e,
             (0.1),
-            0.962999940487211048,
+            0.962_999_940_487_211,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye3_e,
             (1.0),
-            0.674415564077814667,
+            0.674_415_564_077_814_7,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye3_e,
             (10.0),
-            0.0192957656903454886,
+            0.019_295_765_690_345_49,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_debye4_e() {
         test_check_result_and_code!(
             debye4_e,
             (0.1),
-            0.960555486124335944,
+            0.960_555_486_124_335_9,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye4_e,
             (1.0),
-            0.654874068886737049,
+            0.654_874_068_886_737,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye4_e,
             (10.0),
-            0.00967367556027115896,
+            0.009_673_675_560_271_159,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_debye5_e() {
         test_check_result_and_code!(
             debye5_e,
             (0.1),
-            0.95892849428310568745,
+            0.958_928_494_283_105_7,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye5_e,
             (1.0),
-            0.6421002580217790246,
+            0.642_100_258_021_779_1,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye5_e,
             (10.0),
-            0.005701535852992908538,
+            0.005_701_535_852_992_909,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_debye6_e() {
         test_check_result_and_code!(
             debye6_e,
             (0.1),
-            0.95776777382605465878,
+            0.957_767_773_826_054_7,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye6_e,
             (1.0),
-            0.63311142583495107588,
+            0.633_111_425_834_951_1,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             debye6_e,
             (10.0),
-            3.7938493294615955279e-3,
+            3.793_849_329_461_595_3e-3,
             TOL0,
             SpecFunCode::Success
         );

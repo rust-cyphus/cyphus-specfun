@@ -52,8 +52,6 @@ pub(crate) mod riemann;
 
 use crate::zeta::{eta::*, hurwitz::*, riemann::*};
 
-use num::Float;
-
 /// Implementation for the Riemann- and Hurwitz-zeta functions.
 pub trait Zeta {
     /// Compute the Hurwitz-zeta function with error estimate.
@@ -150,19 +148,14 @@ impl_zeta_float!(f64);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consts::SQRT_DLB_EPS;
+
     use crate::result::SpecFunCode;
-    #[macro_use]
     use crate::test_check_result_and_code;
     use crate::test_utils::*;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
-    const SQRT_TOL0: f64 = 2.0 * SQRT_DLB_EPS;
     const TOL1: f64 = 16.0 * f64::EPSILON;
     const TOL2: f64 = 256.0 * f64::EPSILON;
-    const TOL3: f64 = 2048.0 * f64::EPSILON;
-    const TOL4: f64 = 16384.0 * f64::EPSILON;
-    const TOL5: f64 = 131072.0 * f64::EPSILON;
 
     #[test]
     fn test_zeta_int_e() {
@@ -226,13 +219,13 @@ mod tests {
 
         test_check_result_and_code!(
             5.zeta_m1_e(),
-            0.0369277551433699263313655,
+            0.036_927_755_143_369_93,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             31.zeta_m1_e(),
-            0.0000000004656629065033784,
+            0.000_000_000_465_662_906_503_378_4,
             TOL0,
             SpecFunCode::Success
         );
@@ -242,19 +235,19 @@ mod tests {
     fn test_zeta_e() {
         test_check_result_and_code!(
             (-151.0).zeta_e(),
-            8.195215221831378294e+143,
+            8.195_215_221_831_378e143,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             (-51.0).zeta_e(),
-            9.68995788746359406565e+24,
+            9.689_957_887_463_594e24,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             (-5.0).zeta_e(),
-            -0.003968253968253968253968,
+            -0.003_968_253_968_253_968,
             TOL1,
             SpecFunCode::Success
         );
@@ -268,38 +261,38 @@ mod tests {
 
         test_check_result_and_code!(
             (-0.5).zeta_e(),
-            -0.207886224977354566017307,
+            -0.207_886_224_977_354_57,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             (-1e-10).zeta_e(),
-            -0.49999999990810614668948,
+            -0.499_999_999_908_106_2,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(0.0.zeta_e(), -0.5, TOL1, SpecFunCode::Success);
         test_check_result_and_code!(
             (1e-10).zeta_e(),
-            -0.50000000009189385333058,
+            -0.500_000_000_091_893_8,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             0.5.zeta_e(),
-            -1.460354508809586812889499,
+            -1.460_354_508_809_586_8,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             (1.0 - 1.0 / 1024.0).zeta_e(),
-            -1023.4228554489429787,
+            -1_023.422_855_448_943,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
-            (1.0 + 1.0 / 1048576.0).zeta_e(),
-            1.0485765772157343441e+06,
+            (1.0 + 1.0 / 1_048_576.0).zeta_e(),
+            1.048_576_577_215_734_4e6,
             TOL1,
             SpecFunCode::Success
         );

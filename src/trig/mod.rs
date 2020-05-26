@@ -32,7 +32,7 @@ use crate::result::{SpecFunCode, SpecFunResult};
 use num::{Complex, Num};
 
 use data::*;
-use sincos::*;
+//use sincos::*;
 
 pub trait Trig {
     /// Compute sine of a number along with the error estimate.
@@ -817,19 +817,19 @@ pub fn sinc_e(x: f64) -> SpecFunResult<f64> {
 mod tests {
     use super::*;
 
-    #[macro_use]
     use crate::test_utils::*;
     use crate::result::SpecFunCode;
     use crate::test_check_result_and_code;
-    use std::os::macos::raw::off_t;
+
+    use super::sincos::*;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
 
     #[test]
     fn test_sin_e() {
         let x = 1.0;
-        assert!((sin_e(x).val - 0.841470984807897).abs() < 1e-10);
-        assert!((x.sin_e().val - 0.841470984807897).abs() < 1e-10);
+        assert!((sin_e(x).val - 0.841_470_984_807_897).abs() < 1e-10);
+        assert!((x.sin_e().val - 0.841_470_984_807_897).abs() < 1e-10);
     }
 
     #[test]
@@ -859,16 +859,16 @@ mod tests {
         let w3 = complex_sin_e(z3).val;
         let w4 = complex_sin_e(z4).val;
 
-        assert!((w1.re - 1.2984575814159773).abs() < 1e-10);
-        assert!((w1.im - 0.6349639147847361).abs() < 1e-10);
+        assert!((w1.re - 1.298_457_581_415_977_3).abs() < 1e-10);
+        assert!((w1.im - 0.634_963_914_784_736_1).abs() < 1e-10);
 
         assert!((w2.re - -14.856_255_163_875_256).abs() < 1e-10);
         assert!((w2.im - 22.898_192_550_963_76).abs() < 1e-10);
 
         assert!((w3.re - -0.917_513_782_188_016_5).abs() < 1e-10);
-        assert!((w3.im - 0.04087625387324457).abs() < 1e-10);
+        assert!((w3.im - 0.040_876_253_873_244_57).abs() < 1e-10);
 
-        assert!((w4.re - -0.3755928499348538).abs() < 1e-10);
+        assert!((w4.re - -0.375_592_849_934_853_8).abs() < 1e-10);
         assert!((w4.im - -3.608_741_212_689_743).abs() < 1e-10);
     }
 
@@ -973,10 +973,7 @@ mod tests {
 
     #[test]
     fn test_sin_pi_e() {
-        let mut s = 0;
-        let mut k = 0;
-        let mut kmax = 12;
-        let mut x: f64 = 0.0;
+        let kmax = 12;
         let mut ix: f64 = 0.0;
         let mut fx: f64;
         let mut exact: f64;
@@ -1015,11 +1012,11 @@ mod tests {
         test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
 
         fx = 0.375;
-        exact = 0.923879532511286756128183189397;
+        exact = 0.923_879_532_511_286_7;
         test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
 
         fx = -0.375;
-        exact = -0.923879532511286756128183189397;
+        exact = -0.923_879_532_511_286_7;
         test_check_result_and_code!(sin_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
 
         fx = 0.0;
@@ -1061,7 +1058,7 @@ mod tests {
         }
 
         fx = 0.03125;
-        exact = 0.0980171403295606019941955638886;
+        exact = 0.098_017_140_329_560_6;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1080,7 +1077,7 @@ mod tests {
         }
 
         fx = 0.0625;
-        exact = 0.195090322016128267848284868477;
+        exact = 0.195_090_322_016_128_28;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1099,7 +1096,7 @@ mod tests {
         }
 
         fx = 0.75;
-        exact = 0.707106781186547524400844362105;
+        exact = std::f64::consts::FRAC_1_SQRT_2;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1117,8 +1114,8 @@ mod tests {
             ix = 10f64.powf((k + 1) as f64);
         }
 
-        fx = 0.0078125;
-        exact = 0.0245412285229122880317345294593;
+        fx = 0.007_812_5;
+        exact = 0.024_541_228_522_912_288;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1141,11 +1138,11 @@ mod tests {
     fn test_sin_pi_e_large_arg() {
         let kmax = 12;
         let mut fx = 0.0625;
-        let mut exact = 0.195090322016128267848284868477;
+        let mut exact = 0.195_090_322_016_128_28;
         let mut ix = i32::MAX as f64 + 1.0;
         ix += (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
 
-        for k in 0..kmax {
+        for _k in 0..kmax {
             let mut x = ix + fx;
             x -= ix; /* careful with compiler optimization */
             if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
@@ -1157,11 +1154,11 @@ mod tests {
         }
 
         fx = -0.0625;
-        exact = -0.195090322016128267848284868477;
+        exact = -0.195_090_322_016_128_28;
         ix = i32::MAX as f64 - 1.0;
         ix -= (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
 
-        for k in 0..kmax {
+        for _k in 0..kmax {
             let mut x = ix + fx;
             x -= ix; /* careful with compiler optimization */
             if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
@@ -1175,11 +1172,8 @@ mod tests {
 
     #[test]
     fn test_cos_pi_e() {
-        let mut s = 0;
-        let mut k = 0;
-        let mut kmax = 12;
-        let mut x: f64 = 0.0;
-        let mut ix: f64 = 0.0;
+        let kmax = 12;
+        let mut ix: f64;
         let mut fx: f64;
         let mut exact: f64;
 
@@ -1220,12 +1214,12 @@ mod tests {
         test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
 
         fx = 0.375;
-        exact = 0.382683432365089771728459984030;
+        exact = 0.382_683_432_365_089_8;
 
         test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
 
         fx = -0.375;
-        exact = 0.382683432365089771728459984030;
+        exact = 0.382_683_432_365_089_8;
 
         test_check_result_and_code!(cos_pi_e, (ix + fx), exact, TOL0, SpecFunCode::Success);
 
@@ -1268,7 +1262,7 @@ mod tests {
         }
 
         fx = 0.0625;
-        exact = 0.980785280403230449126182236134;
+        exact = 0.980_785_280_403_230_4;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1287,7 +1281,7 @@ mod tests {
         }
 
         fx = 0.4375;
-        exact = 0.195090322016128267848284868477;
+        exact = 0.195_090_322_016_128_28;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1305,8 +1299,8 @@ mod tests {
             ix = 10f64.powi(k + 1);
         }
 
-        fx = 0.4921875;
-        exact = 0.0245412285229122880317345294593;
+        fx = 0.492_187_5;
+        exact = 0.024_541_228_522_912_288;
 
         ix = 0.0;
         for k in 0..kmax {
@@ -1329,11 +1323,11 @@ mod tests {
     fn test_cos_pi_e_large_arg() {
         let kmax = 12;
         let mut fx = 0.0625;
-        let mut exact = 0.980785280403230449126182236134;
+        let mut exact = 0.980_785_280_403_230_4;
         let mut ix = i32::MAX as f64 + 1.0;
         ix += (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
 
-        for k in 0..kmax {
+        for _k in 0..kmax {
             let mut x = ix + fx;
             x -= ix; /* careful with compiler optimization */
             if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {
@@ -1345,11 +1339,11 @@ mod tests {
         }
 
         fx = -0.0625;
-        exact = 0.980785280403230449126182236134;
+        exact = 0.980_785_280_403_230_4;
         ix = i32::MAX as f64 - 1.0;
         ix -= (ix - (ix / 2.0).trunc() * 2.0).abs(); /* make sure of even number */
 
-        for k in 0..kmax {
+        for _k in 0..kmax {
             let mut x = ix + fx;
             x -= ix; /* careful with compiler optimization */
             if (x != fx) || ((ix + fx).abs() >= 2.0 / f64::EPSILON) {

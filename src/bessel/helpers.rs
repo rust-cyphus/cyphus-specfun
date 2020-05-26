@@ -9,20 +9,20 @@ lazy_static! {
     // nu = (x+1)/4, -1<x<1, 1/(2nu)(1/Gamma[1-nu]-1/Gamma[1+nu])
     static ref G1_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            -1.14516408366268311786898152867,
-            0.00636085311347084238122955495,
-            0.00186245193007206848934643657,
-            0.000152833085873453507081227824,
-            0.000017017464011802038795324732,
-            -6.4597502923347254354668326451e-07,
-            -5.1819848432519380894104312968e-08,
-            4.5189092894858183051123180797e-10,
-            3.2433227371020873043666259180e-11,
-            6.8309434024947522875432400828e-13,
-            2.8353502755172101513119628130e-14,
-            -7.9883905769323592875638087541e-16,
-            -3.3726677300771949833341213457e-17,
-            -3.6586334809210520744054437104e-20,
+            -1.145_164_083_662_683,
+            0.006_360_853_113_470_843,
+            0.001_862_451_930_072_068_4,
+            0.000_152_833_085_873_453_5,
+            0.000_017_017_464_011_802_038,
+            -6.459_750_292_334_725e-7,
+            -5.181_984_843_251_938e-8,
+            4.518_909_289_485_818e-10,
+            3.243_322_737_102_087e-11,
+            6.830_943_402_494_752e-13,
+            2.835_350_275_517_210_3e-14,
+            -7.988_390_576_932_36e-16,
+            -3.372_667_730_077_195e-17,
+            -3.658_633_480_921_052e-20,
         ],
         a: -1.0,
         b: 1.0,
@@ -31,21 +31,21 @@ lazy_static! {
     // nu = (x+1)/4, -1<x<1,  1/2 (1/Gamma[1-nu]+1/Gamma[1+nu])
     static ref G2_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
-            1.882645524949671835019616975350,
-            -0.077490658396167518329547945212,
-            -0.018256714847324929419579340950,
-            0.0006338030209074895795923971731,
-            0.0000762290543508729021194461175,
-            -9.5501647561720443519853993526e-07,
-            -8.8927268107886351912431512955e-08,
-            -1.9521334772319613740511880132e-09,
-            -9.4003052735885162111769579771e-11,
-            4.6875133849532393179290879101e-12,
-            2.2658535746925759582447545145e-13,
-            -1.1725509698488015111878735251e-15,
-            -7.0441338200245222530843155877e-17,
-            -2.4377878310107693650659740228e-18,
-            -7.5225243218253901727164675011e-20,
+            1.882_645_524_949_671_9,
+            -0.077_490_658_396_167_52,
+            -0.018_256_714_847_324_93,
+            0.000_633_803_020_907_489_6,
+            0.000_076_229_054_350_872_9,
+            -9.550_164_756_172_044e-7,
+            -8.892_726_810_788_635e-8,
+            -1.952_133_477_231_961_4e-9,
+            -9.400_305_273_588_516e-11,
+            4.687_513_384_953_239e-12,
+            2.265_853_574_692_576e-13,
+            -1.172_550_969_848_801_5e-15,
+            -7.044_133_820_024_522e-17,
+            -2.437_787_831_010_769_6e-18,
+            -7.522_524_321_825_39e-20,
         ],
         a: -1.0,
         b: 1.0,
@@ -64,23 +64,23 @@ fn debye_u2(tpow: &[f64]) -> f64 {
 
 #[inline]
 fn debye_u3(tpow: &[f64]) -> f64 {
-    (30375.0 * tpow[3] - 369603.0 * tpow[5] + 765765.0 * tpow[7] - 425425.0 * tpow[9]) / 414720.0
+    (30375.0 * tpow[3] - 369_603.0 * tpow[5] + 765_765.0 * tpow[7] - 425_425.0 * tpow[9]) / 414_720.0
 }
 
 #[inline]
 fn debye_u4(tpow: &[f64]) -> f64 {
-    (4465125.0 * tpow[4] - 94121676.0 * tpow[6] + 349922430.0 * tpow[8] - 446185740.0 * tpow[10]
-        + 185910725.0 * tpow[12])
-        / 39813120.0
+    (4_465_125.0 * tpow[4] - 94_121_676.0 * tpow[6] + 349_922_430.0 * tpow[8] - 446_185_740.0 * tpow[10]
+        + 185_910_725.0 * tpow[12])
+        / 39_813_120.0
 }
 
 #[inline]
 fn debye_u5(tpow: &[f64]) -> f64 {
-    (1519035525.0 * tpow[5] - 49286948607.0 * tpow[7] + 284499769554.0 * tpow[9]
-        - 614135872350.0 * tpow[11]
-        + 566098157625.0 * tpow[13]
-        - 188699385875.0 * tpow[15])
-        / 6688604160.0
+    (1_519_035_525.0 * tpow[5] - 49_286_948_607.0 * tpow[7] + 284_499_769_554.0 * tpow[9]
+        - 614_135_872_350.0 * tpow[11]
+        + 566_098_157_625.0 * tpow[13]
+        - 188_699_385_875.0 * tpow[15])
+        / 6_688_604_160.0
 }
 
 /// These are of use in calculating the oscillating Bessel functions.
@@ -418,7 +418,7 @@ pub(super) fn besseliv_scaled_asymp_unif_e(nu: f64, x: f64) -> SpecFunResult<f64
         result.err = pre * ex_result.val / (nu * nu * nu * nu * nu * nu);
         result.err += pre * ex_result.err * sum.abs();
         result.err += 2.0 * f64::EPSILON * result.val.abs();
-        return result;
+        result
     } else {
         result.val = 0.0;
         result.err = 0.0;
@@ -489,7 +489,7 @@ pub(super) fn besseljyv_restricted(
         ymu.err = 0.0;
         ymup1.val = 0.0;
         ymup1.err = 0.0;
-    //GSL_ERROR("error", GSL_EDOM);
+        //GSL_ERROR("error", GSL_EDOM);
     } else if x == 0.0 {
         if mu == 0.0 {
             jmu.val = 1.0;
@@ -504,45 +504,43 @@ pub(super) fn besseljyv_restricted(
         ymu.err = 0.0;
         ymup1.val = 0.0;
         ymup1.err = 0.0;
-    //GSL_ERROR("error", GSL_EDOM);
+        //GSL_ERROR("error", GSL_EDOM);
+    } else if x < 2.0 {
+        // Use Taylor series for J and the Temme series for Y.
+        // The Taylor series for J requires nu > 0, so we shift
+        // up one and use the recursion relation to get jmu, in
+        // case mu < 0.
+        jmup1 = bessel_ij_taylor_e(mu + 1.0, x, -1, 100, f64::EPSILON);
+        let jmup2 = bessel_ij_taylor_e(mu + 2.0, x, -1, 100, f64::EPSILON);
+        let c = 2.0 * (mu + 1.0) / x;
+        jmu.val = c * jmup1.val - jmup2.val;
+        jmu.err = c * jmup1.err + jmup2.err;
+        jmu.err += 2.0 * f64::EPSILON * jmu.val.abs();
+        let y_res = bessely_temme(mu, x);
+        ymu = y_res.0;
+        ymup1 = y_res.1;
+    } else if x < 1000.0 {
+        let (j_ratio, j_sgn) = besselj_cf1(mu, x);
+        let (p, q) = besseljy_steed_cf2(mu, x);
+        let jprime_j_ratio = mu / x - j_ratio.val;
+        let gamma = (p.val - jprime_j_ratio) / q.val;
+        jmu.val = j_sgn
+            * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - jprime_j_ratio)))
+            .sqrt();
+        jmu.err = 4.0 * f64::EPSILON * (jmu.val).abs();
+        jmup1.val = j_ratio.val * jmu.val;
+        jmup1.err = j_ratio.val.abs() * jmu.err;
+        ymu.val = gamma * jmu.val;
+        ymu.err = (gamma).abs() * jmu.err;
+        ymup1.val = ymu.val * (mu / x - p.val - q.val / gamma);
+        ymup1.err = ymu.err * (mu / x - p.val - q.val / gamma).abs()
+            + 4.0 * f64::EPSILON * ymup1.val.abs();
     } else {
-        if x < 2.0 {
-            // Use Taylor series for J and the Temme series for Y.
-            // The Taylor series for J requires nu > 0, so we shift
-            // up one and use the recursion relation to get jmu, in
-            // case mu < 0.
-            jmup1 = bessel_ij_taylor_e(mu + 1.0, x, -1, 100, f64::EPSILON);
-            let jmup2 = bessel_ij_taylor_e(mu + 2.0, x, -1, 100, f64::EPSILON);
-            let c = 2.0 * (mu + 1.0) / x;
-            jmu.val = c * jmup1.val - jmup2.val;
-            jmu.err = c * jmup1.err + jmup2.err;
-            jmu.err += 2.0 * f64::EPSILON * jmu.val.abs();
-            let y_res = bessely_temme(mu, x);
-            ymu = y_res.0;
-            ymup1 = y_res.1;
-        } else if x < 1000.0 {
-            let (j_ratio, j_sgn) = besselj_cf1(mu, x);
-            let (p, q) = besseljy_steed_cf2(mu, x);
-            let jprime_j_ratio = mu / x - j_ratio.val;
-            let gamma = (p.val - jprime_j_ratio) / q.val;
-            jmu.val = j_sgn
-                * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - jprime_j_ratio)))
-                    .sqrt();
-            jmu.err = 4.0 * f64::EPSILON * (jmu.val).abs();
-            jmup1.val = j_ratio.val * jmu.val;
-            jmup1.err = j_ratio.val.abs() * jmu.err;
-            ymu.val = gamma * jmu.val;
-            ymu.err = (gamma).abs() * jmu.err;
-            ymup1.val = ymu.val * (mu / x - p.val - q.val / gamma);
-            ymup1.err = ymu.err * (mu / x - p.val - q.val / gamma).abs()
-                + 4.0 * f64::EPSILON * ymup1.val.abs();
-        } else {
-            /* Use asymptotics for large argument. */
-            jmu = besseljv_asympx_e(mu, x);
-            jmup1 = besseljv_asympx_e(mu + 1.0, x);
-            ymu = besselyv_asympx_e(mu, x);
-            ymup1 = besselyv_asympx_e(mu + 1.0, x);
-        }
+        /* Use asymptotics for large argument. */
+        jmu = besseljv_asympx_e(mu, x);
+        jmup1 = besseljv_asympx_e(mu + 1.0, x);
+        ymu = besselyv_asympx_e(mu, x);
+        ymup1 = besselyv_asympx_e(mu + 1.0, x);
     }
 
     (jmu, jmup1, ymu, ymup1)
@@ -746,7 +744,7 @@ fn besselk_scaled_steed_temme_cf2(
         qqi += ci * qip1;
         bi += 2.0;
         di = 1.0 / (bi + ai * di);
-        delhi = (bi * di - 1.0) * delhi;
+        delhi *= bi * di - 1.0;
         hi += delhi;
         let dels = qqi * delhi;
         s += dels;
@@ -945,11 +943,11 @@ pub(super) fn besseljv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
         return besseljv_asympx_e(nu, x);
     } else {
         // -1/2 <= mu <= 1/2
-        let N = (nu + 0.5) as usize;
-        let mu = nu - N as f64;
+        let nn = (nu + 0.5) as usize;
+        let mu = nu - nn as f64;
 
         // Determine the J ratio at nu.
-        let (mut Jnup1_Jnu, mut sgn_Jnu) = besselj_cf1(nu, x);
+        let (jnup1_jnu, sgn_jnu) = besselj_cf1(nu, x);
 
         if x < 2.0 {
             // Determine Y_mu, Y_mup1 directly and recurse forward to nu.
@@ -960,14 +958,14 @@ pub(super) fn besseljv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
             let mut yn = ymup1.val;
             let mut ynp1 = 0.0;
 
-            for n in 1..N {
+            for n in 1..nn {
                 ynp1 = 2.0 * (mu + n as f64) / x * yn - ynm1;
                 ynm1 = yn;
                 yn = ynp1;
             }
 
-            result.val = 2.0 / (std::f64::consts::PI * x) / (Jnup1_Jnu.val * yn - ynp1);
-            result.err = f64::EPSILON * (N as f64 + 2.0) * result.val.abs();
+            result.val = 2.0 / (std::f64::consts::PI * x) / (jnup1_jnu.val * yn - ynp1);
+            result.err = f64::EPSILON * (nn as f64 + 2.0) * result.val.abs();
         } else {
             // Recurse backward from nu to mu, determining the J ratio
             // at mu. Use this together with a Steed method CF2 to
@@ -975,25 +973,25 @@ pub(super) fn besseljv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
 
             let (p, q) = besseljy_steed_cf2(mu, x);
 
-            let mut Jnp1 = sgn_Jnu * crate::consts::SQRT_DBL_MIN * Jnup1_Jnu.val;
-            let mut Jn = sgn_Jnu * crate::consts::SQRT_DBL_MIN;
+            let mut jnp1 = sgn_jnu * crate::consts::SQRT_DBL_MIN * jnup1_jnu.val;
+            let mut jn = sgn_jnu * crate::consts::SQRT_DBL_MIN;
 
-            for n in (1..(N + 1)).rev() {
-                let Jnm1 = 2.0 * (mu + n as f64) / x * Jn - Jnp1;
-                Jnp1 = Jn;
-                Jn = Jnm1;
+            for n in (1..(nn + 1)).rev() {
+                let jnm1 = 2.0 * (mu + n as f64) / x * jn - jnp1;
+                jnp1 = jn;
+                jn = jnm1;
             }
-            let Jmup1_Jmu = Jnp1 / Jn;
-            let sgn_Jmu = Jn.signum();
-            let Jmuprime_Jmu = mu / x - Jmup1_Jmu;
+            let jmup1_jmu = jnp1 / jn;
+            let sgn_jmu = jn.signum();
+            let jmuprime_jmu = mu / x - jmup1_jmu;
 
-            let gamma = (p.val - Jmuprime_Jmu) / q.val;
-            let Jmu = sgn_Jmu
-                * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - Jmuprime_Jmu)))
-                    .sqrt();
+            let gamma = (p.val - jmuprime_jmu) / q.val;
+            let jmu = sgn_jmu
+                * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - jmuprime_jmu)))
+                .sqrt();
 
-            result.val = Jmu * (sgn_Jnu * crate::consts::SQRT_DBL_MIN) / Jn;
-            result.err = 2.0 * f64::EPSILON * (N as f64 + 2.0) * result.val.abs();
+            result.val = jmu * (sgn_jnu * crate::consts::SQRT_DBL_MIN) / jn;
+            result.err = 2.0 * f64::EPSILON * (nn as f64 + 2.0) * result.val.abs();
         }
     }
     result
@@ -1006,8 +1004,8 @@ pub(super) fn besselyv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
         return super::olver::besselyv_asymp_olver_e(nu, x);
     } else {
         /* -1/2 <= mu <= 1/2 */
-        let N = (nu + 0.5) as usize;
-        let mu = nu - N as f64;
+        let nn = (nu + 0.5) as usize;
+        let mu = nu - nn as f64;
 
         let (ymu, ymup1) = if x < 2.0 {
             // Determine Ymu, Ymup1 directly. This is really
@@ -1026,14 +1024,14 @@ pub(super) fn besselyv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
          */
         let mut ynm1 = ymu.val;
         let mut yn = ymup1.val;
-        for n in 1..(N + 1) {
+        for n in 1..(nn + 1) {
             let ynp1 = 2.0 * (mu + n as f64) / x * yn - ynm1;
             ynm1 = yn;
             yn = ynp1;
         }
 
         result.val = ynm1;
-        result.err = (N as f64 + 1.0)
+        result.err = (nn as f64 + 1.0)
             * ynm1.abs()
             * ((ymu.err / ymu.val).abs() + (ymup1.err / ymup1.val).abs());
         result.err += 2.0 * f64::EPSILON * ynm1.abs();

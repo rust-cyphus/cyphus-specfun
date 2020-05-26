@@ -6,7 +6,7 @@ pub(crate) mod psi;
 
 use crate::result::SpecFunResult;
 
-use inc::*;
+//use inc::*;
 use mono::*;
 use poch::*;
 use psi::*;
@@ -274,101 +274,97 @@ impl_gamma_float!(f64);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consts::SQRT_DLB_EPS;
-    #[macro_use]
     use crate::test_utils::*;
     use crate::result::SpecFunCode;
     use crate::test_check_result_and_code;
     use crate::test_check_result_sgn_and_code;
 
     const TOL0: f64 = 2.0 * f64::EPSILON;
-    const SQRT_TOL0: f64 = 2.0 * SQRT_DLB_EPS;
     const TOL1: f64 = 16.0 * f64::EPSILON;
     const TOL2: f64 = 256.0 * f64::EPSILON;
-    const TOL3: f64 = 2048.0 * f64::EPSILON;
-    const TOL4: f64 = 16384.0 * f64::EPSILON;
-    const TOL5: f64 = 131072.0 * f64::EPSILON;
+    const TOL5: f64 = 131_072.0 * f64::EPSILON;
 
     #[test]
     fn test_ln_gamma_e() {
         test_check_result_and_code!(
             lngamma_e,
             (-0.1),
-            2.368961332728788655,
+            2.368_961_332_728_788_6,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (-1.0 / 256.0),
-            5.547444766967471595,
+            5.547_444_766_967_471,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (1.0e-08),
-            18.420680738180208905,
+            18.420_680_738_180_21,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (0.1),
-            2.252712651734205,
+            2.252_712_651_734_205,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (1.0 + 1.0 / 256.0),
-            -0.0022422226599611501448,
+            -0.002_242_222_659_961_150_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (2.0 + 1.0 / 256.0),
-            0.0016564177556961728692,
+            0.001_656_417_755_696_172_8,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (100.0),
-            359.1342053695753,
+            359.134_205_369_575_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (-1.0 - 1.0 / 65536.0),
-            11.090348438090047844,
+            11.090_348_438_090_048,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
-            (-1.0 - 1.0 / 268435456.0),
-            19.408121054103474300,
+            (-1.0 - 1.0 / 268_435_456.0),
+            19.408_121_054_103_475,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (-100.5),
-            -364.9009683094273518,
+            -364.900_968_309_427_36,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lngamma_e,
             (-100.0 - 1.0 / 65536.0),
-            -352.6490910117097874,
+            -352.649_091_011_709_8,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_lnfact_e() {
         test_check_result_and_code!(lnfact_e, (0), 0.0, TOL0, SpecFunCode::Success);
@@ -376,14 +372,14 @@ mod tests {
         test_check_result_and_code!(
             lnfact_e,
             (7),
-            8.525161361065414300,
+            8.525_161_361_065_415,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lnfact_e,
             (33),
-            85.05446701758151741,
+            85.054_467_017_581_52,
             TOL0,
             SpecFunCode::Success
         );
@@ -394,65 +390,65 @@ mod tests {
         test_check_result_and_code!(
             gamma_e,
             (1.0 + 1.0 / 4096.0),
-            0.9998591371459403421,
+            0.999_859_137_145_940_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (1.0 + 1.0 / 32.0),
-            0.9829010992836269148,
+            0.982_901_099_283_626_9,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (2.0 + 1.0 / 256.0),
-            1.0016577903733583299,
+            1.001_657_790_373_358_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(gamma_e, (9.0), 40320.0, TOL0, SpecFunCode::Success);
-        test_check_result_and_code!(gamma_e, (10.0), 362880.0, TOL0, SpecFunCode::Success);
+        test_check_result_and_code!(gamma_e, (10.0), 362_880.0, TOL0, SpecFunCode::Success);
         test_check_result_and_code!(
             gamma_e,
             (100.0),
-            9.332621544394415268e+155,
+            9.332_621_544_394_415e155,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (170.0),
-            4.269068009004705275e+304,
+            4.269_068_009_004_705e304,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (171.0),
-            7.257415615307998967e+306,
+            7.257_415_615_307_999e306,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (-10.5),
-            -2.640121820547716316e-07,
+            -2.640_121_820_547_716e-7,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (-11.25),
-            6.027393816261931672e-08,
+            6.027_393_816_261_932e-8,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gamma_e,
             (-1.0 + 1.0 / 65536.0),
-            -65536.42280587818970,
+            -65_536.422_805_878_19,
             TOL0,
             SpecFunCode::Success
         );
@@ -463,68 +459,69 @@ mod tests {
         test_check_result_and_code!(
             gammastar_e,
             (1.0e-08),
-            3989.423555759890865,
+            3_989.423_555_759_891,
             2.0 * TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (1.0e-05),
-            126.17168469882690233,
+            126.171_684_698_826_91,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (0.001),
-            12.708492464364073506,
+            12.708_492_464_364_074,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (1.5),
-            1.0563442442685598666,
+            1.056_344_244_268_559_8,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (3.0),
-            1.0280645179187893045,
+            1.028_064_517_918_789_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (9.0),
-            1.0092984264218189715,
+            1.009_298_426_421_819,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (11.0),
-            1.0076024283104962850,
+            1.007_602_428_310_496_3,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (100.0),
-            1.0008336778720121418,
+            1.000_833_677_872_012_2,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammastar_e,
             (1.0e+05),
-            1.0000008333336805529,
+            1.000_000_833_333_680_5,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(gammastar_e, (1.0e+20), 1.0, TOL0, SpecFunCode::Success);
     }
+
     #[test]
     fn test_gammainv_e() {
         test_check_result_and_code!(gammainv_e, (1.0), 1.0, TOL0, SpecFunCode::Success);
@@ -535,14 +532,14 @@ mod tests {
         test_check_result_and_code!(
             gammainv_e,
             (10.0),
-            1.0 / 362880.0,
+            1.0 / 362_880.0,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammainv_e,
             (100.0),
-            1.0715102881254669232e-156,
+            1.071_510_288_125_467e-_156,
             TOL2,
             SpecFunCode::Success
         );
@@ -556,21 +553,21 @@ mod tests {
         test_check_result_and_code!(
             gammainv_e,
             (-10.5),
-            -1.0 / 2.640121820547716316e-07,
+            -1.0 / 2.640_121_820_547_716e-7,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammainv_e,
             (-11.25),
-            1.0 / 6.027393816261931672e-08,
+            1.0 / 6.027_393_816_261_932e-8,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             gammainv_e,
             (-1.0 + 1.0 / 65536.0),
-            -1.0 / 65536.42280587818970,
+            -1.0 / 65_536.422_805_878_19,
             TOL1,
             SpecFunCode::Success
         );
@@ -582,32 +579,33 @@ mod tests {
         test_check_result_and_code!(
             lnpoch_e,
             (5.0, 1.0 / 65536.0),
-            0.000022981557571259389129,
+            0.000_022_981_557_571_259_39,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lnpoch_e,
             (5.0, 1.0 / 256.0),
-            0.005884960217985189004,
+            0.005_884_960_217_985_189,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lnpoch_e,
             (7.0, 3.0),
-            6.222576268071368616,
+            6.222_576_268_071_369,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lnpoch_e,
             (5.0, 2.0),
-            3.401197381662155375,
+            3.401_197_381_662_155_5,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_lnpoch_sgn_e() {
         test_check_result_sgn_and_code!(
@@ -621,7 +619,7 @@ mod tests {
         test_check_result_sgn_and_code!(
             lnpoch_sgn_e,
             (-4.5, 0.25),
-            0.7430116475119920117,
+            0.743_011_647_511_992,
             TOL1,
             1.0,
             SpecFunCode::Success
@@ -629,12 +627,13 @@ mod tests {
         test_check_result_sgn_and_code!(
             lnpoch_sgn_e,
             (-4.5, 1.25),
-            2.1899306304483174731,
+            2.189_930_630_448_317_5,
             TOL2,
             -1.0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_poch_e() {
         dbg!(f64::NEG_INFINITY.exp());
@@ -644,7 +643,7 @@ mod tests {
         test_check_result_and_code!(
             poch_e,
             (5.0, 1.0 / 256.0),
-            1.0059023106151364982,
+            1.005_902_310_615_136_6,
             TOL0,
             SpecFunCode::Success
         );
@@ -695,7 +694,7 @@ mod tests {
         test_check_result_and_code!(
             pochrel_e,
             (5.0, 0.0),
-            1.506117668431800472,
+            1.506_117_668_431_800_5,
             TOL1,
             SpecFunCode::Success
         );
@@ -716,35 +715,35 @@ mod tests {
         test_check_result_and_code!(
             pochrel_e,
             (5.0, 0.01),
-            1.5186393661368275330,
+            1.518_639_366_136_827_6,
             TOL2,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             pochrel_e,
             (-5.5, 0.01),
-            1.8584945633829063516,
+            1.858_494_563_382_906_4,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             pochrel_e,
             (-5.5, -1.0 / 8.0),
-            1.0883319303552135488,
+            1.088_331_930_355_213_5,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             pochrel_e,
             (-5.5, -1.0 / 256.0),
-            1.7678268037726177453,
+            1.767_826_803_772_617_7,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             pochrel_e,
             (-5.5, -11.0),
-            0.09090909090939652475,
+            0.090_909_090_909_396_53,
             TOL1,
             SpecFunCode::Success
         );
@@ -754,61 +753,62 @@ mod tests {
     fn test_taylorcoeff_e() {
         test_check_result_and_code!(
             taylorcoeff_e,
-            (10, 1.0 / 1048576.0),
-            1.7148961854776073928e-67,
+            (10, 1.0 / 1_048_576.0),
+            1.714_896_185_477_607_2e-67,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (10, 1.0 / 1024.0),
-            2.1738891788497900281e-37,
+            2.173_889_178_849_79e-37,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (10, 1.0),
-            2.7557319223985890653e-07,
+            2.755_731_922_398_589e-7,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (10, 5.0),
-            2.6911444554673721340,
+            2.691_144_455_467_372_2,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (10, 500.0),
-            2.6911444554673721340e+20,
+            2.691_144_455_467_372e20,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (100, 100.0),
-            1.0715102881254669232e+42,
+            1.071_510_288_125_466_9e42,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (1000, 200.0),
-            2.6628790558154746898e-267,
+            2.662_879_055_815_474_7e-_267,
             TOL1,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             taylorcoeff_e,
             (1000, 500.0),
-            2.3193170139740855074e+131,
+            2.319_317_013_974_085_6e131,
             TOL1,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_fact_e() {
         test_check_result_and_code!(fact_e, (0), 1.0, TOL0, SpecFunCode::Success);
@@ -817,11 +817,12 @@ mod tests {
         test_check_result_and_code!(
             fact_e,
             (33),
-            8.683317618811886496e+36,
+            8.683_317_618_811_886e36,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_doublefact_e() {
         test_check_result_and_code!(doublefact_e, (0), 1.0, TOL0, SpecFunCode::Success);
@@ -830,50 +831,52 @@ mod tests {
         test_check_result_and_code!(
             doublefact_e,
             (33),
-            6.332659870762850625e+18,
+            6.332_659_870_762_85e18,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_lndoublefact_e() {
         test_check_result_and_code!(lndoublefact_e, (0), 0.0, TOL0, SpecFunCode::Success);
         test_check_result_and_code!(
             lndoublefact_e,
             (7),
-            4.653960350157523371,
+            4.653_960_350_157_523,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lndoublefact_e,
             (33),
-            43.292252022541719660,
+            43.292_252_022_541_72,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lndoublefact_e,
             (34),
-            45.288575519655959140,
+            45.288_575_519_655_96,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lndoublefact_e,
             (1034),
-            3075.6383796271197707,
+            3_075.638_379_627_12,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lndoublefact_e,
             (1035),
-            3078.8839081731809169,
+            3_078.883_908_173_180_8,
             TOL0,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_choose_e() {
         test_check_result_and_code!(choose_e, (7, 3), 35.0, TOL0, SpecFunCode::Success);
@@ -883,14 +886,14 @@ mod tests {
         test_check_result_and_code!(
             choose_e,
             (500, 495),
-            255244687600.0,
+            255_244_687_600.0,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             choose_e,
             (500, 5),
-            255244687600.0,
+            255_244_687_600.0,
             TOL0,
             SpecFunCode::Success
         );
@@ -898,31 +901,32 @@ mod tests {
         test_check_result_and_code!(
             choose_e,
             (500, 200),
-            5.054949849935532221e+144,
+            5.054_949_849_935_532_4e144,
             TOL5,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             choose_e,
             (500, 300),
-            5.054949849935532221e+144,
+            5.054_949_849_935_532_4e144,
             TOL5,
             SpecFunCode::Success
         );
     }
+
     #[test]
     fn test_lnchoose_e() {
         test_check_result_and_code!(
             lnchoose_e,
             (7, 3),
-            3.555348061489413680,
+            3.555_348_061_489_413_5,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             lnchoose_e,
             (5, 2),
-            2.302585092994045684,
+            std::f64::consts::LN_10,
             TOL0,
             SpecFunCode::Success
         );

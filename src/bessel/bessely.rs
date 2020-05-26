@@ -194,10 +194,11 @@ pub(super) fn besselyn_e(n: i32, x: f64) -> SpecFunResult<f64> {
     result
 }
 
+#[allow(dead_code)]
 pub(super) fn besselyv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
-    if (x <= 0.0) {
+    if x <= 0.0 {
         result.code = SpecFunCode::DomainErr;
         result.val = f64::NAN;
         result.err = f64::NAN;

@@ -46,7 +46,7 @@ fn pochrel_smallx(a: f64, x: f64) -> SpecFunResult<f64> {
     let alneps = LN_DBL_EPS - LN_2;
 
     if x == 0.0 {
-        return digamma_e(a);
+        digamma_e(a)
     } else {
         let bp = if a < -0.5 { 1.0 - a - x } else { a };
         let incr: i32 = if bp < 10.0 { (11.0 - bp) as i32 } else { 0 };
@@ -105,7 +105,7 @@ fn pochrel_smallx(a: f64, x: f64) -> SpecFunResult<f64> {
         if bp == a {
             result.val = poch1;
             result.err = 2.0 * f64::EPSILON * ((incr.abs() + 1) as f64) * result.val.abs();
-            return result;
+            result
         } else {
             // We have poch1(bp, x), but a is < -0.5. We therefore use a
             // reflection formula to obtain poch1(a,x).
@@ -118,7 +118,7 @@ fn pochrel_smallx(a: f64, x: f64) -> SpecFunResult<f64> {
             result.val = poch1 * (1.0 + x * trig) + trig;
             result.err = ((poch1 * x).abs() + 1.0) * f64::EPSILON * (t1.abs() + t2.abs());
             result.err += 2.0 * f64::EPSILON * ((incr.abs() + 1) as f64) * result.val.abs();
-            return result;
+            result
         }
     }
 }
@@ -183,7 +183,7 @@ fn lnpoch_pos(a: f64, x: f64) -> SpecFunResult<f64> {
         let a4 = a * a * a * a;
         let a6 = a4 * a * a;
         let ser_1 = c1 + c3 / (30.0 * a * a) + c5 / (105.0 * a4) + c7 / (140.0 * a6);
-        let ser_2 = c8 / (99.0 * a6 * a * a) - 691.0 / 360360.0 * c9 / (a6 * a4);
+        let ser_2 = c8 / (99.0 * a6 * a * a) - 691.0 / 360_360.0 * c9 / (a6 * a4);
         let ser = (ser_1 + ser_2) / (12.0 * a);
 
         let ln_1peps = ln_p1_e(eps);
@@ -235,9 +235,9 @@ pub fn lnpoch_e(a: f64, x: f64) -> SpecFunResult<f64> {
 pub fn lnpoch_sgn_e(a: f64, x: f64) -> (SpecFunResult<f64>, f64) {
     let mut result = SpecFunResult::default();
     if x == 0.0 {
-        return (result, 1.0);
+        (result, 1.0)
     } else if a > 0.0 && a + x > 0.0 {
-        return (lnpoch_e(a, x), 1.0);
+        (lnpoch_e(a, x), 1.0)
     } else if a <= 0.0 && a == a.floor() {
         // Special case for infinite denominator gamma(a)
         if a + x < 0.0 && x == x.floor() {
@@ -246,18 +246,18 @@ pub fn lnpoch_sgn_e(a: f64, x: f64) -> (SpecFunResult<f64>, f64) {
             let s = if x % 2.0 == 0.0 { 1.0 } else { -1.0 };
             result.val = f - result_pos.val;
             result.err = result_pos.err + 2.0 * f64::EPSILON * f;
-            return (result, s);
+            (result, s)
         } else if a + x == 0.0 {
             // Handle a+x = 0, i.e. gamma(0) / gamma(a)
             // poch(-a,a) == (-1)^a gamma(a+1)
             let (res, sgn) = lngamma_sgn_e(-a + 1.0);
             let s = if -a % 2.0 == 0.0 { 1.0 } else { -1.0 };
-            return (res, sgn * s);
+            (res, sgn * s)
         } else {
             // Handle finite numberator, Gamma(a+x) for a+x != 0 or neg int
             result.val = f64::NEG_INFINITY;
             result.err = 0.0;
-            return (result, 1.0);
+            (result, 1.0)
         }
     } else if a < 0.0 && a + x < 0.0 {
         // Reduce to positive case using reflection.
@@ -268,7 +268,7 @@ pub fn lnpoch_sgn_e(a: f64, x: f64) -> (SpecFunResult<f64>, f64) {
             result.code = SpecFunCode::DomainErr;
             result.val = f64::NAN;
             result.err = f64::NAN;
-            return (result, 0.0);
+            (result, 0.0)
         } else {
             let lnp_pos = lnpoch_pos(1.0 - a, -x);
             let lnterm = (sin_1 / sin_2).abs().ln();
@@ -277,7 +277,7 @@ pub fn lnpoch_sgn_e(a: f64, x: f64) -> (SpecFunResult<f64>, f64) {
             result.err +=
                 2.0 * f64::EPSILON * ((1.0 - a).abs() + (1.0 - a - a).abs()) * lnterm.abs();
             result.err += 2.0 * f64::EPSILON * result.val.abs();
-            return (result, 1f64.copysign(sin_1 * sin_2));
+            (result, 1f64.copysign(sin_1 * sin_2))
         }
     } else {
         // Evaluate gamma ratio directly
@@ -288,18 +288,18 @@ pub fn lnpoch_sgn_e(a: f64, x: f64) -> (SpecFunResult<f64>, f64) {
             result.val = lg_apn.val - lg_a.val;
             result.err = lg_apn.err + lg_a.err;
             result.err += 2.0 * f64::EPSILON * result.val.abs();
-            return (result, s_a * s_apn);
+            (result, s_a * s_apn)
         } else if lg_apn.code == SpecFunCode::DomainErr || lg_a.code == SpecFunCode::DomainErr {
             result.val = f64::NAN;
             result.err = f64::NAN;
             result.code = SpecFunCode::DomainErr;
-            return (result, 0.0);
+            (result, 0.0)
         } else {
             result.val = 0.0;
             result.err = 0.0;
             // TODO: Change this to Failure!
             result.code = SpecFunCode::DomainErr;
-            return (result, 0.0);
+            (result, 0.0)
         }
     }
 }
@@ -309,16 +309,16 @@ pub fn poch_e(a: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::default();
     if x == 0.0 {
         result.val = 1.0;
-        return result;
+        result
     } else {
         let (lnpoch, sgn) = lnpoch_sgn_e(a, x);
         if lnpoch.val == f64::NEG_INFINITY {
-            return result;
+            result
         } else {
             let res = exp_err_e(lnpoch.val, lnpoch.err);
             result.val = res.val * sgn;
             result.err = res.err + 2.0 * f64::EPSILON * result.val.abs();
-            return result;
+            result
         }
     }
 }

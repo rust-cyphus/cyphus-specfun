@@ -114,13 +114,13 @@ mod tests {
     #[test]
     fn test_cheby() {
         let x = 0.5;
-        let coeffs = [0., 0.880101, 0., -0.0391267, 0., 0.00050252];
+        let coeffs = [0., 0.880_101, 0., -0.039_126_7, 0., 0.000_502_52];
         let sinhalf = 0.5_f64.sin();
         let cheb = cheb_eval_e(x, &coeffs, -1.0, 1.0).val;
         assert!((sinhalf - cheb).abs() < 1e-5);
 
         let cheb = ChebSeries {
-            coeffs: vec![0.0, 0.880101, 0.0, -0.0391267, 0.0, 0.00050252],
+            coeffs: vec![0.0, 0.880_101, 0.0, -0.039_126_7, 0.0, 0.000_502_52],
             a: -1.0,
             b: 1.0,
         };

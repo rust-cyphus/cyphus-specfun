@@ -16,6 +16,7 @@ use num::{complex::Complex, Float};
 use super::data::*;
 
 /// Compute Log(Gamma(z)) using Lanczos method for complex numbers
+#[allow(dead_code)]
 fn lngamma_lanczos_complex_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
     let mut y = SpecFunResult {
         val: Complex::new(0.0, 0.0),
@@ -75,9 +76,9 @@ fn lngamma_lanczos_e(x: f64) -> SpecFunResult<f64> {
 
 /// Calculate series for g(eps) = Gamma(eps) eps - 1/(1+eps) - eps / 2, as well as its sign
 #[allow(
-    clippy::excessive_precision,
-    clippy::unreadable_literal,
-    clippy::unseparated_literal_suffix
+clippy::excessive_precision,
+clippy::unreadable_literal,
+clippy::unseparated_literal_suffix
 )]
 fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
     let c1 = -0.07721566490153286061_f64;
@@ -93,15 +94,15 @@ fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
 
     let g = eps
         * c10
-            .mul_add(eps, c9)
-            .mul_add(eps, c8)
-            .mul_add(eps, c7)
-            .mul_add(eps, c6)
-            .mul_add(eps, c5)
-            .mul_add(eps, c4)
-            .mul_add(eps, c3)
-            .mul_add(eps, c2)
-            .mul_add(eps, c1);
+        .mul_add(eps, c9)
+        .mul_add(eps, c8)
+        .mul_add(eps, c7)
+        .mul_add(eps, c6)
+        .mul_add(eps, c5)
+        .mul_add(eps, c4)
+        .mul_add(eps, c3)
+        .mul_add(eps, c2)
+        .mul_add(eps, c1);
 
     let gee = g + 1.0 / (1.0 + eps) + 0.5 * eps;
     let val = (gee / eps.abs()).ln();
@@ -117,9 +118,9 @@ fn lngamma_sgn_0_e(eps: f64) -> (SpecFunResult<f64>, f64) {
 }
 
 #[allow(
-    clippy::excessive_precision,
-    clippy::unreadable_literal,
-    clippy::unseparated_literal_suffix
+clippy::excessive_precision,
+clippy::unreadable_literal,
+clippy::unseparated_literal_suffix
 )]
 fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
     if eps == 0.0 {
@@ -255,9 +256,9 @@ fn lngamma_sgn_sing_e(n: usize, eps: f64) -> (SpecFunResult<f64>, f64) {
 /// Compute log(Gamma(1+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
 #[allow(
-    clippy::excessive_precision,
-    clippy::unreadable_literal,
-    clippy::unseparated_literal_suffix
+clippy::excessive_precision,
+clippy::unreadable_literal,
+clippy::unseparated_literal_suffix
 )]
 #[inline]
 fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
@@ -291,9 +292,9 @@ fn lngamma_1_pade_e(eps: f64) -> SpecFunResult<f64> {
 /// Compute log(Gamma(2+eps))/eps using the (2,2) pade
 /// approximate plus a correction series
 #[allow(
-    clippy::excessive_precision,
-    clippy::unreadable_literal,
-    clippy::unseparated_literal_suffix
+clippy::excessive_precision,
+clippy::unreadable_literal,
+clippy::unseparated_literal_suffix
 )]
 #[inline]
 fn lngamma_2_pade_e(eps: f64) -> SpecFunResult<f64> {
@@ -352,7 +353,7 @@ fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
 fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
     if x == 0.5 {
         // Error term
-        let val = 1.77245385090551602729817_f64;
+        let val = 1.772_453_850_905_516_f64;
         let err = f64::EPSILON * val;
         SpecFunResult {
             val,
@@ -370,13 +371,13 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if (x - 1.0).abs() < 0.01 {
         let eps = x - 1.0;
-        let c1: f64 = 0.4227843350984671394;
-        let c2: f64 = -0.01094400467202744461;
-        let c3: f64 = 0.09252092391911371098;
-        let c4: f64 = -0.018271913165599812664;
-        let c5: f64 = 0.018004931096854797895;
-        let c6: f64 = -0.006850885378723806846;
-        let c7: f64 = 0.003998239557568466030;
+        let c1: f64 = 0.422_784_335_098_467_13;
+        let c2: f64 = -0.010_944_004_672_027_444;
+        let c3: f64 = 0.092_520_923_919_113_7;
+        let c4: f64 = -0.018_271_913_165_599_812;
+        let c5: f64 = 0.018_004_931_096_854_797;
+        let c6: f64 = -0.006_850_885_378_723_807;
+        let c7: f64 = 0.003_998_239_557_568_466;
         let err = f64::EPSILON;
         let val = c7
             .mul_add(eps, c6)
@@ -394,14 +395,14 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         }
     } else if (x - 2.0).abs() < 0.01 {
         let eps = x - 2.0;
-        let c1 = 0.4227843350984671394_f64;
-        let c2 = 0.4118403304264396948_f64;
-        let c3 = 0.08157691924708626638_f64;
-        let c4 = 0.07424901075351389832_f64;
-        let c5 = -0.0002669820687450147683_f64;
-        let c6 = 0.011154045718130991049_f64;
-        let c7 = -0.002852645821155340816_f64;
-        let c8 = 0.0021039333406973880085_f64;
+        let c1 = 0.422_784_335_098_467_13_f64;
+        let c2 = 0.411_840_330_426_439_7_f64;
+        let c3 = 0.081_576_919_247_086_27_f64;
+        let c4 = 0.074_249_010_753_513_9_f64;
+        let c5 = -0.000_266_982_068_745_014_75_f64;
+        let c6 = 0.011_154_045_718_130_992_f64;
+        let c7 = -0.002_852_645_821_155_340_8_f64;
+        let c8 = 0.002_103_933_340_697_388_f64;
 
         let err = f64::EPSILON;
         let val = c8
@@ -433,7 +434,7 @@ fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
         // is not good.
         let gamma_8 = 5040.0;
         let t = (2.0 * x - 15.0) / 5.0;
-        let c = cheb_eval_e(t, &GAMMA_5_10_DATA, -1.0, 1.0);
+        let c = cheb_eval_e(t, &(*GAMMA_5_10_DATA), -1.0, 1.0);
         let val = c.val.exp() * gamma_8;
         let err = val * c.err + 2.0 * f64::EPSILON * val;
         SpecFunResult {
@@ -495,6 +496,7 @@ pub(crate) fn fact_e(n: usize) -> SpecFunResult<f64> {
 }
 
 /// Compute the double fact_e of a number, returning an f64
+#[allow(dead_code)]
 pub(crate) fn doublefact_e(n: usize) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -531,6 +533,7 @@ pub(crate) fn lnfact_e(n: usize) -> SpecFunResult<f64> {
 }
 
 /// Compute the natural log of n!!
+#[allow(dead_code)]
 pub(crate) fn lndoublefact_e(n: usize) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     if n <= DOUBLE_FACT_TABLE.len() {
@@ -550,6 +553,7 @@ pub(crate) fn lndoublefact_e(n: usize) -> SpecFunResult<f64> {
 }
 
 /// Compute the binomial coefficient n! / (m! * (n-m)!)
+#[allow(dead_code)]
 pub(crate) fn choose_e(n: usize, m: usize) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
@@ -592,6 +596,7 @@ pub(crate) fn choose_e(n: usize, m: usize) -> SpecFunResult<f64> {
 }
 
 /// Compute the natural log of the binomial coefficient: ln(n! / (m! * (n-m)!))
+#[allow(dead_code)]
 pub(crate) fn lnchoose_e(n: usize, m: usize) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     if m > n {
@@ -841,10 +846,10 @@ pub(crate) fn gammastar_e(x: f64) -> SpecFunResult<f64> {
         exp_err_e(lnr_val, lnr_err)
     } else if x < 2.0 {
         let t = 4.0 / 3.0 * (x - 0.5) - 1.0;
-        cheb_eval_e(t, &GSTAR_A_DATA, -1.0, 1.0)
+        cheb_eval_e(t, &(*GSTAR_A_DATA), -1.0, 1.0)
     } else if x < 10.0 {
         let t = 0.25 * (x - 2.0) - 1.0;
-        let c = cheb_eval_e(t, &GSTAR_B_DATA, -1.0, 1.0);
+        let c = cheb_eval_e(t, &(*GSTAR_B_DATA), -1.0, 1.0);
         let val = c.val / (x * x) + 1.0 + 1.0 / (12.0 * x);
         let mut err = c.err / (x * x);
         err += 2.0 * f64::EPSILON * val.abs();
@@ -909,6 +914,7 @@ pub(crate) fn gammainv_e(x: f64) -> SpecFunResult<f64> {
 }
 
 /// Compute ln(gamma(z)) for a complex number z
+#[allow(dead_code)]
 pub(crate) fn lngamma_complex_e(z: Complex<f64>) -> SpecFunResult<Complex<f64>> {
     let mut result = SpecFunResult {
         val: Complex::new(0.0, 0.0),

@@ -5,6 +5,7 @@ use crate::gamma::mono::lnfact_e;
 use crate::result::{SpecFunCode, SpecFunResult, SpecFunResultE10};
 use std::f64::consts::LN_10;
 
+#[allow(dead_code)]
 pub(crate) fn exp_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -27,6 +28,7 @@ pub(crate) fn exp_e(x: f64) -> SpecFunResult<f64> {
 }
 
 /// Compute exp(x)
+#[allow(dead_code)]
 pub(crate) fn exp_e10_e(x: f64) -> SpecFunResultE10<f64> {
     let mut result = SpecFunResultE10 {
         val: 0.0,
@@ -60,6 +62,7 @@ pub(crate) fn exp_e10_e(x: f64) -> SpecFunResultE10<f64> {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn exp_mult_e(x: f64, y: f64) -> SpecFunResult<f64> {
     let ay = y.abs();
 
@@ -109,6 +112,7 @@ pub(crate) fn exp_mult_e(x: f64, y: f64) -> SpecFunResult<f64> {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
     let ay = y.abs();
 
@@ -159,6 +163,7 @@ pub(crate) fn exp_mult_e10_e(x: f64, y: f64) -> SpecFunResultE10<f64> {
 }
 
 /// Exponentiate and multiply by a given factor: y * Exp(x)
+#[allow(dead_code)]
 pub(crate) fn exp_mult_err_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResult<f64> {
     let ay = y.abs();
 
@@ -221,6 +226,7 @@ pub(crate) fn exp_mult_err_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResult<
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn exp_mult_err_e10_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunResultE10<f64> {
     let mut result = SpecFunResultE10 {
         val: 0.0,
@@ -274,6 +280,7 @@ pub(crate) fn exp_mult_err_e10_e(x: f64, dx: f64, y: f64, dy: f64) -> SpecFunRes
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn expm1_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -309,6 +316,7 @@ pub(crate) fn expm1_e(x: f64) -> SpecFunResult<f64> {
     result
 }
 
+#[allow(dead_code)]
 pub(crate) fn exprel_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -344,6 +352,7 @@ pub(crate) fn exprel_e(x: f64) -> SpecFunResult<f64> {
     result
 }
 
+#[allow(dead_code)]
 pub(crate) fn exprel_2_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -382,6 +391,7 @@ pub(crate) fn exprel_2_e(x: f64) -> SpecFunResult<f64> {
 
 /// Evaluate continued fraction for exprel
 /// Ref: Abramowitz + Stegun, 4.2.41
+#[allow(dead_code)]
 pub(crate) fn exprel_n_cf_e(nn: f64, x: f64) -> SpecFunResult<f64> {
     let recur_big = SQRT_DBL_MAX;
     let maxiter = 5000;
@@ -454,6 +464,7 @@ pub(crate) fn exprel_n_cf_e(nn: f64, x: f64) -> SpecFunResult<f64> {
     result
 }
 
+#[allow(dead_code)]
 pub(crate) fn exprel_n_e(n: usize, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult {
         val: 0.0,
@@ -543,6 +554,7 @@ pub(crate) fn exprel_n_e(n: usize, x: f64) -> SpecFunResult<f64> {
 }
 
 /// Exponentiate a quantity with an associated error.
+#[allow(dead_code)]
 pub(crate) fn exp_err_e(x: f64, dx: f64) -> SpecFunResult<f64> {
     let adx = dx.abs();
 
@@ -576,6 +588,7 @@ pub(crate) fn exp_err_e(x: f64, dx: f64) -> SpecFunResult<f64> {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn exp_err_e10_e(x: f64, dx: f64) -> SpecFunResultE10<f64> {
     let adx = dx.abs();
     let mut result = SpecFunResultE10 {

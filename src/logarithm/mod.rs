@@ -429,10 +429,10 @@ mod tests {
         let ln2 = complex_ln_e(z2);
         let ln3 = complex_ln_e(z3);
         assert!((ln1.val.re - 0.804_718_956_217_050_1).abs() < 1e-10);
-        assert!((ln1.val.im + 0.4636476090008061).abs() < 1e-10);
+        assert!((ln1.val.im + 0.463_647_609_000_806_1).abs() < 1e-10);
 
         assert!((ln2.val.re - 2.307_560_258_420_63).abs() < 1e-10);
-        assert!((ln2.val.im - 0.0996686524911620).abs() < 1e-10);
+        assert!((ln2.val.im - 0.099_668_652_491_162_0).abs() < 1e-10);
 
         assert!((ln3.val.re - 1.416_606_672_028_108).abs() < 1e-10);
         assert!((ln3.val.im - 2.896_613_990_462_929).abs() < 1e-10);
@@ -442,35 +442,35 @@ mod tests {
         test_check_result_and_code!(
             ln_p1_e,
             (1.0e-10),
-            9.999999999500000000e-11,
+            9.999_999_999_5e-11,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             ln_p1_e,
             (1.0e-8),
-            9.999999950000000333e-09,
+            9.999_999_950_000_001e-9,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             ln_p1_e,
             (1.0e-4),
-            0.00009999500033330833533,
+            0.000_099_995_000_333_308_34,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             ln_p1_e,
             (0.1),
-            0.09531017980432486004,
+            0.095_310_179_804_324_87,
             TOL0,
             SpecFunCode::Success
         );
         test_check_result_and_code!(
             ln_p1_e,
             (0.49),
-            0.3987761199573677730,
+            0.398_776_119_957_367_8,
             TOL0,
             SpecFunCode::Success
         );
@@ -478,7 +478,7 @@ mod tests {
         test_check_result_and_code!(
             ln_p1_e,
             (-0.49),
-            -0.6733445532637655964,
+            -0.673_344_553_263_765_6,
             TOL0,
             SpecFunCode::Success
         );
@@ -492,7 +492,7 @@ mod tests {
         test_check_result_and_code!(
             ln_p1_e,
             (-0.99),
-            -4.605170185988091368,
+            -4.605_170_185_988_092,
             TOL0,
             SpecFunCode::Success
         );

@@ -30,7 +30,7 @@ pub enum SpecFunCode {
 
 impl Default for SpecFunCode {
     fn default() -> Self {
-        return SpecFunCode::Success;
+        SpecFunCode::Success
     }
 }
 

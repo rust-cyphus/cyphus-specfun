@@ -1,10 +1,9 @@
-use super::airy_core::*;
 use super::airy_data::*;
 use crate::exp::core::exp_mult_err_e;
 use crate::result::{SpecFunCode, SpecFunResult};
 
 pub(crate) fn airy_deriv_mod_phase(x: f64) -> (SpecFunResult<f64>, SpecFunResult<f64>) {
-    let pi34 = 2.356194490192344928847;
+    let pi34 = 2.356_194_490_192_345;
     let mut res_mod = SpecFunResult::<f64>::default();
     let mut res_phase = SpecFunResult::<f64>::default();
 
@@ -118,8 +117,8 @@ pub(crate) fn airy_ai_deriv_e(x: f64) -> SpecFunResult<f64> {
 }
 
 pub(crate) fn airy_bi_deriv_scaled_e(x: f64) -> SpecFunResult<f64> {
-    let atr: f64 = 8.7506905708484345; // 16./(sqrt(8)-1)
-    let btr: f64 = -2.0938363213560543; // -(sqrt(8)+1)/(sqrt(8)-1)
+    let atr: f64 = 8.750_690_570_848_434; // 16./(sqrt(8)-1)
+    let btr: f64 = -2.093_836_321_356_054_2; // -(sqrt(8)+1)/(sqrt(8)-1)
 
     let mut result = SpecFunResult::<f64>::default();
 

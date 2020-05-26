@@ -60,8 +60,8 @@ fn airy_aie(x: f64) -> SpecFunResult<f64> {
 fn airy_bie(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
-    let atr: f64 = 8.7506905708484345;
-    let btr: f64 = -2.0938363213560543;
+    let atr: f64 = 8.750_690_570_848_434;
+    let btr: f64 = -2.093_836_321_356_054_2;
 
     if x < 4.0 {
         let sqx = x.sqrt();

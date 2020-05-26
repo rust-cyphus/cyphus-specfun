@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub(crate) enum TestResult {
     InCons = 1,
     ErrNeg = 2,
@@ -8,6 +9,7 @@ pub(crate) enum TestResult {
     ExpBad = 64,
 }
 
+#[allow(dead_code)]
 pub(crate) fn test_sf_frac_diff(x1: f64, x2: f64) -> f64 {
     if x1 == 0.0 && x2 == 0.0 {
         0.0

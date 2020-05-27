@@ -64,12 +64,14 @@ fn debye_u2(tpow: &[f64]) -> f64 {
 
 #[inline]
 fn debye_u3(tpow: &[f64]) -> f64 {
-    (30375.0 * tpow[3] - 369_603.0 * tpow[5] + 765_765.0 * tpow[7] - 425_425.0 * tpow[9]) / 414_720.0
+    (30375.0 * tpow[3] - 369_603.0 * tpow[5] + 765_765.0 * tpow[7] - 425_425.0 * tpow[9])
+        / 414_720.0
 }
 
 #[inline]
 fn debye_u4(tpow: &[f64]) -> f64 {
-    (4_465_125.0 * tpow[4] - 94_121_676.0 * tpow[6] + 349_922_430.0 * tpow[8] - 446_185_740.0 * tpow[10]
+    (4_465_125.0 * tpow[4] - 94_121_676.0 * tpow[6] + 349_922_430.0 * tpow[8]
+        - 446_185_740.0 * tpow[10]
         + 185_910_725.0 * tpow[12])
         / 39_813_120.0
 }
@@ -489,7 +491,7 @@ pub(super) fn besseljyv_restricted(
         ymu.err = 0.0;
         ymup1.val = 0.0;
         ymup1.err = 0.0;
-        //GSL_ERROR("error", GSL_EDOM);
+    //GSL_ERROR("error", GSL_EDOM);
     } else if x == 0.0 {
         if mu == 0.0 {
             jmu.val = 1.0;
@@ -504,7 +506,7 @@ pub(super) fn besseljyv_restricted(
         ymu.err = 0.0;
         ymup1.val = 0.0;
         ymup1.err = 0.0;
-        //GSL_ERROR("error", GSL_EDOM);
+    //GSL_ERROR("error", GSL_EDOM);
     } else if x < 2.0 {
         // Use Taylor series for J and the Temme series for Y.
         // The Taylor series for J requires nu > 0, so we shift
@@ -526,15 +528,15 @@ pub(super) fn besseljyv_restricted(
         let gamma = (p.val - jprime_j_ratio) / q.val;
         jmu.val = j_sgn
             * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - jprime_j_ratio)))
-            .sqrt();
+                .sqrt();
         jmu.err = 4.0 * f64::EPSILON * (jmu.val).abs();
         jmup1.val = j_ratio.val * jmu.val;
         jmup1.err = j_ratio.val.abs() * jmu.err;
         ymu.val = gamma * jmu.val;
         ymu.err = (gamma).abs() * jmu.err;
         ymup1.val = ymu.val * (mu / x - p.val - q.val / gamma);
-        ymup1.err = ymu.err * (mu / x - p.val - q.val / gamma).abs()
-            + 4.0 * f64::EPSILON * ymup1.val.abs();
+        ymup1.err =
+            ymu.err * (mu / x - p.val - q.val / gamma).abs() + 4.0 * f64::EPSILON * ymup1.val.abs();
     } else {
         /* Use asymptotics for large argument. */
         jmu = besseljv_asympx_e(mu, x);
@@ -710,7 +712,7 @@ pub(super) fn besseljy_steed_cf2(nu: f64, x: f64) -> (SpecFunResult<f64>, SpecFu
  * Also requires |nu| < 1/2.
 */
 #[allow(dead_code)]
-fn besselk_scaled_steed_temme_cf2(
+pub(super) fn besselk_scaled_steed_temme_cf2(
     nu: f64,
     x: f64,
 ) -> (SpecFunResult<f64>, SpecFunResult<f64>, SpecFunResult<f64>) {
@@ -988,7 +990,7 @@ pub(super) fn besseljv_pos_e(nu: f64, x: f64) -> SpecFunResult<f64> {
             let gamma = (p.val - jmuprime_jmu) / q.val;
             let jmu = sgn_jmu
                 * (2.0 / (std::f64::consts::PI * x) / (q.val + gamma * (p.val - jmuprime_jmu)))
-                .sqrt();
+                    .sqrt();
 
             result.val = jmu * (sgn_jnu * crate::consts::SQRT_DBL_MIN) / jn;
             result.err = 2.0 * f64::EPSILON * (nn as f64 + 2.0) * result.val.abs();

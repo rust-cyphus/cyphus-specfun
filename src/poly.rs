@@ -1,9 +1,11 @@
-pub struct Polynomial {
-    coef: Vec<f64>,
+use num::Float;
+
+pub struct Polynomial<T: Float> {
+    coef: Vec<T>,
 }
 
-impl Polynomial {
-    pub fn new(coef: Vec<f64>) -> Polynomial {
+impl<T: Float> Polynomial<T> {
+    pub fn new(coef: Vec<T>) -> Polynomial<T> {
         Polynomial { coef: coef.clone() }
     }
     /// Evaluate a polynomial at a point.
@@ -14,7 +16,7 @@ impl Polynomial {
     /// let poly = Polynomial::new([1.0,2.0,3.0].to_vec());
     /// assert_eq!(poly.eval(-1.0), 2.0);
     /// ```
-    pub fn eval(&self, x: f64) -> f64 {
+    pub fn eval(&self, x: T) -> T {
         // Make sure that there is at least one element in the coeff list. If not,
         // return zero.
         match self.coef.last() {
@@ -26,7 +28,7 @@ impl Polynomial {
                 }
                 z
             }
-            None => 0.0,
+            None => T::zero(),
         }
     }
     /// Compute all derivatives of a polynomial at a point (including the
@@ -38,11 +40,11 @@ impl Polynomial {
     /// let poly = Polynomial::new([1.0,2.0,3.0].to_vec());
     /// assert_eq!(poly.derivs(-1.0), vec![2.0, -4.0, 6.0]);
     /// ```
-    pub fn derivs(&self, x: f64) -> Vec<f64> {
+    pub fn derivs(&self, x: T) -> Vec<T> {
         let mut n = 0;
         let mut nmax = 0;
         let lenc = self.coef.len();
-        let mut res = vec![0.0; lenc];
+        let mut res = vec![T::zero(); lenc];
 
         for i in 0..lenc {
             if n < lenc {
@@ -50,7 +52,7 @@ impl Polynomial {
                 nmax = n;
                 n += 1;
             } else {
-                res[i] = 0.0;
+                res[i] = T::zero();
             }
         }
 
@@ -63,10 +65,10 @@ impl Polynomial {
             }
         }
 
-        let mut f = 1.0;
+        let mut f = T::one();
         for i in 2..(nmax + 1) {
-            f *= i as f64;
-            res[i] *= f;
+            f = f * T::from(i).unwrap();
+            res[i] = res[i] * f;
         }
         res
     }
@@ -77,8 +79,16 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_poly_eval() {
+    fn test_poly_eval_f64() {
         let poly = Polynomial::new([1.0, 2.0, 3.0].to_vec());
+        let x = -1.0;
+        println!("{:?}", poly.eval(x));
+        println!("{:?}", poly.derivs(x));
+        assert_eq!(poly.derivs(-1.0), vec![2.0, -4.0, 6.0]);
+    }
+    #[test]
+    fn test_poly_eval_f32() {
+        let poly = Polynomial::new([1f32, 2.0, 3.0].to_vec());
         let x = -1.0;
         println!("{:?}", poly.eval(x));
         println!("{:?}", poly.derivs(x));

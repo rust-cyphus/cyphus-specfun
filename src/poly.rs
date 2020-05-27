@@ -1,12 +1,14 @@
 use num::Float;
 
 pub struct Polynomial<T: Float> {
-    coef: Vec<T>,
+    pub coeffs: Vec<T>,
 }
 
 impl<T: Float> Polynomial<T> {
-    pub fn new(coef: Vec<T>) -> Polynomial<T> {
-        Polynomial { coef: coef.clone() }
+    pub fn new(coeffs: Vec<T>) -> Polynomial<T> {
+        Polynomial {
+            coeffs: coeffs.clone(),
+        }
     }
     /// Evaluate a polynomial at a point.
     ///
@@ -17,13 +19,13 @@ impl<T: Float> Polynomial<T> {
     /// assert_eq!(poly.eval(-1.0), 2.0);
     /// ```
     pub fn eval(&self, x: T) -> T {
-        // Make sure that there is at least one element in the coeff list. If not,
+        // Make sure that there is at least one element in the coeffsf list. If not,
         // return zero.
-        match self.coef.last() {
+        match self.coeffs.last() {
             Some(cn) => {
                 let mut z = *cn;
                 // Construct the result in Horner form.
-                for val in self.coef.iter().rev().skip(1) {
+                for val in self.coeffs.iter().rev().skip(1) {
                     z = z.mul_add(x, *val);
                 }
                 z
@@ -43,12 +45,12 @@ impl<T: Float> Polynomial<T> {
     pub fn derivs(&self, x: T) -> Vec<T> {
         let mut n = 0;
         let mut nmax = 0;
-        let lenc = self.coef.len();
+        let lenc = self.coeffs.len();
         let mut res = vec![T::zero(); lenc];
 
         for i in 0..lenc {
             if n < lenc {
-                res[i] = self.coef[lenc - 1];
+                res[i] = self.coeffs[lenc - 1];
                 nmax = n;
                 n += 1;
             } else {
@@ -58,7 +60,7 @@ impl<T: Float> Polynomial<T> {
 
         for i in 0..(lenc - 1) {
             let k = (lenc - 1) - i;
-            res[0] = x.mul_add(res[0], self.coef[k - 1]);
+            res[0] = x.mul_add(res[0], self.coeffs[k - 1]);
             let lmax = if nmax < k { nmax } else { k - 1 };
             for l in 1..(lmax + 1) {
                 res[l] = x.mul_add(res[l], res[l - 1]);

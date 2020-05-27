@@ -1,3 +1,4 @@
+pub mod poly;
 pub mod airy;
 pub mod bessel;
 pub mod cheb;

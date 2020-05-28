@@ -1,5 +1,6 @@
 pub(crate) mod bessel_data;
 mod bessel_helpers;
+pub(crate) mod cyl_bessel_i;
 pub(crate) mod cyl_bessel_j;
 pub(crate) mod cyl_bessel_k;
 pub(crate) mod cyl_bessel_y;
@@ -7,7 +8,9 @@ mod olver;
 
 use crate::result::SpecFunResult;
 use cyl_bessel_j::*;
+use cyl_bessel_k::*;
 use cyl_bessel_y::*;
+use num::Float;
 
 pub trait CylBesselJ {
     /// Compute the cylindrical Bessel-function of the first kind of order 0
@@ -219,6 +222,127 @@ impl CylBesselY for f64 {
     }
     fn cyl_bessel_yv(&self, nu: Self) -> Self {
         cyl_bessel_yv_e(nu, *self).val
+    }
+}
+
+pub trait CylBesselK {
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 0 along with an error estimate.
+    fn cyl_bessel_k0_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 0 scaled by e^x along with an error estimate.
+    fn cyl_bessel_k0_scaled_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 0.
+    fn cyl_bessel_k0(&self) -> Self;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 0 scaled by e^x.
+    fn cyl_bessel_k0_scaled(&self) -> Self;
+
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 1 along with an error estimate.
+    fn cyl_bessel_k1_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 1 scaled by e^x along with an error estimate.
+    fn cyl_bessel_k1_scaled_e(&self) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 1.
+    fn cyl_bessel_k1(&self) -> Self;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order 1 scaled by e^x.
+    fn cyl_bessel_k1_scaled(&self) -> Self;
+
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order n along with an error estimate.
+    fn cyl_bessel_kn_e(&self, n: i32) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order n scaled by e^x along with an error estimate.
+    fn cyl_bessel_kn_scaled_e(&self, n: i32) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order n.
+    fn cyl_bessel_kn(&self, n: i32) -> Self;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// order n scaled by e^x.
+    fn cyl_bessel_kn_scaled(&self, n: i32) -> Self;
+
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// fractional order nu along with an error estimate.
+    fn cyl_bessel_kv_e(&self, nu: Self) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// fractional order nu scaled by e^x along with an error estimate.
+    fn cyl_bessel_kv_scaled_e(&self, nu: Self) -> SpecFunResult<Self>
+    where
+        Self: Float;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// fractional order nu.
+    fn cyl_bessel_kv(&self, nu: Self) -> Self;
+    /// Compute the modified cylindrical bessel function of the second kind of
+    /// fractional order nu scaled by e^x.
+    fn cyl_bessel_kv_scaled(&self, nu: Self) -> Self;
+}
+
+impl CylBesselK for f64 {
+    fn cyl_bessel_k0_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_k0_e(*self)
+    }
+    fn cyl_bessel_k0_scaled_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_k0_scaled_e(*self)
+    }
+    fn cyl_bessel_k0(&self) -> Self {
+        cyl_bessel_k0_e(*self).val
+    }
+    fn cyl_bessel_k0_scaled(&self) -> Self {
+        cyl_bessel_k0_scaled_e(*self).val
+    }
+    fn cyl_bessel_k1_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_k1_e(*self)
+    }
+    fn cyl_bessel_k1_scaled_e(&self) -> SpecFunResult<Self> {
+        cyl_bessel_k1_scaled_e(*self)
+    }
+    fn cyl_bessel_k1(&self) -> Self {
+        cyl_bessel_k1_e(*self).val
+    }
+    fn cyl_bessel_k1_scaled(&self) -> Self {
+        cyl_bessel_k1_scaled_e(*self).val
+    }
+    fn cyl_bessel_kn_e(&self, n: i32) -> SpecFunResult<Self> {
+        cyl_bessel_kn_e(n, *self)
+    }
+    fn cyl_bessel_kn_scaled_e(&self, n: i32) -> SpecFunResult<Self> {
+        cyl_bessel_kn_scaled_e(n, *self)
+    }
+    fn cyl_bessel_kn(&self, n: i32) -> Self {
+        cyl_bessel_kn_e(n, *self).val
+    }
+    fn cyl_bessel_kn_scaled(&self, n: i32) -> Self {
+        cyl_bessel_kn_scaled_e(n, *self).val
+    }
+    fn cyl_bessel_kv_e(&self, nu: Self) -> SpecFunResult<Self> {
+        cyl_bessel_kv_e(nu, *self)
+    }
+    fn cyl_bessel_kv_scaled_e(&self, nu: Self) -> SpecFunResult<Self> {
+        cyl_bessel_kv_scaled_e(nu, *self)
+    }
+    fn cyl_bessel_kv(&self, nu: Self) -> Self {
+        cyl_bessel_kv_e(nu, *self).val
+    }
+    fn cyl_bessel_kv_scaled(&self, nu: Self) -> Self {
+        cyl_bessel_kv_scaled_e(nu, *self).val
     }
 }
 

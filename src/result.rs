@@ -156,3 +156,37 @@ impl<T: std::fmt::Debug + Num> SpecFunResultE10<T> {
         }
     }
 }
+
+/// Convert SpecFunResultE10 object into a SpecFunResult object.
+pub(crate) fn result_smash_e(re: &mut SpecFunResultE10<f64>) -> SpecFunResult<f64> {
+    let mut result = SpecFunResult::<f64>::default();
+    result.code = re.code.clone();
+    if re.e10 == 0 {
+        result.val = re.val;
+        result.err = re.err;
+        result
+    } else {
+        let av = re.val;
+        let ae = re.err;
+
+        if (crate::consts::SQRT_DBL_MIN < av)
+            && (av < crate::consts::SQRT_DBL_MAX)
+            && (crate::consts::SQRT_DBL_MIN < ae)
+            && (ae < crate::consts::SQRT_DBL_MAX)
+            && (0.49 * crate::consts::LN_DBL_MIN < re.e10 as f64)
+            && ((re.e10 as f64) < 0.49 * crate::consts::LN_DBL_MAX)
+        {
+            let scale = (re.e10 as f64 * std::f64::consts::LN_10).exp();
+            result.val = re.val * scale;
+            result.err = re.err * scale;
+            result
+        } else {
+            crate::exp::core::exp_mult_err_e(
+                re.e10 as f64 * std::f64::consts::LN_10,
+                0.0,
+                re.val,
+                re.err,
+            )
+        }
+    }
+}

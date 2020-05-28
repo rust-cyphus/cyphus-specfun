@@ -351,7 +351,7 @@ fn gammastar_ser_e(x: f64) -> SpecFunResult<f64> {
 
 /// Compute Gamma(x) for x >= 1/2
 fn gamma_x_gt_half_e(x: f64) -> SpecFunResult<f64> {
-    if x == 0.5 {
+    if (x - 0.5).abs() < 0.5 * f64::EPSILON {
         // Error term
         let val = 1.772_453_850_905_516_f64;
         let err = f64::EPSILON * val;

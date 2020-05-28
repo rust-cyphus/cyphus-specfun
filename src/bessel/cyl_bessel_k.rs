@@ -2,6 +2,9 @@ use super::bessel_data::*;
 use crate::gamma::Gamma;
 use crate::result::{result_smash_e, SpecFunCode, SpecFunResult, SpecFunResultE10};
 
+/// Compute the modified bessel function of the second kind of order 0 scaled
+/// by e^x along with an error estimate.
+#[allow(dead_code)]
 pub(crate) fn cyl_bessel_k0_scaled_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
@@ -14,7 +17,8 @@ pub(crate) fn cyl_bessel_k0_scaled_e(x: f64) -> SpecFunResult<f64> {
         let lx = x.ln();
         let ex = x.exp();
         let x2 = x * x;
-        result.val = ex * ((*K0_POLY).eval(x2) - lx * (1.0 + 0.25 * x2 * (*K0_POLY).eval(x2)));
+        result.val =
+            ex * ((*K0_POLY).eval(x2) - lx * (1.0 + 0.25 * x2 * (*I0_POLY).eval(0.25 * x2)));
         result.err = ex * (1.6 + lx.abs() * 0.6) * f64::EPSILON;
         result.err += 2.0 * f64::EPSILON * result.val.abs();
         result
@@ -35,6 +39,9 @@ pub(crate) fn cyl_bessel_k0_scaled_e(x: f64) -> SpecFunResult<f64> {
     }
 }
 
+/// Compute the modified bessel function of the second kind of order 0 along
+/// with an error estimate.
+#[allow(dead_code)]
 pub(crate) fn cyl_bessel_k0_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
     if x <= 0.0 {
@@ -45,7 +52,7 @@ pub(crate) fn cyl_bessel_k0_e(x: f64) -> SpecFunResult<f64> {
     } else if x < 1.0 {
         let lx = x.ln();
         let x2 = x * x;
-        result.val = (*K0_POLY).eval(x2) - lx * (1.0 + 0.25 * x2 * (*I0_POLY).eval(x2));
+        result.val = (*K0_POLY).eval(x2) - lx * (1.0 + 0.25 * x2 * (*I0_POLY).eval(0.25 * x2));
         result.err = (1.6 + lx.abs() * 0.6) * f64::EPSILON;
         result.err += 2.0 * f64::EPSILON * result.val.abs();
         result
@@ -55,6 +62,9 @@ pub(crate) fn cyl_bessel_k0_e(x: f64) -> SpecFunResult<f64> {
     }
 }
 
+/// Compute the modified bessel function of the second kind of order 1 scaled
+/// by e^x along with an error estimate.
+#[allow(dead_code)]
 pub(crate) fn cyl_bessel_k1_scaled_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
@@ -92,6 +102,9 @@ pub(crate) fn cyl_bessel_k1_scaled_e(x: f64) -> SpecFunResult<f64> {
     result
 }
 
+/// Compute the modified bessel function of the second kind of order 1 along
+/// with an error estimate.
+#[allow(dead_code)]
 pub(crate) fn cyl_bessel_k1_e(x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
 
@@ -174,6 +187,9 @@ fn cyl_bessel_kn_scaled_small_x(n: i32, x: f64) -> SpecFunResult<f64> {
     result.err += 2.0 * f64::EPSILON * result.val.abs();
     result
 }
+
+/// Compute the modified bessel function of the second kind of order n scaled
+/// by e^x along with an error estimate.
 #[allow(dead_code)]
 pub(crate) fn cyl_bessel_kn_scaled_e(n: i32, x: f64) -> SpecFunResult<f64> {
     let n = n.abs(); /* K(-n, z) = K(n, z) */
@@ -218,13 +234,16 @@ pub(crate) fn cyl_bessel_kn_scaled_e(n: i32, x: f64) -> SpecFunResult<f64> {
     }
 }
 
+/// Compute the modified bessel function of the second kind of order n along
+/// with an error estimate.
 #[allow(dead_code)]
-pub(crate) fn cyl_bessel_kn_e(n: i32, x: f64) {
+pub(crate) fn cyl_bessel_kn_e(n: i32, x: f64) -> SpecFunResult<f64> {
     let mut result = cyl_bessel_kn_scaled_e(n, x);
     let ex = (-x).exp();
     result.val *= ex;
     result.err *= ex;
     result.err += x * f64::EPSILON * result.val.abs();
+    result
 }
 
 fn cyl_bessel_kv_scaled_e10_e(nu: f64, x: f64) -> SpecFunResultE10<f64> {
@@ -234,41 +253,43 @@ fn cyl_bessel_kv_scaled_e10_e(nu: f64, x: f64) -> SpecFunResultE10<f64> {
         result.err = f64::NAN;
         result.code = SpecFunCode::DomainErr;
     } else {
-        let N = (nu + 0.5) as i32;
-        let mu = nu - N as f64; // -1/2 <= mu <= 1/2
-        let e10 = 0;
+        let nn = (nu + 0.5) as i32;
+        let mu = nu - nn as f64; // -1/2 <= mu <= 1/2
+        let mut e10 = 0;
 
-        let (mut K_mu, mut K_mup1, mut Kp_mu) = if x < 2.0 {
+        let (mut kmu, mut kmup1, _) = if x < 2.0 {
             super::bessel_helpers::besselk_scaled_temme(mu, x)
         } else {
             super::bessel_helpers::besselk_scaled_steed_temme_cf2(mu, x)
         };
 
         /* recurse forward to obtain K_num1, K_nu */
-        let mut K_nu = K_mu.val;
-        let mut K_nup1 = K_mup1.val;
+        let mut knu = kmu.val;
+        let mut knup1 = kmup1.val;
 
-        for n in 0..N {
-            let K_num1 = K_nu;
-            K_nu = K_nup1;
-            /* rescale the recurrence to avoid overflow */
-            if K_nu.abs() > crate::consts::SQRT_DBL_MAX {
-                let p = (((K_nu).abs()).ln() / std::f64::consts::LN_10).floor() as i32;
+        for n in 0..nn {
+            let mut knum1 = knu;
+            knu = knup1;
+            // rescale the recurrence to avoid overflow
+            if knu.abs() > crate::consts::SQRT_DBL_MAX {
+                let p = (((knu).abs()).ln() / std::f64::consts::LN_10).floor() as i32;
                 let factor = 10f64.powi(p);
-                K_num1 /= factor;
-                K_nu /= factor;
+                knum1 /= factor;
+                knu /= factor;
                 e10 += p as i32;
             }
-            K_nup1 = 2.0 * (mu + n as f64 + 1.0) / x * K_nu + K_num1;
+            knup1 = 2.0 * (mu + n as f64 + 1.0) / x * knu + knum1;
         }
 
-        result.val = K_nu;
-        result.err = 2.0 * f64::EPSILON * (N + 4) as f64 * result.val.abs();
+        result.val = knu;
+        result.err = 2.0 * f64::EPSILON * (nn + 4) as f64 * result.val.abs();
         result.e10 = e10;
     }
     result
 }
 
+/// Compute the modified bessel function of the second kind of fractional order
+/// nu scaled by e^x along with an error estimate.
 #[allow(dead_code)]
 pub(crate) fn cyl_bessel_kv_scaled_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let mut result = SpecFunResult::<f64>::default();
@@ -276,13 +297,15 @@ pub(crate) fn cyl_bessel_kv_scaled_e(nu: f64, x: f64) -> SpecFunResult<f64> {
         result.val = f64::NAN;
         result.err = f64::NAN;
         result.code = SpecFunCode::DomainErr;
+        result
     } else {
         let mut result_e10 = cyl_bessel_kv_scaled_e10_e(nu, x);
-        result_smash_e(&mut result_e10, &mut result);
+        result_smash_e(&mut result_e10)
     }
-    result
 }
 
+/// Compute the modified bessel function of the second kind of fractional order
+/// nu along with an error estimate.
 #[allow(dead_code)]
 pub(crate) fn cyl_bessel_kv_e(nu: f64, x: f64) -> SpecFunResult<f64> {
     let b = cyl_bessel_kv_scaled_e(nu, x);

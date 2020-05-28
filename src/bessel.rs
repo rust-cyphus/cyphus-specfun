@@ -225,6 +225,7 @@ impl CylBesselY for f64 {
 #[cfg(test)]
 mod test {
     use crate::bessel::cyl_bessel_j::*;
+    use crate::bessel::cyl_bessel_k::*;
     use crate::bessel::cyl_bessel_y::*;
     use crate::consts::SQRT_DLB_EPS;
     use crate::result::SpecFunCode;
@@ -2699,6 +2700,198 @@ mod test {
             (1000, 4294967296.0),
             3.656551321485397501e-06,
             2.0e-05,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_k0_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_k0_scaled_e,
+            (0.1),
+            2.6823261022628943831,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_scaled_e,
+            (1.95),
+            0.8513330938802157074894,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_scaled_e,
+            (2.0),
+            0.8415682150707714179,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_scaled_e,
+            (6.0),
+            0.50186313086214003217346,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_scaled_e,
+            (100.0),
+            0.1251756216591265789,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_k0_e() {
+        test_check_result_and_code!(
+            cyl_bessel_k0_e,
+            (0.1),
+            2.4270690247020166125,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_e,
+            (1.95),
+            0.1211226255426818887894,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_e,
+            (2.0),
+            0.11389387274953343565,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k0_e,
+            (100.0),
+            4.656628229175902019e-45,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_k1_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_k1_scaled_e,
+            (0.1),
+            10.890182683049696574,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_scaled_e,
+            (1.95),
+            1.050086915104152747182,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_scaled_e,
+            (2.0),
+            1.0334768470686885732,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_scaled_e,
+            (6.0),
+            0.5421759102771335382849,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_scaled_e,
+            (100.0),
+            0.1257999504795785293,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_k1_e() {
+        test_check_result_and_code!(
+            cyl_bessel_k1_e,
+            (0.1),
+            9.853844780870606135,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_e,
+            (1.95),
+            0.1494001409315894276793,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_e,
+            (2.0),
+            0.13986588181652242728,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_k1_e,
+            (100.0),
+            4.679853735636909287e-45,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_kn_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_kn_scaled_e,
+            (4, 0.1),
+            530040.2483725626207,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_kn_scaled_e,
+            (5, 2.0),
+            69.68655087607675118,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_kn_scaled_e,
+            (100, 100.0),
+            2.0475736731166756813e+19,
+            TOL1,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_kn_e() {
+        test_check_result_and_code!(
+            cyl_bessel_kn_e,
+            (4, 0.1),
+            479600.2497925682849,
+            TOL1,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_kn_e,
+            (5, 2.0),
+            9.431049100596467443,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_kn_e,
+            (100, 100.0),
+            7.617129630494085416e-25,
+            TOL2,
             SpecFunCode::Success
         );
     }

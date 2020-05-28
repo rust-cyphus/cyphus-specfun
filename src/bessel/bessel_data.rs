@@ -497,7 +497,7 @@ lazy_static! {
     //                                          log weighted error  17.61
     //                                significant figures required  17.90
     //                                     decimal places required  18.15
-    static BI0_CHEB: ChebSeries<f64> = ChebSeries {
+    pub(super) static ref BI0_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
             -0.07660547252839144951,
             1.92733795399380827000,
@@ -522,7 +522,7 @@ lazy_static! {
     //                                          log weighted error  16.10
     //                                significant figures required  14.69
     //                                     decimal places required  16.76
-    static AI0_CHEB: ChebSeries<f64> = ChebSeries {
+    pub(super) static ref AI0_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
             0.07575994494023796,
             0.00759138081082334,
@@ -556,7 +556,7 @@ lazy_static! {
     //                                          log weighted error  16.42
     //                                significant figures required  14.86
     //                                     decimal places required  17.09
-    static AI02_CHEB: ChebSeries<f64> = ChebSeries {
+    pub(super) static ref AI02_CHEB: ChebSeries<f64> = ChebSeries {
         coeffs: vec![
             0.05449041101410882,
             0.00336911647825569,
@@ -585,4 +585,96 @@ lazy_static! {
         b: 1.0,
     };
 
+    // based on SLATEC besi1(), besi1e()
+    // series for bi1        on the interval  0.          to  9.00000d+00
+    //                                         with weighted error   2.40e-17
+    //                                          log weighted error  16.62
+    //                                significant figures required  16.23
+    //                                     decimal places required  17.14
+    pub(super) static ref BI1_CHEB: ChebSeries<f64> = ChebSeries {
+        coeffs: vec![
+            -0.001971713261099859,
+            0.407348876675464810,
+            0.034838994299959456,
+            0.001545394556300123,
+            0.000041888521098377,
+            0.000000764902676483,
+            0.000000010042493924,
+            0.000000000099322077,
+            0.000000000000766380,
+            0.000000000000004741,
+            0.000000000000000024,
+        ],
+        a: -1.0,
+        b: 1.0,
+    };
+
+    // based on SLATEC besi1(), besi1e()
+    // series for ai1        on the interval  1.25000d-01 to  3.33333d-01
+    //                                         with weighted error   6.98e-17
+    //                                          log weighted error  16.16
+    //                                significant figures required  14.53
+    //                                     decimal places required  16.82
+    pub(super) static ref AI1_CHEB: ChebSeries<f64> = ChebSeries {
+        coeffs: vec![
+            -0.02846744181881479,
+            -0.01922953231443221,
+            -0.00061151858579437,
+            -0.00002069971253350,
+            0.00000858561914581,
+            0.00000104949824671,
+            -0.00000029183389184,
+            -0.00000001559378146,
+            0.00000001318012367,
+            -0.00000000144842341,
+            -0.00000000029085122,
+            0.00000000012663889,
+            -0.00000000001664947,
+            -0.00000000000166665,
+            0.00000000000124260,
+            -0.00000000000027315,
+            0.00000000000002023,
+            0.00000000000000730,
+            -0.00000000000000333,
+            0.00000000000000071,
+            -0.00000000000000006,
+        ],
+        a: -1.0,
+        b: 1.0,
+    };
+
+    // based on SLATEC besi1(), besi1e()
+    // series for ai12       on the interval  0.          to  1.25000d-01
+    //                                        with weighted error   3.55e-17
+    //                                         log weighted error  16.45
+    //                               significant figures required  14.69
+    //                                    decimal places required  17.12
+    pub(super) static ref AI12_CHEB: ChebSeries<f64> = ChebSeries {
+        coeffs: vec![
+            0.02857623501828014,
+            -0.00976109749136147,
+            -0.00011058893876263,
+            -0.00000388256480887,
+            -0.00000025122362377,
+            -0.00000002631468847,
+            -0.00000000383538039,
+            -0.00000000055897433,
+            -0.00000000001897495,
+            0.00000000003252602,
+            0.00000000001412580,
+            0.00000000000203564,
+            -0.00000000000071985,
+            -0.00000000000040836,
+            -0.00000000000002101,
+            0.00000000000004273,
+            0.00000000000001041,
+            -0.00000000000000382,
+            -0.00000000000000186,
+            0.00000000000000033,
+            0.00000000000000028,
+            -0.00000000000000003,
+        ],
+        a: -1.0,
+        b: 1.0,
+    };
 }

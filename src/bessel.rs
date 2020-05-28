@@ -7,6 +7,7 @@ pub(crate) mod cyl_bessel_y;
 mod olver;
 
 use crate::result::SpecFunResult;
+use cyl_bessel_i::*;
 use cyl_bessel_j::*;
 use cyl_bessel_k::*;
 use cyl_bessel_y::*;
@@ -348,6 +349,7 @@ impl CylBesselK for f64 {
 
 #[cfg(test)]
 mod test {
+    use crate::bessel::cyl_bessel_i::*;
     use crate::bessel::cyl_bessel_j::*;
     use crate::bessel::cyl_bessel_k::*;
     use crate::bessel::cyl_bessel_y::*;
@@ -3015,6 +3017,318 @@ mod test {
             cyl_bessel_kn_e,
             (100, 100.0),
             7.617129630494085416e-25,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_i0_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_i0_scaled_e,
+            (1e-10),
+            0.99999999990000000001,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i0_scaled_e,
+            (0.1),
+            0.90710092578230109640,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i0_scaled_e,
+            (2.0),
+            0.30850832255367103953,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i0_scaled_e,
+            (100.0),
+            0.03994437929909668265,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i0_scaled_e,
+            (65536.0),
+            0.0015583712551952223537,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_i0_e() {
+        test_check_result_and_code!(
+            cyl_bessel_i0_e,
+            (0.1),
+            1.0025015629340956014,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i0_e,
+            (2.0),
+            2.2795853023360672674,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i0_e,
+            (100.0),
+            1.0737517071310738235e+42,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_i1_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_i1_scaled_e,
+            (0.1),
+            0.04529844680880932501,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i1_scaled_e,
+            (2.0),
+            0.21526928924893765916,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i1_scaled_e,
+            (100.0),
+            0.03974415302513025267,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i1_scaled_e,
+            (65536.0),
+            0.0015583593657207350452,
+            TOL0,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_i1_e() {
+        test_check_result_and_code!(
+            cyl_bessel_i1_e,
+            (0.1),
+            0.05006252604709269211,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i1_e,
+            (2.0),
+            1.59063685463732906340,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_i1_e,
+            (100.0),
+            1.0683693903381624812e+42,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_in_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_in_scaled_e,
+            (-4, 0.1),
+            2.3575258620054605307e-07,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_scaled_e,
+            (4, 0.1),
+            2.3575258620054605307e-07,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_scaled_e,
+            (5, 2.0),
+            0.0013297610941881578142,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_scaled_e,
+            (100, 100.0),
+            1.7266862628167695785e-22,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_scaled_e,
+            (2, 1e7),
+            1.261566024466416433e-4,
+            TOL2,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_scaled_e,
+            (2, 1e8),
+            3.989422729212649531e-5,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_in_e() {
+        test_check_result_and_code!(
+            cyl_bessel_in_e,
+            (4, 0.1),
+            2.6054690212996573677e-07,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_e,
+            (5, 2.0),
+            0.009825679323131702321,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_in_e,
+            (100, 100.0),
+            4.641534941616199114e+21,
+            TOL2,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_iv_scaled_e() {
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (0.0001, 10.0),
+            0.12783333709581669672,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (1.0, 0.001),
+            0.0004995003123542213370,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (1.0, 1.0),
+            0.20791041534970844887,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (30.0, 1.0),
+            1.3021094983785914437e-42,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (30.0, 100.0),
+            0.0004486987756920986146,
+            TOL3,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (10.0, 1.0),
+            1.0127529864692066036e-10,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (10.0, 100.0),
+            0.024176682718258828365,
+            TOL3,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_scaled_e,
+            (10.2, 100.0),
+            0.023691628843913810043,
+            TOL3,
+            SpecFunCode::Success
+        );
+    }
+
+    #[test]
+    fn test_cyl_bessel_iv_e() {
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (0.0001, 10.0),
+            2815.7166269770030352,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (1.0, 0.001),
+            0.0005000000625000026042,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (1.0, 1.0),
+            0.5651591039924850272,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (30.0, 1.0),
+            3.539500588106447747e-42,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (30.0, 100.0),
+            1.2061548704498434006e+40,
+            TOL2,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (10.0, 1.0),
+            2.7529480398368736252e-10,
+            TOL0,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (10.0, 100.0),
+            6.498975524720147799e+41,
+            TOL2,
+            SpecFunCode::Success
+        );
+        test_check_result_and_code!(
+            cyl_bessel_iv_e,
+            (10.2, 100.0),
+            6.368587361287030443e+41,
             TOL2,
             SpecFunCode::Success
         );

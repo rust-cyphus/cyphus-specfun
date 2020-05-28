@@ -1,4 +1,35 @@
 use crate::result::{SpecFunCode, SpecFunResult};
+use num::Float;;
+
+
+pub trait LambertW{
+    /// Compute the Lambert W-function on the principal branch along with an
+    /// error estimate.
+    fn lambert_w0_e(&self) -> SpecFunResult<Self> where Self:Float;
+    /// Compute the Lambert W-function on the principal branch.
+    fn lambert_w0(&self) -> Self;
+    /// Compute the Lambert W-function on the second real-valued branch along
+    /// with an error estimate.
+    fn lambert_wm1_e(&self) -> SpecFunResult<Self>where Self:Float;
+    /// Compute the Lambert W-function on the second real-valued branch.
+    fn lambert_wm1(&self) -> Self;
+}
+
+impl LambertW for f64{
+    fn lambert_w0_e(&self) -> SpecFunResult<Self>{
+        lambert_w0_e(*self)
+    }
+    fn lambert_w0(&self) -> Self{
+        lambert_w0_e(*self).val
+    }
+    fn lambert_wm1_e(&self) -> SpecFunResult<Self>{
+        lambert_wm1_e(*self)
+    }
+    fn lambert_wm1(&self) -> Self{
+        lambert_wm1_e(*self).val
+    }
+}
+
 
 /// Perform a Halley-iteration to determine root of x = w * exp(w)
 #[allow(dead_code)]

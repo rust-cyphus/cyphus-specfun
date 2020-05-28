@@ -257,7 +257,7 @@ fn cyl_bessel_kv_scaled_e10_e(nu: f64, x: f64) -> SpecFunResultE10<f64> {
         let mu = nu - nn as f64; // -1/2 <= mu <= 1/2
         let mut e10 = 0;
 
-        let (mut kmu, mut kmup1, _) = if x < 2.0 {
+        let (kmu, kmup1, _) = if x < 2.0 {
             super::bessel_helpers::besselk_scaled_temme(mu, x)
         } else {
             super::bessel_helpers::besselk_scaled_steed_temme_cf2(mu, x)

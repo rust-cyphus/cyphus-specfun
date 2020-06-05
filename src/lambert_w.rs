@@ -69,9 +69,8 @@ fn halley_iteration(x: f64, w_initial: f64, max_iters: usize) -> SpecFunResult<f
     result
 }
 
-/* series which appears for q near zero;
- * only the argument is different for the different branches
- */
+// series which appears for q near zero;
+// only the argument is different for the different branches
 fn series_eval(r: f64) -> f64 {
     27.029044799010561650f64
         .mul_add(r, -18.100697012472442755)

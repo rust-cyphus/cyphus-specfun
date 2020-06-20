@@ -1,12 +1,28 @@
 [package]
+authors = ["Logan A Morrison <loanmorr@ucsc.com>"]
+description = "A collection of special functions for Rust."
+homepage = "https://github.com/rust-cyphus/cyphus-specfun"
+repository = "https://github.com/rust-cyphus/cyphus-specfun"
+license = "GPL-3.0"
+keywords = ["mathematics", "numerics", "science", "special-functions", "scientific-computing"]
 name = "cyphus-specfun"
 version = "0.0.1"
-authors = ["Logan A Morrison <loanmorr@ucsc.com>"]
 edition = "2018"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-num = "0.2.1"
-log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
 lazy_static = "1.4.0"
+
+[dependencies.log]
+version = "0.4.8"
+features = ["max_level_debug", "release_max_level_warn"]
+
+[dependencies.num]
+version = "0.3"
+default-features = true
+
+[dependencies.cyphus-autodiff]
+optional = true
+path = "../cyphus-autodiff"

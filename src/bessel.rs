@@ -5,6 +5,10 @@ pub(crate) mod cyl_bessel_j;
 pub(crate) mod cyl_bessel_k;
 pub(crate) mod cyl_bessel_y;
 mod olver;
+pub(crate) mod sph_bessel_i;
+pub(crate) mod sph_bessel_j;
+pub(crate) mod sph_bessel_k;
+pub(crate) mod sph_bessel_y;
 
 use crate::result::SpecFunResult;
 use cyl_bessel_i::*;

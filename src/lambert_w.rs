@@ -40,9 +40,8 @@ fn halley_iteration(x: f64, w_initial: f64, max_iters: usize) -> SpecFunResult<f
     let mut result = SpecFunResult::<f64>::default();
 
     for _ in 0..max_iters {
-        let mut tol = 0.0;
-        let mut e = w.exp();
-        let mut p = w + 1.0;
+        let e = w.exp();
+        let p = w + 1.0;
         let mut t = w * e - x;
 
         t = if w > 0.0 {
@@ -53,7 +52,7 @@ fn halley_iteration(x: f64, w_initial: f64, max_iters: usize) -> SpecFunResult<f
 
         w -= t;
 
-        tol = 10.0 * f64::EPSILON * w.abs().max(1.0 / (p.abs() * e));
+        let tol = 10.0 * f64::EPSILON * w.abs().max(1.0 / (p.abs() * e));
 
         if t.abs() < tol {
             result.val = w;

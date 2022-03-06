@@ -4,7 +4,13 @@ description = "A collection of special functions for Rust."
 homepage = "https://github.com/rust-cyphus/cyphus-specfun"
 repository = "https://github.com/rust-cyphus/cyphus-specfun"
 license = "GPL-3.0"
-keywords = ["mathematics", "numerics", "science", "special-functions", "scientific-computing"]
+keywords = [
+  "mathematics",
+  "numerics",
+  "science",
+  "special-functions",
+  "scientific-computing",
+]
 name = "cyphus-specfun"
 version = "0.0.1"
 edition = "2018"
@@ -25,4 +31,4 @@ default-features = true
 
 [dependencies.cyphus-autodiff]
 optional = true
-path = "../cyphus-autodiff"
+git = "https://github.com/rust-cyphus/cyphus-autodiff.git"
